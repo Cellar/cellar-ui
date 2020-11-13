@@ -1,0 +1,8 @@
+<div class="card-container">
+  <a id="copy-button"
+     [cdkCopyToClipboard]="copyValue"
+     (click)="showSnackbarMessage()"
+     class="card card-large" target="_blank" rel="noopener">
+    <span>{{copyButtonText}}</span>
+  </a>
+</div>

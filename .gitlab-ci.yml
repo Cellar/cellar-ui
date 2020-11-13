@@ -1,0 +1,140 @@
+stages:
+  - build
+  - test
+  - publish
+  - release
+
+variables:
+  APP_NAME: cellar-ui
+  APP_VERSION: 1.0.0
+  API_VERSION: 1.0.0
+  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  PACKAGE_REGISTRY_URL: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic
+
+
+.docker:
+  image: docker:stable
+  services:
+    - docker:dind
+  inherit:
+    variables: true
+  before_script:
+    - apk add --no-cache make
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  after_script:
+    - docker logout $CI_REGISTRY
+
+.ui:
+  image: node:14-alpine
+  before_script:
+    - apk add --no-cache make curl
+    - npm install
+  cache:
+    key:
+      files:
+        - package.json
+      prefix: ${CI_PIPELINE_IID}
+    paths:
+      - node_modules
+
+build:
+  extends: .ui
+  stage: build
+  script:
+    - make build
+
+build-docker:
+  extends: .docker
+  stage: build
+  script:
+    - make docker-build APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
+
+test-unit:
+  extends: .ui
+  stage: test
+  variables:
+    CHROME_BIN: /usr/bin/chromium-browser
+  before_script:
+    - apk add --no-cache chromium make
+    - npm install
+  script:
+    - make test-unit
+
+test-e2e:
+  extends: .ui
+  stage: test
+  image: node:14-slim
+  variables:
+    CHROME_BIN: /usr/bin/chromium
+    APP_BIND_ADDRESS: ":8081"
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+    VAULT_DEV_ROOT_TOKEN_ID: vault-admin
+    VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    VAULT_ADDR: http://vault:8200
+    VAULT_ADDRESS: http://vault:8200
+    VAULT_ROOT_TOKEN: vault-admin
+    VAULT_TOKEN_NAME: cellar-testing
+  services:
+    - name: redis:6.0-alpine
+      alias: redis
+    - name: vault:1.5.5
+      alias: vault
+  before_script:
+    - mkdir -p /usr/share/man/man1
+    - apt-get update && apt-get install -y chromium chromium-driver curl procps make jq
+    - npm install
+    - make vault-configure
+    - export VAULT_ROLE_ID=$(make vault-role-id)
+    - export VAULT_SECRET_ID=$(make vault-secret-id)
+    - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
+  script:
+    - make test-e2e
+
+
+publish:
+  extends: .ui
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  script:
+    - echo "//gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}">.npmrc
+    - make publish
+      APP_VERSION=${APP_VERSION}
+      PACKAGE_NAME=${APP_NAME}
+      PACKAGE_REGISTRY_URL=${PACKAGE_REGISTRY_URL}
+      PACKAGE_TOKEN=${CI_JOB_TOKEN}
+  artifacts:
+    name: cellar-ui-${APP_VERSION}
+    paths:
+      - dist/*.tgz
+
+publish-docker:
+  extends: .docker
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  script:
+    - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
+    - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=latest
+
+release:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - job: publish
+      artifacts: true
+    - job: publish-docker
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  before_script:
+    - apk add --no-cache make
+  script:
+    - make release
+      APP_VERSION=${APP_VERSION}
+      IMAGE_NAME=${IMAGE_NAME}
+      IMAGE_TAG=${APP_VERSION}
+      PACKAGE_NAME=${APP_NAME}
+      PACKAGE_REGISTRY_URL=${PACKAGE_REGISTRY_URL}
