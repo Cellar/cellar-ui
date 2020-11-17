@@ -6,7 +6,7 @@ IMAGE_TAG ?= local
 
 APP_VERSION ?= 0.0.0
 
-API_IMAGE ?= registry.gitlab.com/auroq/cellar/cellar-api
+API_IMAGE ?= registry.gitlab.com/cellar-app/cellar-api
 API_VERSION ?= 0.0.0
 API_PACKAGE_URL ?= https://gitlab.com/api/v4/projects/22424828/packages/generic/cellar-api
 
