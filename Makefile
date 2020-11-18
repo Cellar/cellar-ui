@@ -124,3 +124,20 @@ api-run-binary:
 	@chmod +x cellar-api
 	$(LOG) "Starting Cellar"
 	@./cellar-api & sleep 5
+
+services: clean-services
+	@[ -f ".env" ] && rm -f .env
+	@touch .env
+	$(LOG) "Starting API dependencies"
+	@docker-compose pull
+	@docker-compose up -d redis vault
+	@make vault-configure
+	@echo "VAULT_ROLE_ID=$$(make -s vault-role-id)" >> .env
+	@echo "VAULT_SECRET_ID=$$(make -s vault-secret-id)" >> .env
+	$(LOG) "Starting API"
+	@docker-compose up -d api
+
+clean-services:
+	@docker-compose rm -svf
+	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
+

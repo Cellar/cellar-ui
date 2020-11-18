@@ -27,6 +27,9 @@ services:
       - 8081:8080
     networks:
       - datastore
+    depends_on:
+      - redis
+      - vault
     environment:
       APP_CLIENT_ADDRESS: 127.0.0.1:8081
       REDIS_HOST: redis
