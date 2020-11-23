@@ -73,7 +73,7 @@ docker-build:
 
 docker-run:
 	$(LOG) "Running docker image '${IMAGE_NAME}:${IMAGE_TAG}"
-	@docker run ${IMAGE_NAME}:${IMAGE_TAG}
+	@docker run -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
 
 docker-publish: docker-build
 	$(LOG) "Pushing docker image '${IMAGE_NAME}:${IMAGE_TAG}"
