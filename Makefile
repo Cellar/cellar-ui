@@ -125,17 +125,33 @@ api-run-binary:
 	$(LOG) "Starting Cellar"
 	@./cellar-api & sleep 5
 
-services: clean-services
-	@[ -f ".env" ] && rm -f .env
-	@touch .env
+services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api
+
+dotenv-clean:
+	$(LOG) Generating empty .env file
+	[ -f ".env" ] && rm -f .env || exit 0
+	@echo "VAULT_ROLE_ID=" > .env
+	@echo "VAULT_SECRET_ID=" >> .env
+
+dotenv-values:
+	@[ -f ".env" ] && rm -f .env || exit 0
+	$(LOG) Adding vault role to .env
+	@echo "VAULT_ROLE_ID=$$(make -s vault-role-id)" >> .env
+	@echo "VAULT_SECRET_ID=$$(make -s vault-secret-id)" >> .env
+
+services-api-dependencies:
 	$(LOG) "Starting API dependencies"
 	@docker-compose pull
 	@docker-compose up -d redis vault
-	@make vault-configure
-	@echo "VAULT_ROLE_ID=$$(make -s vault-role-id)" >> .env
-	@echo "VAULT_SECRET_ID=$$(make -s vault-secret-id)" >> .env
+
+services-api:
 	$(LOG) "Starting API"
 	@docker-compose up -d api
+
+services-vault-wait:
+	@timeout 10 \
+		sh -c "until [ $$(docker-compose ps vault | tail -n 1 | awk '{print $$5}') = Up ]; do echo \"waiting for vault\"; sleep 1; done;" || \
+		{ echo "Timed out waiting for Vault to startup"; exit 1; }
 
 clean-services:
 	@docker-compose rm -svf
