@@ -6,6 +6,9 @@ To start learning about Cellar read the documentation [here][cellar-docs]
 
 The source for API can be found [here][api]
 
+> Note: The primary location for contributing to the project is on [GitLab][project-gitlab].
+> It is mirrored to other locations for visibility.
+
 
 # Cellar UI
 
@@ -20,5 +23,5 @@ If you would like to contribute, get started by reading the [contributing docume
 [angular-material]: https://material.angular.io/
 [cellar-docs]: https://cellar-app.gitlab.io
 [contributing]: CONTRIBUTING.md
+[project-gitlab]: https://gitlab.com/cellar-app/cellar-ui
 [api]: https://gitlab.com/cellar-app/cellar-api
-

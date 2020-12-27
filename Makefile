@@ -19,7 +19,7 @@ PACKAGE_URL := ${PACKAGE_REGISTRY_URL}/${PACKAGE_NAME}/${APP_VERSION}/${PACKAGE_
 RELEASE_TAG := v${APP_VERSION}
 RELEASE_NAME := "Release ${PACKAGE_NAME} ${RELEASE_TAG}"
 
-VAULT_ADDR ?= http://127.0.0.1:8200
+VAULT_LOCAL_ADDR ?= http://127.0.0.1:8200
 VAULT_ROOT_TOKEN ?= vault-admin
 VAULT_TOKEN_NAME ?= cellar-key
 VAULT_ROLE_NAME ?= cellar-testing
@@ -85,31 +85,31 @@ vault-enable-transit:
 	$(LOG) "Enabling the transit secrets engine with a single key"
 	$(VAULT_REQUEST) -sX POST \
 		--data '{"type": "transit"}' \
-		${VAULT_ADDR}/v1/sys/mounts/transit
+		${VAULT_LOCAL_ADDR}/v1/sys/mounts/transit
 	$(VAULT_REQUEST) -sX POST \
-		${VAULT_ADDR}/v1/transit/keys/${VAULT_TOKEN_NAME}
+		${VAULT_LOCAL_ADDR}/v1/transit/keys/${VAULT_TOKEN_NAME}
 
 vault-enable-auth:
 	$(LOG) "Enabling approle authentication transit secrets engine"
 	$(VAULT_REQUEST) -sX POST \
 		--data '{"type": "approle"}' \
-		${VAULT_ADDR}/v1/sys/auth/approle
+		${VAULT_LOCAL_ADDR}/v1/sys/auth/approle
 	$(LOG) "Adding role ${VAULT_ROLE_NAME} with full access to transit engine"
 	$(VAULT_REQUEST) -sX PUT \
 		--data '{"name":"transit","policy":"path \"transit/*\" {\n  capabilities = [ \"create\", \"read\", \"update\", \"delete\", \"list\" ]\n}"}' \
-		${VAULT_ADDR}/v1/sys/policy/transit
+		${VAULT_LOCAL_ADDR}/v1/sys/policy/transit
 	$(VAULT_REQUEST) -sX POST \
 		--data '{"policies": "transit"}' \
-		${VAULT_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}
+		${VAULT_LOCAL_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}
 
 vault-role-id:
 	$(VAULT_REQUEST) -sX GET \
-		${VAULT_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}/role-id \
+		${VAULT_LOCAL_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}/role-id \
 		| jq -r '.data.role_id'
 
 vault-secret-id:
 	$(VAULT_REQUEST) -sX POST \
-		${VAULT_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}/secret-id \
+		${VAULT_LOCAL_ADDR}/v1/auth/approle/role/${VAULT_ROLE_NAME}/secret-id \
 		| jq -r '.data.secret_id'
 
 api-run:
@@ -128,14 +128,14 @@ api-run-binary:
 services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api
 
 dotenv-clean:
-	$(LOG) Generating empty .env file
-	[ -f ".env" ] && rm -f .env || exit 0
+	$(LOG) "Generating empty .env file"
+	@[ -f ".env" ] && rm -f .env || exit 0
 	@echo "VAULT_ROLE_ID=" > .env
 	@echo "VAULT_SECRET_ID=" >> .env
 
 dotenv-values:
 	@[ -f ".env" ] && rm -f .env || exit 0
-	$(LOG) Adding vault role to .env
+	$(LOG) "Adding vault role to .env"
 	@echo "VAULT_ROLE_ID=$$(make -s vault-role-id)" >> .env
 	@echo "VAULT_SECRET_ID=$$(make -s vault-secret-id)" >> .env
 
