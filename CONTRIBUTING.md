@@ -58,16 +58,16 @@ Naturally, you will need the node interpreter.
 Use the version listed in the [.nvmrc file][nvmrc].
 
 In fact the easiest way to make sure you are on the right version is to install NVM,
-which is a node version manager.
-For linux and macOS see here: https://github.com/nvm-sh/nvm
+which is a node version manager.  
+For Linux and macOS see here: https://github.com/nvm-sh/nvm  
 For Windows see here: https://github.com/coreybutler/nvm-windows
 
 This project also makes extensive use of [**GNU Make**][gnu-make].
-Make can generally be installed from your linux distros package manager or on Mac using brew.
+Make can generally be installed from your Linux distros package manager or on Mac using brew.
 For Windows there are multiple ports of Make from which to choose or installing make on Windows subsystem for Linux will likely also work.
 
 [Curl][curl] is used within Makefiles for making http requests.
-It can generally be installed from your linux distros package manager or on Mac using brew.
+It can generally be installed from your Linux distros package manager or on Mac using brew.
 On Windows curl is usually aliased automatically to another windows native http client.
 
 Finally, working on this project relies heavily on [Docker][docker] and [docker-compose][docker-compose].
@@ -138,7 +138,7 @@ To update the version of the API on which this project relies:
 
 [gitlab-ci]: .gitlab-ci.yml
 [changelog]: CHANGELOG.md
-[tsling-json]: tslint.json
+[tslint-json]: tslint.json
 [package-json]: package.json
 [nvmrc]: .nvmrc
 [docker-compose-yml]: docker-compose.yml
