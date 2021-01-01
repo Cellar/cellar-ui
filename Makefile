@@ -32,6 +32,9 @@ LOG := @sh -c '\
 	   echo -e "\n> $$1\n"; \
 	   printf ${NC}' VALUE
 
+
+-include .env
+
 .PHONY: build publish
 
 build:
@@ -154,6 +157,7 @@ services-vault-wait:
 		{ echo "Timed out waiting for Vault to startup"; exit 1; }
 
 clean-services:
+	@docker-compose down
 	@docker-compose rm -svf
 	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
 
