@@ -80,10 +80,10 @@ This is done through make by running `make services`.
 This will startup any dependencies required by the API and bootstrap their configuration.
 It will also output any relevant secrets into a file called `.env` from which the Cellar API will read secrets.
 
-You can now be able to run the tests.
+You should now be able to run the tests.
 They can be run either from your IDE or from the terminal using the commands below.
-Running the test from make will run them in headless mode.
-(This is how the tests run in the CI pipeline.
+Running the test with `make` will run them in headless mode.
+(This is how the tests run in the CI pipeline.)
 
 ```shell
 make test-unit
@@ -93,14 +93,48 @@ make test-e2e
 > Note: The unit tests do not require the services to be running,
 > Only the e2e tests actually require the API and its dependencies to be running.
 
+> Note: While the e2e tests do require the UI to be running,
+> they will automatically start the UI themselves when run in headless mode.
+
 If all the tests pass, you are ready to begin work!
-You can stop the API and its dependencies any time with `make clean-services`.
+You can stop the API and its dependencies any time:
+
+```shell
+make clean-services
+```
 
 
 ### Project Structure
 
 This project was initially generated from the angular CLI and is structured accordingly.
 Please make sure to follow all linting and formatting rules specified in relevant files, such as [tslint.json][tslint-json]
+
+Any scripts related to directly working with the UI are found in the [package.json][package-json], but a few important ones are called out in the sections below.
+
+#### Running
+
+Before attempting to run the API make sure you have installed and are using the correct version of node:
+```shell
+nvm install
+nvm use
+```
+
+Then install all the necessary UI source dependencies.
+
+```shell
+npm install
+```
+
+Finally, you can run the UI:
+
+```shell
+npm run start
+```
+
+You should now be able to load the API in your browser at http://127.0.0.1:4200.
+
+If you need to reference the endpoints available in the Cellar API,
+you can load the swagger page at http://127.0.0.1:4200/api/swagger/index.html.
 
 
 #### Testing
@@ -119,6 +153,7 @@ This project uses [semantic versioning][semver], but the version is __NOT__ mana
 Insead to update the version, change the `APP_VERSION` variable in [`.gitlab-ci.yml`][gitlab-ci].
 Then make sure add a list of changes to the [CHANGELOG.md][changelog].
 Tagging and release will be handled automatically through the [CI/CD pipelines][pipelines] in GitLab.
+
 
 ### Updating API Dependency Version
 
