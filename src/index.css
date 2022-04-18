@@ -1,0 +1,42 @@
+@font-face {
+    font-family: 'Vremena Grotesk';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbook.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Vremena Grotesk';
+    font-style: italic;
+    font-weight: normal;
+    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbookitalic.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Vremena Grotesk';
+    font-style: normal;
+    font-weight: bold;
+    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Vremena Grotesk';
+    font-style: italic;
+    font-weight: bold;
+    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbolditalic.otf') format('opentype');
+}
+@font-face {
+    font-family: 'DSE Typewriter';
+    font-style: normal;
+    font-weight: normal;
+    src: local('DSE Typewriter'), url('@/fonts/dse-typewriter.ttf') format('truetype');
+}
+
+body {
+    font-family: 'Vremena Grotesk', Verdana, sans-serif; ;
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
+}

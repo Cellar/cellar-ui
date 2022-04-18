@@ -1,6 +1,6 @@
 # Cellar
 
-This repository contains the source for the cellar API.
+This repository contains the source for the cellar UI.
 
 To start learning about Cellar read the documentation [here][cellar-docs]
 

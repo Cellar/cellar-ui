@@ -1,0 +1,63 @@
+.header {
+    text-align: center;
+}
+
+.banner {
+    background-color: green;
+    padding: 10px;
+}
+.banner p { margin: 0; }
+
+.title {
+    background-color: lightgrey;
+    padding: 10px;
+    position: relative;
+}
+.logo {
+    display: block;
+    position: relative;
+    bottom: -15px;
+}
+
+.cta {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.button {
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    overflow: visible;
+    text-decoration: none;
+
+    background: transparent;
+
+    /* inherit font & color from ancestor */
+    color: inherit;
+    font: inherit;
+
+    /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+    line-height: normal;
+
+    /* Corrects font smoothing for webkit */
+    -webkit-font-smoothing: inherit;
+    -moz-osx-font-smoothing: inherit;
+
+    /* Corrects inability to style clickable `input` types in iOS */
+    -webkit-appearance: none;
+}
+.button {
+    background-color: green;
+    color: white;
+    padding: .6rem .8rem;
+    border-radius: .25rem;
+}
+
+
+.button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
