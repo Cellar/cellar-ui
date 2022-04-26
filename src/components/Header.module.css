@@ -1,63 +1,43 @@
-.header {
-    text-align: center;
-}
-
 .banner {
-    background-color: green;
-    padding: 10px;
+  background-color: #1BFF00;
+  font-size: 12px;
+  padding: 0.8rem;
+  text-align: center;
 }
 .banner p { margin: 0; }
 
+
 .title {
-    background-color: lightgrey;
-    padding: 10px;
-    position: relative;
+  background-color: #E7E7E7;
+  display: flex;
 }
-.logo {
-    display: block;
-    position: relative;
-    bottom: -15px;
+
+.branding {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.8rem 0.8rem 0 0.8rem;
+}
+
+.branding > .logo {
+  display: inline-block;
+  width: 155px;
+  height: 35px;
 }
 
 .cta {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-.button {
-    border: none;
-    margin: 0;
-    padding: 0;
-    width: auto;
-    overflow: visible;
-    text-decoration: none;
-
-    background: transparent;
-
-    /* inherit font & color from ancestor */
-    color: inherit;
-    font: inherit;
-
-    /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
-    line-height: normal;
-
-    /* Corrects font smoothing for webkit */
-    -webkit-font-smoothing: inherit;
-    -moz-osx-font-smoothing: inherit;
-
-    /* Corrects inability to style clickable `input` types in iOS */
-    -webkit-appearance: none;
-}
-.button {
-    background-color: green;
-    color: white;
-    padding: .6rem .8rem;
-    border-radius: .25rem;
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+  padding: 0.8rem;
 }
 
-
-.button::-moz-focus-inner {
-    border: 0;
-    padding: 0;
+@media screen and (min-width: 768px) {
+  .shim {
+    flex: 1;
+  }
+  .branding {
+    align-items: center;
+  }
 }

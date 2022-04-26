@@ -29,6 +29,10 @@
     src: local('DSE Typewriter'), url('@/fonts/dse-typewriter.ttf') format('truetype');
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Vremena Grotesk', Verdana, sans-serif; ;
     font-size: 1rem;
