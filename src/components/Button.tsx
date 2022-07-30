@@ -1,8 +1,32 @@
-import { ComponentPropsWithoutRef, FC } from 'react'
+import {ComponentPropsWithoutRef, FC, ReactElement, ValidationMap, WeakValidationMap} from 'react'
 import cx from 'classnames'
 
 import classes from './Button.module.css'
 
-export const Button: FC<ComponentPropsWithoutRef<'a'>> = (props) => (
-  <a className={cx(classes.resetBtn, classes.button)} {...props} />
-)
+interface ButtonProps extends ComponentPropsWithoutRef<'a'> {
+  appearance?: string
+}
+
+interface Btn extends FC<ButtonProps> {
+  appearances: {
+    primary: string,
+    secondary: string,
+  }
+}
+
+const appearances = {
+  primary: 'primary',
+  secondary: 'secondary',
+}
+
+const Button: Btn = (props) => {
+  const {appearance, ...rest} = props
+
+  return (
+    <a className={cx(classes.resetBtn, classes.button, appearance === appearances.primary && classes.primary, appearance === appearances.secondary && classes.secondary)} {...props} />
+  )
+}
+
+Button.appearances = appearances
+
+export default Button

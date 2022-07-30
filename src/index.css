@@ -34,13 +34,21 @@
 }
 
 body {
-    font-family: 'Vremena Grotesk', Verdana, sans-serif; ;
+    font-family: 'Vremena Grotesk', Verdana, sans-serif;
     font-size: 1rem;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --color-primary: #1BFF00;
+  --color-secondary: #CED4DA;
+  --color-accent: #001AFF;
+  --color-text: #212529;
+  --font-monospace: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
+}
+
 code {
-    font-family: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
+  font-family: var(--font-monospace);
 }

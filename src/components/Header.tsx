@@ -1,4 +1,4 @@
-import { Button } from "./Button";
+import Button from "./Button";
 import { Logo } from "./Logo";
 
 import classes from './Header.module.css'
@@ -16,7 +16,7 @@ export function Header() {
           <Logo className={classes.logo} />
         </div>
         <div className={classes.cta}>
-          <Button href="/">New Secret</Button>
+          <Button appearance={Button.appearances.secondary} href="/">New Secret</Button>
         </div>
       </div>
     </header>

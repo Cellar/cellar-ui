@@ -1,7 +1,8 @@
-import { ComponentPropsWithoutRef, FC } from 'react'
+import { ComponentPropsWithoutRef, FC, useState } from 'react'
 import cx from 'classnames'
 
 import classes from './Form.module.css'
+import {stringify} from "querystring";
 
 export const Form: FC<ComponentPropsWithoutRef<'form'>> = (props) => {
   const { className, ...rest } = props
@@ -44,12 +45,58 @@ export const TextArea: FC<TextAreaProps> = (props) => {
   )
 
 }
+
 export const TextInput: FC<ComponentPropsWithoutRef<'input'>> = (props) => {
   const { className, ...rest } = props
 
   return (
     <InputWrapper>
-      <input className={cx(classes.input, classes.textInput, className)}  {...rest} />
+      <input className={cx(classes.input, className)}  {...rest} />
     </InputWrapper>
+  )
+}
+
+export const FormButton: FC<ComponentPropsWithoutRef<'button'>> = (props) => {
+  const { children, className, ...rest } = props
+
+  return (
+    <button type='button' className={cx(classes.input, classes.formButton, className)} {...rest}>
+      {children}
+    </button>
+  )
+}
+
+export const ToggleButton: FC<ComponentPropsWithoutRef<'button'>> = (props) => {
+  const { children, className} = props
+
+  const [isOn, setIsOn] = useState(false)
+
+  console.log({ isOn });
+
+  return (
+    <FormButton className={cx(className, isOn && classes.toggled)} onClick={() => setIsOn(!isOn)}>
+      {children}
+    </FormButton>
+  )
+}
+
+interface DropdownItem {
+  label: string;
+  value: string;
+}
+
+interface DropdownProps extends
+  ComponentPropsWithoutRef<'select'> {
+  items: DropdownItem[],
+  selected: string,
+}
+
+export const DropDown: FC<DropdownProps> = (props) => {
+  const { className, items, selected, ...rest} = props
+
+  return (
+    <select className={className} {...rest}>
+      {items.map(({value, label}) => <option selected={value === selected} value={value}>{label}</option>)}
+    </select>
   )
 }
