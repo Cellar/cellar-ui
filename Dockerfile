@@ -15,7 +15,7 @@ RUN npm version ${APP_VERSION} --allow-same-version && \
     npm run build && ls -alF /app
 
 
-FROM nginx:1.17-alpine
+FROM nginx:1.26-alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 
