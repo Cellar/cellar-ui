@@ -2,7 +2,7 @@ import dayjs from "dayjs"
 import {useMemo, useState} from 'react'
 
 import Button from '../Button'
-import {DropDown, Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
+import {DropDown, Form, FormButton, TextArea, TextInput} from '../Form'
 
 import classes from './CreateSecretForm.module.css'
 import {RelativeExpiration} from "./RelativeExpiration";
@@ -41,17 +41,21 @@ export const CreateSecretForm = () => {
           <div>
             <span className={classes.header}>Expiration</span>
             <div>
-              <DropDown
-                className={classes.expirationMode}
-                items={Object.values(ExpirationModes).map(m => ({label: m, value: m}))}
-                selected={expirationMode}
-                onChange={(e) => setExpirationMode(e.target.value)}
-              />
               {
-                (expirationMode === ExpirationModes.Relative) && <RelativeExpiration />
+                (expirationMode === ExpirationModes.Relative) &&
+                <>
+                  <button className={classes.expirationModeOption}
+                     onClick={() => setExpirationMode(ExpirationModes.Absolute)}>{ExpirationModes.Absolute}</button><br />
+                  <RelativeExpiration/>
+                </>
               }
               {
-                (expirationMode === ExpirationModes.Absolute) && <AbsoluteExpiration />
+                (expirationMode === ExpirationModes.Absolute) &&
+                <>
+                  <AbsoluteExpiration/>
+                  <button className={classes.expirationModeOption}
+                     onClick={() => setExpirationMode(ExpirationModes.Relative)}>{ExpirationModes.Relative}</button>
+                </>
               }
             </div>
           </div>
@@ -68,6 +72,7 @@ export const CreateSecretForm = () => {
             </div>
           </div>
         </div>
+        <br />
         <div>
           <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
             Create Secret

@@ -41,6 +41,7 @@ export const AbsoluteExpiration: FC<{className?: string}> = ({className, ...prop
 
   return (
     <>
+      <button className={classes.expirationMode}>Expires On (Absolute)</button>
       <input
         value={date}
         className={classes.expirationInput}
