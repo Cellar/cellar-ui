@@ -51,7 +51,7 @@
   text-align:center;
   letter-spacing: initial;
   color: var(--color-black);
-  transition: all 0.2s ease;
+  transition: all 1s ease;
 }
 
 .primary {
