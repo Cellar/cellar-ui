@@ -2,6 +2,11 @@
   "name": "cellar",
   "private": true,
   "version": "0.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Aria Vesta",
+    "email": "dev@ariavesta.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
