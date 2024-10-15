@@ -11,13 +11,11 @@ export function Header() {
       </div>
 
       <div className={classes.title}>
-        <div className={classes.shim} />
+        <div className={classes.shim}/>
         <div className={classes.branding}>
-          <Logo className={classes.logo} />
+          <Logo className={classes.logo}/>
         </div>
-        <div className={classes.cta}>
-          <Button appearance={Button.appearances.secondary} href="/">New Secret</Button>
-        </div>
+        <div className={classes.shim}/>
       </div>
     </header>
   );
