@@ -8,7 +8,7 @@
 
 
 .title {
-  background-color: #E7E7E7;
+  background-color: var(--color-silver);
   display: flex;
 }
 

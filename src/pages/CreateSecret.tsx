@@ -5,9 +5,7 @@ import React from "react";
 
 export const CreateSecret = () => {
   return (
-    <Layout>
-      <h1>Create a Secret</h1>
-      <Button appearance={Button.appearances.round}>🔒 New Secret</Button>
+    <Layout title="Create a Secret">
       <CreateSecretForm />
     </Layout>
   );

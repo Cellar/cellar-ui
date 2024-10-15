@@ -3,7 +3,18 @@
   padding: 0.8rem;
 }
 
+.title {
+  display: flex;
+}
+
+.createButton{
+  margin: auto;
+}
+
 @media screen and (min-width: 1000px) {
+  .shim {
+    flex: 1;
+  }
   .main {
     max-width: 900px;
   }
