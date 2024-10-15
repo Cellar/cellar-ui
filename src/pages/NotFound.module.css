@@ -1,0 +1,30 @@
+.center {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+h1 {
+  color: var(--color-black);
+  width: 100%;
+}
+
+h2 {
+  color: var(--color-black);
+  width: 100%;
+}
+
+p {
+  color: var(--color-gray);
+  width: 100%;
+}
+
+.message {
+  color: var(--color-gray);
+  text-wrap: balance;
+  font-size: large;
+  width: 100%;
+}

@@ -6,10 +6,10 @@ import {Form, TextArea} from '../Form'
 export const AccessSecretDisplay = () => {
   const dummySecret = `Jon Doe
 
-  123 Maple Street
-  Apt 4B
-  Springfield, IL 62704
-  United States`
+123 Maple Street
+Apt 4B
+Springfield, IL 62704
+United States`
 
   const [secretContent, setSecretContent] = useState(dummySecret)
 
