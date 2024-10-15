@@ -7,19 +7,12 @@
   vertical-align: middle;
 }
 
-h1 {
+.errorHeader {
   color: var(--color-black);
-  width: 100%;
 }
 
-h2 {
-  color: var(--color-black);
-  width: 100%;
-}
-
-p {
+.cta {
   color: var(--color-gray);
-  width: 100%;
 }
 
 .message {

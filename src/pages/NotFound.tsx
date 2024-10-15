@@ -8,9 +8,9 @@ export const NotFound = () => {
     <>
       <Header/>
       <div className={classes.center}>
-        <h1>No Secrets Here</h1>
+        <h1 className={classes.errorHeader}>No Secrets Here</h1>
         <h2 className={classes.message}>Sorry, but the page you were trying to view could not be found</h2>
-        <p>Click <a href="/create">here</a> to create a new secret</p>
+        <p className={classes.cta}>Click <a href="/create">here</a> to create a new secret</p>
         <br />
         <div className={classes.createButton}>
           <Button appearance={Button.appearances.round}>🔒 New Secret</Button>

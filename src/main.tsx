@@ -17,6 +17,10 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       {
+        path: '/',
+        element: <CreateSecret />
+      },
+      {
         path: '/create',
         element: <CreateSecret />
       },
