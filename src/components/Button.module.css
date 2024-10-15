@@ -76,3 +76,18 @@
   border: 1px solid var(--color-gray);
   color: var(--color-silver);
 }
+
+
+.round {
+  border-radius: 1rem;
+  background-color: white;
+  border: 1px solid var(--color-blue);
+  padding: 6px 20px;
+  color: var(--color-blue);
+  font-size: small;
+}
+
+.round:hover {
+  background-color: var(--color-blue);
+  color: white;
+}
