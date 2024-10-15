@@ -96,7 +96,7 @@ export const DropDown: FC<DropdownProps> = (props) => {
 
   return (
     <select className={className} {...rest}>
-      {items.map(({value, label}) => <option selected={value === selected} value={value}>{label}</option>)}
+      {items.map(({value, label}) => <option key={value} selected={value === selected} value={value}>{label}</option>)}
     </select>
   )
 }

@@ -1,29 +1,24 @@
 import dayjs from "dayjs"
 import {useMemo, useState} from 'react'
 
-import Button from './Button'
-import {DropDown, Form, FormButton, TextArea, TextInput, ToggleButton} from './Form'
+import Button from '../Button'
+import {DropDown, Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
 
 import classes from './CreateSecretForm.module.css'
+import {RelativeExpiration} from "./RelativeExpiration";
+import {AbsoluteExpiration} from "./AbsoluteExpiration";
 
 const ExpirationModes = {
   Absolute: 'Expire On (Absolute)',
   Relative: 'Expire After (Relative)',
 }
 
-const RelativeTimeUnits = {
-  Hours: 'Hours',
-  Minutes: 'Minutes',
-}
-
 export const CreateSecretForm = () => {
   const minDate = useMemo(() => dayjs(new Date()).toDate(), [])
   const [expirationMode, setExpirationMode] = useState(ExpirationModes.Relative)
-  const [relativeTimeUnit, setRelativeTimeUnit] = useState(RelativeTimeUnits.Hours)
-  const [relativeTimeValue, setRelativeTimeValue] = useState('24')
 
   function handleCreateSecret() {
-    console.log({expirationMode, relativeTimeUnit, relativeTimeValue}) // TODO: make network request
+    //console.log({expirationMode, relativeTimeUnit, relativeTimeValue}) // TODO: make network request
     const secretId = "12345" // TODO: get back secret id from back end
     window.location.href =`/secret/${secretId}` // TODO: redirect using spa navigation function (graviger)
   }
@@ -43,29 +38,10 @@ export const CreateSecretForm = () => {
                 onChange={(e) => setExpirationMode(e.target.value)}
               />
               {
-                (expirationMode === ExpirationModes.Relative) && (
-                  <>
-                    <input
-                      value={relativeTimeValue}
-                      className={classes.relativeTimeValue}
-                      type='number'
-                      onChange={(e) => setRelativeTimeValue(e.target.value)}
-                    />
-                    <DropDown
-                      className={classes.relativeTimeUnit}
-                      items={Object.values(RelativeTimeUnits).map(t => ({label: t, value: t}))}
-                      selected={relativeTimeUnit}
-                      onChange={(e) => setRelativeTimeUnit(e.target.value)}
-                    />
-                  </>
-                )
+                (expirationMode === ExpirationModes.Relative) && <RelativeExpiration />
               }
               {
-                (expirationMode === ExpirationModes.Absolute) && (
-                  <>
-                    Absolute
-                  </>
-                )
+                (expirationMode === ExpirationModes.Absolute) && <AbsoluteExpiration />
               }
             </div>
           </div>
