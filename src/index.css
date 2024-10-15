@@ -34,7 +34,7 @@
 }
 
 body {
-    font-family: 'Vremena Grotesk', Verdana, sans-serif;
+    font-family: var(--font-default);
     font-size: 1rem;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -42,6 +42,7 @@ body {
 }
 
 :root {
+  --color-white: white;
   --color-blue: #3376F9;
   --color-green: #00FF00;
   --color-silver: #E9E9E9;
@@ -49,6 +50,7 @@ body {
   --color-black: #303030;
   --color-red: #FF0000;
 
+  --font-default: 'Vremena Grotesk', Verdana, sans-serif;
   --font-monospace: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
 }
 

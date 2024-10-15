@@ -7,8 +7,8 @@ import {DropDown, Form, FormButton, TextArea, TextInput, ToggleButton} from './F
 import classes from './CreateSecretForm.module.css'
 
 const ExpirationModes = {
-  Absolute: 'Absolute',
-  Relative: 'Relative',
+  Absolute: 'Expire On (Absolute)',
+  Relative: 'Expire After (Relative)',
 }
 
 const RelativeTimeUnits = {
@@ -31,7 +31,7 @@ export const CreateSecretForm = () => {
   return (
     <div>
       <Form>
-        <TextArea rows={13} placeholder="Your secret is safe here" required />
+        <TextArea rows={13} placeholder="Enter Secret Content" required/>
         <div className={classes.formControls}>
           <div>
             <span className={classes.header}>Expiration</span>
@@ -62,7 +62,9 @@ export const CreateSecretForm = () => {
               }
               {
                 (expirationMode === ExpirationModes.Absolute) && (
-                  <div>Absolute</div>
+                  <>
+                    Absolute
+                  </>
                 )
               }
             </div>
@@ -73,14 +75,13 @@ export const CreateSecretForm = () => {
               <TextInput value='1' className={classes.accessLimitInput}/>
               <FormButton>-</FormButton>
               <FormButton>+</FormButton>
-              <ToggleButton>Unlimited</ToggleButton>
             </div>
           </div>
-          <div>
-            <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
-              Create Secret
-            </Button>
-          </div>
+        </div>
+        <div>
+          <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
+            Create Secret
+          </Button>
         </div>
       </Form>
     </div>

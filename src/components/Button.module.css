@@ -89,5 +89,6 @@
 
 .round:hover {
   background-color: var(--color-blue);
-  color: white;
+  border-color: var(--color-silver);
+  color: var(--color-silver);
 }

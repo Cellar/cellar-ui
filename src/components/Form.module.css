@@ -18,7 +18,7 @@
   background-color: #fff;
   border-radius: 0.5rem;
   border: 1px solid var(--color-silver);
-  color: var(--color-gray);
+  color: var(--color-black);
   display: block;
   font-family: var(--font-monospace);
   font-weight: 400;
@@ -30,6 +30,7 @@
 }
 
 .textArea {
+  font-family: var(--font-default);
   width: 100%;
   min-height: calc(1.5em + 0.75rem + 2px);
   resize: vertical;
@@ -44,14 +45,14 @@
 }
 
 .formButton:hover {
-  background-color: var(--color-blue);
+  background-color: var(--color-silver);
 }
 .formButton:active {
   border: 2px solid var(--color-silver);
 }
 
 .toggled {
-  background-color: var(--color-blue);
+  background-color: var(--color-silver);
   border: 2px solid var(--color-silver);
 }
 
