@@ -17,8 +17,8 @@
   background-clip: padding-box;
   background-color: #fff;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-secondary);
-  color: var(--color-text);
+  border: 1px solid var(--color-silver);
+  color: var(--color-gray);
   display: block;
   font-family: var(--font-monospace);
   font-weight: 400;
@@ -44,14 +44,14 @@
 }
 
 .formButton:hover {
-  background-color: var(--color-secondary);
+  background-color: var(--color-blue);
 }
 .formButton:active {
-  border: 2px solid var(--color-text);
+  border: 2px solid var(--color-silver);
 }
 
 .toggled {
-  background-color: var(--color-secondary);
-  border: 2px solid var(--color-text);
+  background-color: var(--color-blue);
+  border: 2px solid var(--color-silver);
 }
 

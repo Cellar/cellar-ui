@@ -42,10 +42,13 @@ body {
 }
 
 :root {
-  --color-primary: #1BFF00;
-  --color-secondary: #CED4DA;
-  --color-accent: #001AFF;
-  --color-text: #212529;
+  --color-blue: #3376F9;
+  --color-green: #00FF00;
+  --color-silver: #E9E9E9;
+  --color-gray: #6E6E6E;
+  --color-black: #303030;
+  --color-red: #FF0000;
+
   --font-monospace: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
 }
 
