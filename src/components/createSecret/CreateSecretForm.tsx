@@ -14,8 +14,14 @@ const ExpirationModes = {
 }
 
 export const CreateSecretForm = () => {
-  const minDate = useMemo(() => dayjs(new Date()).toDate(), [])
+  const [secretContent, setSecretContent] = useState('')
   const [expirationMode, setExpirationMode] = useState(ExpirationModes.Relative)
+  const [accessLimit, setAccessLimit] = useState(1)
+
+  function handleSetAccessLimit(newLimit: number) {
+    if (newLimit > 0)
+      setAccessLimit(newLimit)
+  }
 
   function handleCreateSecret() {
     //console.log({expirationMode, relativeTimeUnit, relativeTimeValue}) // TODO: make network request
@@ -26,7 +32,11 @@ export const CreateSecretForm = () => {
   return (
     <div>
       <Form>
-        <TextArea rows={13} placeholder="Enter Secret Content" required/>
+        <TextArea
+          rows={13}
+          placeholder="Enter Secret Content"
+          onChange={e => setSecretContent(e.target.value)}
+          required/>
         <div className={classes.formControls}>
           <div>
             <span className={classes.header}>Expiration</span>
@@ -48,9 +58,13 @@ export const CreateSecretForm = () => {
           <div>
             <span className={classes.header}>Access Limit</span>
             <div className={classes.accessLimitElements}>
-              <TextInput value='1' className={classes.accessLimitInput}/>
-              <FormButton>-</FormButton>
-              <FormButton>+</FormButton>
+              <TextInput
+                inputMode='numeric'
+                value={accessLimit}
+                className={classes.accessLimitInput}
+                onChange={(e) => handleSetAccessLimit(+e.target.value)}/>
+              <FormButton onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
+              <FormButton onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
             </div>
           </div>
         </div>
