@@ -77,7 +77,7 @@ export const CreateSecretForm = () => {
             </div>
           </div>
           <div>
-            <Button appearance={Button.appearances.primary} onClick={handleCreateSecret}>
+            <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
               Create Secret
             </Button>
           </div>

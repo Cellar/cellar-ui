@@ -33,8 +33,9 @@
   display: inline-block;
   cursor: pointer;
   font-size: larger;
-  padding: 20px 40px;
+  padding: 20px 30px;
 }
+
 
 .primary {
   font-family: 'DSE Typewriter', monospace;
@@ -42,8 +43,36 @@
   background-color: var(--color-green);
 }
 
+.primary::before {
+  content:attr(data-text);
+  position:absolute;
+  left:0;
+  right:0;
+  text-align:center;
+  letter-spacing: initial;
+  color: var(--color-black);
+  transition: all 0.2s ease;
+}
+
+.primary {
+  letter-spacing: 4px;
+  color: var(--color-green);
+  position:relative;
+}
+
+.primary:hover::before {
+  letter-spacing: 4px;
+}
+
+
 .secondary {
-  background-color: var(--color-blue);
-  border: 1px solid var(--color-blue);
-  color: white;
+  background-color: var(--color-silver);
+  border: 1px solid var(--color-silver);
+  color: var(--color-black);
+}
+
+.secondary:hover {
+  background-color: var(--color-gray);
+  border: 1px solid var(--color-gray);
+  color: var(--color-silver);
 }
