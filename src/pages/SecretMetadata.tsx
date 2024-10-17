@@ -3,13 +3,12 @@ import React from "react";
 import {SecretMetadataDisplay} from "../components/secretMetadata/SecretMetadataDisplay";
 import {ISecretMetadata} from "../models/secretMetadata";
 import {IApiError} from "../models/error";
+import {getSecretMetadata} from "../api/client";
 
 export const SecretMetadataLoader = async ({ params }: { params: any }): Promise<ISecretMetadata | IApiError>  => {
   const secretId = params.secretId;
 
-  const res = await fetch(`/api/v1/secrets/${secretId}`);
-
-  return res.json();
+  return getSecretMetadata(secretId);
 }
 
 export const SecretMetadata = () => {

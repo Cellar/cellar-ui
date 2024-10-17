@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {CreateSecret} from "./pages/CreateSecret";
-import {AccessSecret} from "./pages/AccessSecret";
+import {AccessSecret, AccessSecretLoader} from "./pages/AccessSecret";
 import {NotFound} from "./pages/NotFound";
 import {SecretMetadata, SecretMetadataLoader} from "./pages/SecretMetadata";
 
@@ -28,6 +28,7 @@ const router = createBrowserRouter([
       {
         path: '/secret/:secretId/access',
         element: <AccessSecret />,
+        loader: AccessSecretLoader,
       },
       {
         path: '/secret/:secretId',

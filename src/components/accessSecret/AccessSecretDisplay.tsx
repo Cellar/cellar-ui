@@ -1,17 +1,10 @@
-import {useState} from 'react'
-
 import Button from '../Button'
 import {Form, TextArea} from '../Form'
+import {useLoaderData} from "react-router-dom";
+import {ISecret} from "../../models/secret";
 
 export const AccessSecretDisplay = () => {
-  const dummySecret = `Jon Doe
-
-123 Maple Street
-Apt 4B
-Springfield, IL 62704
-United States`
-
-  const [secretContent, setSecretContent] = useState(dummySecret)
+  const { content: secretContent } = useLoaderData() as ISecret
 
   function handleCopySecret() {
     console.log('TODO copy secret') // TODO: copy secret to clipboard

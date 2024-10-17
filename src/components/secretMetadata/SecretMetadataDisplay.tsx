@@ -26,7 +26,7 @@ export const SecretMetadataDisplay = () => {
       <div className={classes.metadataRow}>
         <div>
           <span className={classes.header}>Expires On</span>
-          <p className={classes.metadataText}>{expiration}</p>
+          <p className={classes.metadataText}>{expiration.toString()}</p>
         </div>
         <div>
           <span className={classes.header}>Accessed</span>
