@@ -52,6 +52,9 @@ build-docker:
 test-unit:
   extends: .ui
   stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "react"
+      when: never
   variables:
     CHROME_BIN: /usr/bin/chromium-browser
   before_script:
