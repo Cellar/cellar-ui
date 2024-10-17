@@ -1,32 +1,28 @@
 import classes from "./CreateSecretForm.module.css";
 import {DropDown} from "../Form";
 import {FC, useState} from "react";
+import cx from "classnames";
 
-
-const RelativeTimeUnits = {
-  Hours: 'Hours',
-  Minutes: 'Minutes',
-}
 
 export const RelativeExpiration: FC<{className?: string}> = ({className, ...props}) => {
-  const [relativeTimeUnit, setRelativeTimeUnit] = useState(RelativeTimeUnits.Hours)
-  const [relativeTimeValue, setRelativeTimeValue] = useState('24')
+  const [hourValue, setHourValue] = useState('24')
+  const [minuteValue, setMinuteValue] = useState('000')
 
   return (
-      <>
-          <button className={classes.expirationMode}>Expires After (Relative)</button>
-          <input
-              value={relativeTimeValue}
-              className={classes.expirationDropdown}
-              type='number'
-              onChange={(e) => setRelativeTimeValue(e.target.value)}
-          />
-          <DropDown
-              className={classes.expirationInput}
-              items={Object.values(RelativeTimeUnits).map(t => ({label: t, value: t}))}
-              selected={relativeTimeUnit}
-              onChange={(e) => setRelativeTimeUnit(e.target.value)}
-          />
-      </>
+    <>
+      <button className={classes.expirationMode}>Expires After (Relative)</button>
+      <input
+        value={hourValue}
+        className={cx(classes.expirationInput, classes.hoursDropdown)}
+        type='number'
+        onChange={(e) => setHourValue(e.target.value)}
+      />
+      <input
+        value={minuteValue}
+        className={cx(classes.expirationInput, classes.minutesDropdown)}
+        type='number'
+        onChange={(e) => setMinuteValue(e.target.value)}
+      />
+    </>
   )
 }

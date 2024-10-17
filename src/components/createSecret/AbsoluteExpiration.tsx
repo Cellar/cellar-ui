@@ -1,6 +1,7 @@
 import classes from "./CreateSecretForm.module.css";
 import {DropDown} from "../Form";
 import {FC, useState} from "react";
+import cx from "classnames";
 
 
 const AMPM = {
@@ -44,19 +45,19 @@ export const AbsoluteExpiration: FC<{className?: string}> = ({className, ...prop
       <button className={classes.expirationMode}>Expires On (Absolute)</button>
       <input
         value={date}
-        className={classes.expirationInput}
+        className={cx(classes.dateDropdown, classes.expirationInput)}
         type='date'
         min={formatDate(tomorrow)}
         onChange={(e) => setDate(e.target.value)}
       />
       <DropDown
-        className={classes.expirationDropdown}
+        className={cx(classes.expirationInput, classes.timeDropdown)}
         items={Object.values(timeOptions).map(t => ({label: t, value: t}))}
         selected={time}
         onChange={(e) => setTime(e.target.value)}
       />
       <DropDown
-        className={classes.expirationDropdown}
+        className={cx(classes.expirationInput, classes.amPmDropdown)}
         items={Object.values(AMPM).map(t => ({label: t, value: t}))}
         selected={amPm}
         onChange={(e) => setAmPm(e.target.value)}

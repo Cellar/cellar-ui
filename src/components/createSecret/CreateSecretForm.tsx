@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import React, {useState} from 'react'
 
 import Button from '../Button'
 import {Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
@@ -6,6 +6,7 @@ import {Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
 import classes from './CreateSecretForm.module.css'
 import {RelativeExpiration} from "./RelativeExpiration";
 import {AbsoluteExpiration} from "./AbsoluteExpiration";
+import cx from "classnames";
 
 const ExpirationModes = {
   Absolute: 'Expire On (Absolute)',
@@ -45,7 +46,8 @@ export const CreateSecretForm = () => {
                 (expirationMode === ExpirationModes.Relative) &&
                 <>
                   <button className={classes.expirationModeOption}
-                     onClick={() => setExpirationMode(ExpirationModes.Absolute)}>{ExpirationModes.Absolute}</button><br />
+                          onClick={() => setExpirationMode(ExpirationModes.Absolute)}>{ExpirationModes.Absolute}</button>
+                  <br/>
                   <RelativeExpiration/>
                 </>
               }
@@ -53,12 +55,14 @@ export const CreateSecretForm = () => {
                 (expirationMode === ExpirationModes.Absolute) &&
                 <>
                   <AbsoluteExpiration/>
+                  <br />
                   <button className={classes.expirationModeOption}
-                     onClick={() => setExpirationMode(ExpirationModes.Relative)}>{ExpirationModes.Relative}</button>
+                          onClick={() => setExpirationMode(ExpirationModes.Relative)}>{ExpirationModes.Relative}</button>
                 </>
               }
             </div>
           </div>
+          <div className={classes.shim}/>
           <div>
             <span className={classes.header}>Access Limit</span>
             <div className={classes.accessLimitElements}>
@@ -69,11 +73,12 @@ export const CreateSecretForm = () => {
                 onChange={(e) => handleSetAccessLimit(+e.target.value)}/>
               <FormButton onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
               <FormButton onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
-              <ToggleButton setParentState={setAccessLimitDisabled}>No Limit</ToggleButton>
+              <p className={classes.orText}>or</p>
+              <ToggleButton className={classes.noLimitInput} setParentState={setAccessLimitDisabled}>No Limit</ToggleButton>
             </div>
           </div>
         </div>
-        <br />
+        <br/>
         <div>
           <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
             Create Secret

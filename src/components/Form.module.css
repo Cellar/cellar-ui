@@ -29,6 +29,12 @@
   text-transform: uppercase;
 }
 
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
 .textArea {
   font-family: var(--font-default);
   width: 100%;
@@ -56,3 +62,14 @@
   border: 1px solid var(--color-gray);
 }
 
+.select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+}
+
+/* For IE10 */
+.select::-ms-expand {
+  display: none;
+}
