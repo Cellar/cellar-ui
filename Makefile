@@ -53,7 +53,7 @@ publish:
 	$(LOG) "Setting build version ${APP_VERSION}"
 	@npm version ${APP_VERSION}
 	$(LOG) "Publishing site with angular"
-	@npm run publish
+	@npm publish
 	$(LOG) "Compressing site as ${PACKAGE_ID}"
 	@cd dist && tar -czvf ${PACKAGE_ID} cellar-ui/*
 	$(LOG) "Uploading package to ${PACKAGE_URL}"
