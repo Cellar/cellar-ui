@@ -9,7 +9,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {CreateSecret} from "./pages/CreateSecret";
 import {AccessSecret} from "./pages/AccessSecret";
 import {NotFound} from "./pages/NotFound";
-import {SecretMetadata} from "./pages/SecretMetadata";
+import {SecretMetadata, SecretMetadataLoader} from "./pages/SecretMetadata";
 
 const router = createBrowserRouter([
   {
@@ -19,19 +19,20 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <CreateSecret />
+        element: <CreateSecret />,
       },
       {
-        path: '/create',
-        element: <CreateSecret />
+        path: '/secret/create',
+        element: <CreateSecret />,
       },
       {
-        path: '/secret',
-        element: <AccessSecret />
+        path: '/secret/:secretId/access',
+        element: <AccessSecret />,
       },
       {
-        path: '/secret/metadata',
-        element: <SecretMetadata />
+        path: '/secret/:secretId',
+        element: <SecretMetadata />,
+        loader: SecretMetadataLoader,
       },
     ]
   }

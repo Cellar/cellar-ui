@@ -10,5 +10,14 @@ export default defineConfig({
     alias: {
       '@/fonts': path.resolve(__dirname, 'src', 'fonts'),
     }
-  }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      }
+    }
+  },
 })

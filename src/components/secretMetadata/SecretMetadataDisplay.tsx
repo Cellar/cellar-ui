@@ -1,12 +1,17 @@
 import Button from '../Button'
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
-import {TextArea, TextInput} from "../Form";
+import {useLoaderData} from "react-router-dom";
+import {ISecretMetadata} from "../../models/secretMetadata";
+import {TextInput} from "../Form";
 
 export const SecretMetadataDisplay = () => {
-  const expiration = '11/04/2024'
-  const accessCount = 0
-  const accessLimit = 1
-  const secretId = 'ccc8744ccd84ddd235a227cd255222a06e545edf4b0af5af0363ac9d965c5f99'
+
+  const {
+    id: secretId,
+    expiration: expiration,
+    access_count: accessCount,
+    access_limit: accessLimit,
+  } = useLoaderData() as ISecretMetadata;
 
   function handleCopyLinkSecret() {
     console.log('TODO copy link to secret') // TODO: perform copy

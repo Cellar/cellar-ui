@@ -144,20 +144,20 @@ dotenv-values:
 
 services-api-dependencies:
 	$(LOG) "Starting API dependencies"
-	@docker-compose pull
-	@docker-compose up -d redis vault
+	@docker compose pull
+	@docker compose up -d redis vault
 
 services-api:
 	$(LOG) "Starting API"
-	@docker-compose up -d api
+	@docker compose up -d api
 
 services-vault-wait:
 	@timeout 10 \
-		sh -c "until [ $$(docker-compose ps vault | tail -n 1 | awk '{print $$5}') = Up ]; do echo \"waiting for vault\"; sleep 1; done;" || \
+		sh -c "until [[ $$(docker compose ps --format=json vault | jq '.Status' ) =~ Up ]]; do echo \"waiting for vault\"; sleep 1; done;" || \
 		{ echo "Timed out waiting for Vault to startup"; exit 1; }
 
 clean-services:
-	@docker-compose down
-	@docker-compose rm -svf
+	@docker compose down
+	@docker compose rm -svf
 	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
 
