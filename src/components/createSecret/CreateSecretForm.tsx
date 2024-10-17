@@ -1,8 +1,7 @@
-import dayjs from "dayjs"
-import {useMemo, useState} from 'react'
+import {useState} from 'react'
 
 import Button from '../Button'
-import {DropDown, Form, FormButton, TextArea, TextInput} from '../Form'
+import {Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
 
 import classes from './CreateSecretForm.module.css'
 import {RelativeExpiration} from "./RelativeExpiration";
@@ -17,6 +16,7 @@ export const CreateSecretForm = () => {
   const [secretContent, setSecretContent] = useState('')
   const [expirationMode, setExpirationMode] = useState(ExpirationModes.Relative)
   const [accessLimit, setAccessLimit] = useState(1)
+  const [accessLimitDisabled, setAccessLimitDisabled] = useState(false)
 
   function handleSetAccessLimit(newLimit: number) {
     if (newLimit > 0)
@@ -69,6 +69,7 @@ export const CreateSecretForm = () => {
                 onChange={(e) => handleSetAccessLimit(+e.target.value)}/>
               <FormButton onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
               <FormButton onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
+              <ToggleButton setParentState={setAccessLimitDisabled}>No Limit</ToggleButton>
             </div>
           </div>
         </div>

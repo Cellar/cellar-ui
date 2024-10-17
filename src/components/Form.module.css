@@ -53,6 +53,6 @@
 
 .toggled {
   background-color: var(--color-silver);
-  border: 2px solid var(--color-silver);
+  border: 1px solid var(--color-gray);
 }
 

@@ -66,15 +66,23 @@ export const FormButton: FC<ComponentPropsWithoutRef<'button'>> = (props) => {
   )
 }
 
-export const ToggleButton: FC<ComponentPropsWithoutRef<'button'>> = (props) => {
-  const { children, className} = props
+
+interface ToggleButtonProps extends ComponentPropsWithoutRef<'button'> {
+  setParentState: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const ToggleButton: FC<ToggleButtonProps> = (props) => {
+  const {setParentState, children, className} = props
 
   const [isOn, setIsOn] = useState(false)
 
   console.log({ isOn });
 
   return (
-    <FormButton className={cx(className, isOn && classes.toggled)} onClick={() => setIsOn(!isOn)}>
+    <FormButton className={cx(className, isOn && classes.toggled)} onClick={() => {
+      setIsOn(!isOn)
+      setParentState(!isOn)
+    }}>
       {children}
     </FormButton>
   )
