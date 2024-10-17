@@ -64,7 +64,7 @@ test-e2e:
   extends: .ui
   stage: test
   rules:
-    - if: $CI_COMMIT_BRANCH == react
+    - if: $CI_COMMIT_BRANCH == "react"
       when: never
   image: node:20-slim
   variables:
@@ -101,7 +101,7 @@ publish:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
-    - if: $CI_COMMIT_BRANCH == react
+    - if: $CI_COMMIT_BRANCH == "react"
       when: manual
   script:
     - echo "//gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}">.npmrc
@@ -121,7 +121,7 @@ publish-docker:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
-    - if: $CI_COMMIT_BRANCH == react
+    - if: $CI_COMMIT_BRANCH == "react"
       when: manual
   script:
     - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
