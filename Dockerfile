@@ -12,7 +12,7 @@ COPY . .
 ARG APP_VERSION
 
 RUN npm version ${APP_VERSION} --allow-same-version && \
-    npm run build && ls -alF /app
+    npm run build
 
 
 FROM nginx:1.26-alpine
