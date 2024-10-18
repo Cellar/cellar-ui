@@ -3,8 +3,10 @@ import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
 import {useLoaderData, useNavigate} from "react-router-dom";
 import {ISecretMetadata} from "../../models/secretMetadata";
 import {TextInput} from "../Form";
+import {deleteSecret} from "../../api/client";
 
 export const SecretMetadataDisplay = () => {
+  const navigate = useNavigate()
 
   const {
     id: secretId,
@@ -13,13 +15,19 @@ export const SecretMetadataDisplay = () => {
     access_limit: accessLimit,
   } = useLoaderData() as ISecretMetadata;
 
-
   async function handleCopyLinkSecret() {
     await navigator.clipboard.writeText(`${window.location.origin}/secret/${secretId}/access`)
   }
 
   async function handleCopyLinkMetadata() {
     await navigator.clipboard.writeText(`${window.location.origin}/secret/${secretId}`)
+  }
+
+  async function handleDeleteSecret() {
+    if (window.confirm("Are you sure you wish to delete this secret?")) {
+      await deleteSecret(secretId)
+      navigate('/secret/create')
+    }
   }
 
   return (
@@ -47,7 +55,7 @@ export const SecretMetadataDisplay = () => {
           Copy Link to Metadata
         </Button>
         <div className={classes.shim}/>
-        <a className={classes.delete}>Delete Secret</a>
+        <a className={classes.delete} onClick={handleDeleteSecret}>Delete Secret</a>
       </div>
     </>
   )
