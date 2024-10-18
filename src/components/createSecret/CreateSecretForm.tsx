@@ -46,6 +46,7 @@ export const CreateSecretForm = () => {
           placeholder="Enter Secret Content"
           onChange={e => setSecretContent(e.target.value)}
           required/>
+        <br />
         <div className={classes.formControls}>
           <div>
             <span className={classes.header}>Expiration</span>
