@@ -1,6 +1,6 @@
 import Button from '../Button'
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
-import {useLoaderData} from "react-router-dom";
+import {useLoaderData, useNavigate} from "react-router-dom";
 import {ISecretMetadata} from "../../models/secretMetadata";
 import {TextInput} from "../Form";
 
@@ -13,12 +13,13 @@ export const SecretMetadataDisplay = () => {
     access_limit: accessLimit,
   } = useLoaderData() as ISecretMetadata;
 
-  function handleCopyLinkSecret() {
-    console.log('TODO copy link to secret') // TODO: perform copy
+
+  async function handleCopyLinkSecret() {
+    await navigator.clipboard.writeText(`${window.location.origin}/secret/${secretId}/access`)
   }
 
-  function handleCopyLinkMetadata() {
-    console.log('TODO copy link to metadata') // TODO: perform copy
+  async function handleCopyLinkMetadata() {
+    await navigator.clipboard.writeText(`${window.location.origin}/secret/${secretId}`)
   }
 
   return (

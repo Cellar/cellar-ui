@@ -6,8 +6,8 @@ import {ISecret} from "../../models/secret";
 export const AccessSecretDisplay = () => {
   const { content: secretContent } = useLoaderData() as ISecret
 
-  function handleCopySecret() {
-    console.log('TODO copy secret') // TODO: copy secret to clipboard
+  async function handleCopySecret() {
+    await navigator.clipboard.writeText(secretContent)
   }
 
   return (
