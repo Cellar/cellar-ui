@@ -6,7 +6,8 @@ import {Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
 import classes from './CreateSecretForm.module.css'
 import {RelativeExpiration} from "./RelativeExpiration";
 import {AbsoluteExpiration} from "./AbsoluteExpiration";
-import cx from "classnames";
+import {createSecret} from "../../api/client";
+import {ISecretMetadata} from "../../models/secretMetadata";
 
 const ExpirationModes = {
   Absolute: 'Expire On (Absolute)',
@@ -19,15 +20,19 @@ export const CreateSecretForm = () => {
   const [accessLimit, setAccessLimit] = useState(1)
   const [accessLimitDisabled, setAccessLimitDisabled] = useState(false)
 
+  const now = new Date()
+  let inTwentyFourHours = new Date()
+  inTwentyFourHours.setHours(now.getHours() + 24, now.getMinutes(), 0, 0)
+  const [expirationDate, setExpirationDate] = useState(inTwentyFourHours)
+
   function handleSetAccessLimit(newLimit: number) {
     if (newLimit > 0)
       setAccessLimit(newLimit)
   }
 
-  function handleCreateSecret() {
-    //console.log({expirationMode, relativeTimeUnit, relativeTimeValue}) // TODO: make network request
-    const secretId = "12345" // TODO: get back secret id from back end
-    window.location.href =`/secret/${secretId}` // TODO: redirect using spa navigation function (graviger)
+  async function handleCreateSecret() {
+    const metadata = await createSecret(secretContent, expirationDate, accessLimitDisabled ? -1 : accessLimit)
+    window.location.href =`/secret/${(metadata as ISecretMetadata).id}` // TODO: redirect using spa navigation function (graviger)
   }
 
   return (
@@ -48,13 +53,13 @@ export const CreateSecretForm = () => {
                   <button className={classes.expirationModeOption}
                           onClick={() => setExpirationMode(ExpirationModes.Absolute)}>{ExpirationModes.Absolute}</button>
                   <br/>
-                  <RelativeExpiration/>
+                  <RelativeExpiration expiration={expirationDate} setExpiration={setExpirationDate}/>
                 </>
               }
               {
                 (expirationMode === ExpirationModes.Absolute) &&
                 <>
-                  <AbsoluteExpiration/>
+                  <AbsoluteExpiration expiration={expirationDate} setExpiration={setExpirationDate}/>
                   <br />
                   <button className={classes.expirationModeOption}
                           onClick={() => setExpirationMode(ExpirationModes.Relative)}>{ExpirationModes.Relative}</button>

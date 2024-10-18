@@ -76,8 +76,6 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
 
   const [isOn, setIsOn] = useState(false)
 
-  console.log({ isOn });
-
   return (
     <FormButton className={cx(className, isOn && classes.toggled)} onClick={() => {
       setIsOn(!isOn)

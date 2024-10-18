@@ -1,7 +1,9 @@
 import classes from "./CreateSecretForm.module.css";
 import {DropDown} from "../Form";
-import {FC, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import cx from "classnames";
+import {Time} from "./time";
+import {padNum} from "./helpers";
 
 
 const AMPM = {
@@ -10,57 +12,98 @@ const AMPM = {
 }
 
 const timeOptions = [
-  ' 1:00', ' 1:30',
-  ' 2:00', ' 2:30',
-  ' 3:00', ' 3:30',
-  ' 4:00', ' 4:30',
-  ' 5:00', ' 5:30',
-  ' 6:00', ' 6:30',
-  ' 7:00', ' 7:30',
-  ' 8:00', ' 8:30',
-  ' 9:00', ' 9:30',
+  '01:00', '01:30',
+  '02:00', '02:30',
+  '03:00', '03:30',
+  '04:00', '04:30',
+  '05:00', '05:30',
+  '06:00', '06:30',
+  '07:00', '07:30',
+  '08:00', '08:30',
+  '09:00', '09:30',
   '10:00', '10:30',
   '11:00', '11:30',
   '12:00', '12:30',
 ];
 
-export const AbsoluteExpiration: FC<{className?: string}> = ({className, ...props}) => {
+export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
   let tomorrow = new Date()
   tomorrow.setHours(24)
 
-  const [date, setDate] = useState(formatDate(tomorrow))
-  const [time, setTime] = useState('12:00')
-  const [amPm, setAmPm] = useState(AMPM.AM)
+  let {date: date, time: time, amPm: amPm} = getAbsoluteParts(expiration)
 
-  function padNum(num: number): string {
-    return ('0' + num).slice(-2)
+  useEffect(() => {
+    let {date: newDate, time: newTime, amPm: newAmPm} = getAbsoluteParts(expiration)
+    date = newDate
+    time = newTime
+    amPm = newAmPm
+
+  }, [expiration]);
+
+  function getAbsoluteParts(target: Date): {date: Date, time: string, amPm: string} {
+    let hours = target.getHours()
+    let minutes = target.getMinutes()
+    if (minutes >= 0 && minutes < 15) {
+      minutes = 0
+    } else if (minutes >= 15 && minutes < 45) {
+      minutes = 30
+    } else { // minutes should round up the hour
+      minutes = 0
+      hours++
+    }
+
+    const time = Time.toString(hours % 12, minutes)
+    const amPm = hours % 24 > 11 ? AMPM.PM : AMPM.AM
+    const date = new Date(target.getTime())
+    date.setHours(0, 0, 0, 0)
+
+    return {date, time, amPm}
+  }
+
+  function getAbsoluteDate(newDate: string, newTime: string, newAmPm: string) {
+    const [hour, minute] = Time.fromString(newTime);
+    const [year, month, day] = (newDate.split('-').map(v => +v))
+    let absoluteDate = new Date(year, month, day, 0, 0, 0, 0)
+    if (newAmPm === AMPM.PM) {
+      absoluteDate.setHours(hour + 12, minute, 0, 0);
+    } else {
+      absoluteDate.setHours(hour, minute, 0, 0);
+    }
+
+    return absoluteDate
   }
 
   function formatDate(date: Date): string {
-    return `${date.getFullYear()}-${padNum(date.getMonth())}-${padNum(date.getDate())}`
+    return `${date.getFullYear()}-${padNum(date.getMonth(), 2)}-${padNum(date.getDate(), 2)}`
   }
 
   return (
     <>
       <button className={classes.expirationMode}>Expires On (Absolute)</button>
       <input
-        value={date}
+        value={formatDate(date)}
         className={cx(classes.dateDropdown, classes.expirationInput)}
         type='date'
         min={formatDate(tomorrow)}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e) => {
+          setExpiration(getAbsoluteDate(e.target.value, time, amPm))
+        }}
       />
       <DropDown
         className={cx(classes.expirationInput, classes.timeDropdown)}
         items={Object.values(timeOptions).map(t => ({label: t, value: t}))}
         selected={time}
-        onChange={(e) => setTime(e.target.value)}
+        onChange={(e) => {
+          setExpiration(getAbsoluteDate(formatDate(date), e.target.value, amPm))
+        }}
       />
       <DropDown
         className={cx(classes.expirationInput, classes.amPmDropdown)}
         items={Object.values(AMPM).map(t => ({label: t, value: t}))}
         selected={amPm}
-        onChange={(e) => setAmPm(e.target.value)}
+        onChange={(e) => {
+          setExpiration(getAbsoluteDate(formatDate(date), time, e.target.value))
+        }}
       />
     </>
   )

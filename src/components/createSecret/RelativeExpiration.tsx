@@ -1,27 +1,58 @@
 import classes from "./CreateSecretForm.module.css";
-import {DropDown} from "../Form";
-import {FC, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import cx from "classnames";
+import {padNum} from "./helpers";
 
 
-export const RelativeExpiration: FC<{className?: string}> = ({className, ...props}) => {
-  const [hourValue, setHourValue] = useState('24')
-  const [minuteValue, setMinuteValue] = useState('000')
+export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
+  let {hours, minutes} = getRelative(expiration)
+
+  useEffect(() => {
+    const {hours: newHours, minutes: newMinutes} = getRelative(expiration)
+    hours = newHours
+    minutes = newMinutes
+  }, [expiration]);
+
+  function getAbsoluteDate(hours: number, minutes: number) {
+    let newDate = new Date()
+    newDate.setHours(newDate.getHours() + hours, newDate.getMinutes() + minutes, 0, 0)
+
+    return newDate
+  }
+
+  function getRelative(target: Date): {hours: number, minutes: number} {
+    let diff = target.getTime() - Date.now()
+    let hours = Math.floor(diff / (1000 * 60 * 60))
+    let minutes = Math.ceil((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+    if (minutes >= 60) {
+      hours++
+      minutes = minutes % 60
+    }
+
+    return {hours, minutes}
+  }
 
   return (
     <>
       <button className={classes.expirationMode}>Expires After (Relative)</button>
       <input
-        value={hourValue}
+        value={padNum(hours, 2)}
         className={cx(classes.expirationInput, classes.hoursDropdown)}
         type='number'
-        onChange={(e) => setHourValue(e.target.value)}
+        min={minutes >= 30 ? 0 : 1}
+        onChange={(e) => {
+          setExpiration(getAbsoluteDate(+e.target.value, minutes))
+        }}
       />
       <input
-        value={minuteValue}
+        value={padNum(minutes, 3)}
         className={cx(classes.expirationInput, classes.minutesDropdown)}
         type='number'
-        onChange={(e) => setMinuteValue(e.target.value)}
+        min={hours >= 1 ? 0 : 30}
+        onChange={(e) => {
+          setExpiration(getAbsoluteDate(hours, +e.target.value))
+        }}
       />
     </>
   )
