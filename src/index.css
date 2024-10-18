@@ -63,3 +63,15 @@ body {
 code {
   font-family: var(--font-monospace);
 }
+
+@media screen and (max-width: 1000px) {
+  body {
+    font-size: .9rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  body {
+    font-size: .8rem;
+  }
+}

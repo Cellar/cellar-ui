@@ -83,3 +83,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .select::-ms-expand {
   display: none;
 }
+
+@media screen and (max-width: 1000px) {
+  .input {
+    font-size: .9rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .input {
+    font-size: .8rem;
+  }
+}

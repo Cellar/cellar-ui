@@ -94,3 +94,21 @@
   border-color: var(--color-silver);
   color: var(--color-silver);
 }
+
+@media screen and (max-width: 1000px) {
+  .button {
+    font-size: large;
+  }
+
+  .primary {
+    padding: 20px 10px;
+  }
+
+  .secondary {
+    font-size: small;
+  }
+
+  .round {
+    font-size: small;
+  }
+}
