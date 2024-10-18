@@ -11,6 +11,17 @@
   margin: auto;
 }
 
+.footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  font-size: x-small;
+  color: var(--color-black);
+  border: 0;
+  text-decoration: none;
+}
+
 @media screen and (min-width: 1000px) {
   .shim {
     flex: 1;

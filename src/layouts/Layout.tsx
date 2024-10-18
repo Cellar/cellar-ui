@@ -24,6 +24,7 @@ export const Layout: React.FC<{ title?: string, children: ReactNode }> = (props)
         )}
         {props.children}
       </main>
+      <Link className={classes.footer} to={'https://cellar-app.io/'} target='_blank'>About Cellar</Link>
     </div>
   )
 }
