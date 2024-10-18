@@ -4,21 +4,26 @@ import { Header } from "../components/Header";
 
 import classes from './Layout.module.css'
 import Button from "../components/Button";
+import {Link, useNavigate} from "react-router-dom";
 
-export const Layout: React.FC<{ title?: string, children: ReactNode }> = (props) => (
-  <div>
-    <Header/>
-    <main className={classes.main}>
-      {props.title && (
-        <div className={classes.title}>
-          <h1>{props.title}</h1>
-          <div className={classes.shim}/>
-          <div className={classes.createButton}>
-            <Button appearance={Button.appearances.round}>🔒 New Secret</Button>
+export const Layout: React.FC<{ title?: string, children: ReactNode }> = (props) => {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <Header/>
+      <main className={classes.main}>
+        {props.title && (
+          <div className={classes.title}>
+            <h1>{props.title}</h1>
+            <div className={classes.shim}/>
+            <div className={classes.createButton}>
+              <Button appearance={Button.appearances.round} onClick={() => navigate('/secret/create')}>🔒 New Secret</Button>
+            </div>
           </div>
-        </div>
-      )}
-      {props.children}
-    </main>
-  </div>
-)
+        )}
+        {props.children}
+      </main>
+    </div>
+  )
+}

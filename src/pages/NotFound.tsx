@@ -2,8 +2,11 @@ import React from "react";
 import classes from "../pages/NotFound.module.css";
 import Button from "../components/Button";
 import {Header} from "../components/Header";
+import {useNavigate} from "react-router-dom";
 
 export const NotFound = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Header/>
@@ -13,7 +16,7 @@ export const NotFound = () => {
         <p className={classes.cta}>Click <a href="/create">here</a> to create a new secret</p>
         <br />
         <div className={classes.createButton}>
-          <Button appearance={Button.appearances.round}>🔒 New Secret</Button>
+          <Button appearance={Button.appearances.round} onClick={() => navigate('/secret/create')}>🔒 New Secret</Button>
         </div>
       </div>
     </>
