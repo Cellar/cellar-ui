@@ -8,6 +8,7 @@ import {RelativeExpiration} from "./RelativeExpiration";
 import {AbsoluteExpiration} from "./AbsoluteExpiration";
 import {createSecret} from "../../api/client";
 import {ISecretMetadata} from "../../models/secretMetadata";
+import {useNavigate} from "react-router-dom";
 
 const ExpirationModes = {
   Absolute: 'Expire On (Absolute)',
@@ -19,6 +20,8 @@ export const CreateSecretForm = () => {
   const [expirationMode, setExpirationMode] = useState(ExpirationModes.Relative)
   const [accessLimit, setAccessLimit] = useState(1)
   const [accessLimitDisabled, setAccessLimitDisabled] = useState(false)
+
+  const navigate = useNavigate()
 
   const now = new Date()
   let inTwentyFourHours = new Date()
@@ -32,7 +35,7 @@ export const CreateSecretForm = () => {
 
   async function handleCreateSecret() {
     const metadata = await createSecret(secretContent, expirationDate, accessLimitDisabled ? -1 : accessLimit)
-    window.location.href =`/secret/${(metadata as ISecretMetadata).id}` // TODO: redirect using spa navigation function (graviger)
+    navigate(`/secret/${(metadata as ISecretMetadata).id}`)
   }
 
   return (
