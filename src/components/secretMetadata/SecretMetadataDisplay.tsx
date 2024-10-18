@@ -39,7 +39,11 @@ export const SecretMetadataDisplay = () => {
         </div>
         <div>
           <span className={classes.header}>Accessed</span>
-          <p className={classes.metadataText}>{accessCount} of {accessLimit} times</p>
+          <p className={classes.metadataText}>{
+            accessLimit > 0
+              && `${accessCount} of ${accessLimit} times`
+              || `${accessCount} times`
+          }</p>
         </div>
       </div>
       <br/>
