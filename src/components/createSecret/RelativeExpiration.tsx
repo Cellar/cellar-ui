@@ -37,7 +37,7 @@ export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Disp
     <>
       <button className={classes.expirationMode}>Expires After (Relative)</button>
       <input
-        value={padNum(hours, 2)}
+        value={padNum(hours, 3)}
         className={cx(classes.expirationInput, classes.hoursDropdown)}
         type='number'
         min={minutes >= 30 ? 0 : 1}
