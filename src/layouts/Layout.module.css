@@ -1,5 +1,5 @@
 .main {
-  margin: 0 auto;
+  margin: 9.6rem auto 0 auto;
   padding: 0.8rem;
 }
 
@@ -8,8 +8,13 @@
   margin-left: auto;
 }
 
+h1 {
+  font-size: 2.6rem;
+  margin: 0;
+}
+
 .createButton{
-  margin: auto;
+  margin-inline: auto;
 }
 
 .footer {
@@ -17,7 +22,7 @@
   bottom: 0;
   right: 0;
   padding: 1rem 1.5rem;
-  font-size: x-small;
+  font-size: .9rem;
   color: var(--color-black);
   border: 0;
   text-decoration: none;
@@ -28,7 +33,7 @@
     flex: 1;
   }
   .main {
-    max-width: 900px;
+    max-width: 840px;
   }
 }
 

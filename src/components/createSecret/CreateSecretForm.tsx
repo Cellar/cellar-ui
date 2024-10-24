@@ -42,7 +42,7 @@ export const CreateSecretForm = () => {
     <div>
       <Form>
         <TextArea
-          rows={13}
+          rows={12}
           placeholder="Enter Secret Content"
           onChange={e => setSecretContent(e.target.value)}
           required/>
@@ -80,8 +80,8 @@ export const CreateSecretForm = () => {
                 value={accessLimit}
                 className={classes.accessLimitInput}
                 onChange={(e) => handleSetAccessLimit(+e.target.value)}/>
-              <FormButton onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
-              <FormButton onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
+              <FormButton className={classes.accessLimitInputModifier} onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
+              <FormButton className={classes.accessLimitInputModifier} onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
               <p className={classes.orText}>or</p>
               <ToggleButton className={classes.noLimitInput} setParentState={setAccessLimitDisabled}>No Limit</ToggleButton>
             </div>
