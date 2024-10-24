@@ -9,6 +9,7 @@ import {AbsoluteExpiration} from "./AbsoluteExpiration";
 import {createSecret} from "../../api/client";
 import {ISecretMetadata} from "../../models/secretMetadata";
 import {useNavigate} from "react-router-dom";
+import cx from "classnames";
 
 const ExpirationModes = {
   Absolute: 'Expire On (Absolute)',
@@ -46,8 +47,7 @@ export const CreateSecretForm = () => {
           placeholder="Enter Secret Content"
           onChange={e => setSecretContent(e.target.value)}
           required/>
-        <br />
-        <div className={classes.formControls}>
+        <div className={cx(classes.formControls, classes.formSection)}>
           <div>
             <span className={classes.header}>Expiration</span>
             <div>
@@ -72,7 +72,7 @@ export const CreateSecretForm = () => {
             </div>
           </div>
           <div className={classes.shim}/>
-          <div>
+          <div className={classes.accessLimitSection}>
             <span className={classes.header}>Access Limit</span>
             <div className={classes.accessLimitElements}>
               <TextInput
@@ -87,8 +87,7 @@ export const CreateSecretForm = () => {
             </div>
           </div>
         </div>
-        <br/>
-        <div>
+        <div className={classes.formSection}>
           <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
             Create Secret
           </Button>
