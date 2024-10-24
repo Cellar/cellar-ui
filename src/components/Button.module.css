@@ -36,13 +36,6 @@
 }
 
 
-.primary {
-  font-family: 'DSE Typewriter', monospace;
-  text-transform: uppercase;
-  background-color: var(--color-green);
-  padding: 20px 30px;
-}
-
 .primary::before {
   content:attr(data-text);
   position:absolute;
@@ -55,8 +48,12 @@
 }
 
 .primary {
-  letter-spacing: 4px;
+  font-family: 'DSE Typewriter', monospace;
+  text-transform: uppercase;
+  background-color: var(--color-green);
   color: var(--color-green);
+  padding: 20px 30px;
+  letter-spacing: 4px;
   position:relative;
 }
 
