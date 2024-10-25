@@ -1,7 +1,7 @@
 import classes from "./CreateSecretForm.module.css";
 import {FC, useEffect, useState} from "react";
 import cx from "classnames";
-import {padNum} from "./helpers";
+import {padNum} from "../../helpers/helpers";
 
 
 export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {

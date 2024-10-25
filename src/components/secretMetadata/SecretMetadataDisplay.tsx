@@ -4,6 +4,7 @@ import {useLoaderData, useNavigate} from "react-router-dom";
 import {ISecretMetadata} from "../../models/secretMetadata";
 import {TextInput} from "../Form";
 import {deleteSecret} from "../../api/client";
+import {formatDate, formatDateAndTime} from "../../helpers/helpers";
 
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate()
@@ -32,25 +33,26 @@ export const SecretMetadataDisplay = () => {
 
   return (
     <>
+      <p className={classes.detailsLabel}>details</p>
       <div className={classes.metadataRow}>
         <div>
-          <span className={classes.header}>Expires On</span>
-          <p className={classes.metadataText}>{expiration.toString()}</p>
+          <div className={classes.headerWrapper}>
+            <span className={classes.header}>Expires On</span>
+          </div>
+          <p className={classes.metadataText}>{formatDateAndTime(expiration)}</p>
         </div>
         <div>
-          <span className={classes.header}>Accessed</span>
+          <div className={classes.headerWrapper}>
+            <span className={classes.header}>Accessed</span>
+          </div>
           <p className={classes.metadataText}>{
             accessLimit > 0
-              && `${accessCount} of ${accessLimit} times`
-              || `${accessCount} times`
+            && `${accessCount} of ${accessLimit} times`
+            || `${accessCount} times`
           }</p>
         </div>
       </div>
-      <br/>
-      <div>
-        <TextInput className={classes.secretId} value={secretId} readOnly={true}/>
-      </div>
-      <br/>
+      <TextInput wrapperClassName={classes.secretIdWrapper} className={classes.secretId} value={secretId} readOnly={true}/>
       <div className={classes.metadataActions}>
         <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkSecret}>
           Copy Link to Secret

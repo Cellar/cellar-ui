@@ -46,11 +46,16 @@ export const TextArea: FC<TextAreaProps> = (props) => {
 
 }
 
-export const TextInput: FC<ComponentPropsWithoutRef<'input'>> = (props) => {
-  const { className, ...rest } = props
+interface TextInputProps extends
+  ComponentPropsWithoutRef<'input'> {
+  wrapperClassName?: string,
+}
+
+export const TextInput: FC<TextInputProps> = (props) => {
+  const { wrapperClassName, className, ...rest } = props
 
   return (
-    <InputWrapper>
+    <InputWrapper className={wrapperClassName}>
       <input className={cx(classes.input, className)}  {...rest} />
     </InputWrapper>
   )

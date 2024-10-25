@@ -1,9 +1,9 @@
 import classes from "./CreateSecretForm.module.css";
 import {DropDown} from "../Form";
-import {FC, useEffect, useState} from "react";
+import {FC, useEffect} from "react";
 import cx from "classnames";
-import {Time} from "./time";
-import {padNum} from "./helpers";
+import {Time} from "../../helpers/time";
+import {formatDate} from "../../helpers/helpers";
 
 
 const AMPM = {
@@ -71,10 +71,6 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
     }
 
     return absoluteDate
-  }
-
-  function formatDate(date: Date): string {
-    return `${date.getFullYear()}-${padNum(date.getMonth(), 2)}-${padNum(date.getDate(), 2)}`
   }
 
   return (
