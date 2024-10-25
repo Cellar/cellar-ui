@@ -1,10 +1,13 @@
 .center {
-  margin: auto;
-  width: 50%;
-  padding: 10px;
-  height: 100%;
+  margin: 0 auto;
   text-align: center;
   vertical-align: middle;
+  align-content: center;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .errorHeader {
@@ -13,11 +16,17 @@
 
 .cta {
   color: var(--color-gray);
+  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 7rem;
 }
 
 .message {
+  margin-top: 4.7rem;
+  margin-bottom: 2.4rem;
+  line-height: 2.3rem;
   color: var(--color-gray);
   text-wrap: balance;
-  font-size: large;
+  font-size: 2rem;
   width: 100%;
 }
