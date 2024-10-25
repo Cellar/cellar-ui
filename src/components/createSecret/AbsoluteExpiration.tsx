@@ -3,7 +3,7 @@ import {DropDown} from "../Form";
 import {FC, useEffect} from "react";
 import cx from "classnames";
 import {Time} from "../../helpers/time";
-import {formatDate} from "../../helpers/helpers";
+import {padNum} from "../../helpers/helpers";
 
 
 const AMPM = {
@@ -73,14 +73,20 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
     return absoluteDate
   }
 
+  function formatDateForParsing(date: Date | string): string {
+    if (typeof date === 'string')
+      date = new Date(date)
+    return `${date.getFullYear()}-${padNum(date.getMonth(), 2)}-${padNum(date.getDate(), 2)}`
+  }
+
   return (
     <>
       <button className={classes.expirationMode}>Expires On (Absolute)</button>
       <input
-        value={formatDate(date)}
+        value={formatDateForParsing(date)}
         className={cx(classes.dateDropdown, classes.expirationInput)}
         type='date'
-        min={formatDate(tomorrow)}
+        min={formatDateForParsing(tomorrow)}
         onChange={(e) => {
           setExpiration(getAbsoluteDate(e.target.value, time, amPm))
         }}
@@ -90,7 +96,7 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
         items={Object.values(timeOptions).map(t => ({label: t, value: t}))}
         selected={time}
         onChange={(e) => {
-          setExpiration(getAbsoluteDate(formatDate(date), e.target.value, amPm))
+          setExpiration(getAbsoluteDate(formatDateForParsing(date), e.target.value, amPm))
         }}
       />
       <DropDown
@@ -98,7 +104,7 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
         items={Object.values(AMPM).map(t => ({label: t, value: t}))}
         selected={amPm}
         onChange={(e) => {
-          setExpiration(getAbsoluteDate(formatDate(date), time, e.target.value))
+          setExpiration(getAbsoluteDate(formatDateForParsing(date), time, e.target.value))
         }}
       />
     </>
