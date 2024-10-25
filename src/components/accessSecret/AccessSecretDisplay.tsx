@@ -2,6 +2,7 @@ import Button from '../Button'
 import {Form, TextArea} from '../Form'
 import {useLoaderData} from "react-router-dom";
 import {ISecret} from "../../models/secret";
+import classes from "./AccessSecretDisplay.module.css";
 
 export const AccessSecretDisplay = () => {
   const { content: secretContent } = useLoaderData() as ISecret
@@ -16,10 +17,9 @@ export const AccessSecretDisplay = () => {
         <TextArea
           readOnly={true}
           value={secretContent}
-          rows={13}
+          rows={8}
           required/>
-        <br />
-        <div>
+        <div className={classes.formSection}>
           <Button appearance={Button.appearances.primary} data-text="Copy Secret" onClick={handleCopySecret}>
             Create Secret
           </Button>
