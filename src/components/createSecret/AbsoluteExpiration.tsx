@@ -1,6 +1,6 @@
 import classes from "./CreateSecretForm.module.css";
 import {FlatSelect, FlatInput} from "../Form";
-import {FC, useEffect} from "react";
+import {FC, useEffect, useState} from "react";
 import cx from "classnames";
 import {Time} from "../../helpers/time";
 import {padNum} from "../../helpers/helpers";
@@ -28,19 +28,24 @@ const timeOptions = [
 ];
 
 export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
-  const isTinyMobile = useMediaQuery('(max-width: 400px)');
   let tomorrow = new Date()
   tomorrow.setHours(24)
 
-  let {date: date, time: time, amPm: amPm} = getAbsoluteParts(expiration)
+  const isTinyMobile = useMediaQuery('(max-width: 400px)');
+  const [date, setDate] = useState<Date>(tomorrow)
+  const [time, setTime] = useState<string>('12:00')
+  const [amPm, setAmPm] = useState<string>(AMPM.AM)
 
   useEffect(() => {
-    let {date: newDate, time: newTime, amPm: newAmPm} = getAbsoluteParts(expiration)
-    date = newDate
-    time = newTime
-    amPm = newAmPm
-
+    setDateTimeAndAmPm(expiration)
   }, [expiration]);
+
+  function setDateTimeAndAmPm(newExpiration: Date) {
+    let {date: newDate, time: newTime, amPm: newAmPm} = getAbsoluteParts(expiration)
+    setDate(newDate)
+    setTime(newTime)
+    setAmPm(newAmPm)
+  }
 
   function getAbsoluteParts(target: Date): {date: Date, time: string, amPm: string} {
     let hours = target.getHours()
