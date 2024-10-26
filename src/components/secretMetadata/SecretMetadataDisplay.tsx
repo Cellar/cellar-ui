@@ -10,6 +10,7 @@ import {useMediaQuery} from "@mantine/hooks";
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width: 1000px)')
+  const isTinyMobile = useMediaQuery('(max-width: 400px)');
 
   const {
     id: secretId,
@@ -61,7 +62,7 @@ export const SecretMetadataDisplay = () => {
         </div>
       </div>
       <TextArea
-        rows={isMobile ? 2 : 1}
+        rows={isMobile ? (isTinyMobile ? 3 : 2) : 1}
         wrapperClassName={classes.secretIdWrapper}
         className={classes.secretId}
         value={secretId}
