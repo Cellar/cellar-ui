@@ -1,6 +1,7 @@
 .main {
   margin: 9.6rem auto 0 auto;
   padding: 0.8rem;
+  max-width: 81.3rem;
 }
 
 .title {
@@ -21,7 +22,7 @@ h1 {
   position: fixed;
   bottom: 0;
   right: 0;
-  padding: 1rem 1.5rem;
+  padding: 1.1rem 1.6rem;
   font-size: .9rem;
   color: var(--color-black);
   border: 0;
@@ -30,12 +31,6 @@ h1 {
 
 .shim {
   flex: 1;
-}
-
-@media screen and (min-width: 1000px) {
-  .main {
-    max-width: 81.3rem;
-  }
 }
 
 @media screen and (max-width: 1000px) {
@@ -50,5 +45,9 @@ h1 {
 
   .title {
     margin-bottom: 1.3rem;
+  }
+
+  .footer {
+    padding: .8rem 1rem;
   }
 }

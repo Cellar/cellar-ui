@@ -2,7 +2,7 @@ import React from "react";
 import classes from "../pages/NotFound.module.css";
 import Button from "../components/Button";
 import {Header} from "../components/Header";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export const NotFound = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ export const NotFound = () => {
           <Button appearance={Button.appearances.round} onClick={() => navigate('/secret/create')}>🔒 New Secret</Button>
         </div>
       </div>
+      <Link className={classes.footer} to={'https://cellar-app.io/'} target='_blank'>About Cellar</Link>
     </>
   );
 }
