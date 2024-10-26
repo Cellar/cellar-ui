@@ -7,14 +7,19 @@ import {FlatInput} from "../Form";
 
 
 export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
-  let {hours, minutes} = getRelative(expiration)
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
   const isTinyMobile = useMediaQuery('(max-width: 400px)');
 
   useEffect(() => {
-    const {hours: newHours, minutes: newMinutes} = getRelative(expiration)
-    hours = newHours
-    minutes = newMinutes
+    setHoursAndMinutes(expiration)
   }, [expiration]);
+
+  function setHoursAndMinutes(newExpiration: Date) {
+    const {hours: newHours, minutes: newMinutes} = getRelative(newExpiration)
+    setHours(newHours)
+    setMinutes(newMinutes)
+  }
 
   function getAbsoluteDate(hours: number, minutes: number) {
     let newDate = new Date()
