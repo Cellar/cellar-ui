@@ -2,12 +2,14 @@ import Button from '../Button'
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
 import {useLoaderData, useNavigate} from "react-router-dom";
 import {ISecretMetadata} from "../../models/secretMetadata";
-import {TextInput} from "../Form";
+import {TextArea, TextInput} from "../Form";
 import {deleteSecret} from "../../api/client";
-import {formatDate, formatDateAndTime} from "../../helpers/helpers";
+import {formatDate, formatDateAndTime, formatTime, getTimeZone} from "../../helpers/helpers";
+import {useMediaQuery} from "@mantine/hooks";
 
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate()
+  const isMobile = useMediaQuery('(max-width: 1000px)')
 
   const {
     id: secretId,
@@ -39,7 +41,13 @@ export const SecretMetadataDisplay = () => {
           <div className={classes.headerWrapper}>
             <span className={classes.header}>Expires On</span>
           </div>
-          <p className={classes.metadataText}>{formatDateAndTime(expiration)}</p>
+          {
+            isMobile ? (
+              <p className={classes.metadataText}>{formatDate(expiration)}<br />{`${formatTime(expiration)} ${getTimeZone(expiration)}`}</p>
+            ) : (
+              <p className={classes.metadataText}>{formatDateAndTime(expiration)}</p>
+            )
+          }
         </div>
         <div>
           <div className={classes.headerWrapper}>
@@ -52,17 +60,44 @@ export const SecretMetadataDisplay = () => {
           }</p>
         </div>
       </div>
-      <TextInput wrapperClassName={classes.secretIdWrapper} className={classes.secretId} value={secretId} readOnly={true}/>
-      <div className={classes.metadataActions}>
-        <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkSecret}>
-          Copy Link to Secret
-        </Button>
-        <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkMetadata}>
-          Copy Link to Metadata
-        </Button>
-        <div className={classes.shim}/>
-        <a className={classes.delete} onClick={handleDeleteSecret}>Delete Secret</a>
-      </div>
+      <TextArea
+        rows={isMobile ? 2 : 1}
+        wrapperClassName={classes.secretIdWrapper}
+        className={classes.secretId}
+        value={secretId}
+        readOnly={true}/>
+      {
+        isMobile ? (
+          <div className={classes.metadataActions}>
+            <div className={classes.actionsLine}>
+              <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkSecret}>
+                Copy Link to Secret
+              </Button>
+              <div className={classes.shim}/>
+              <a className={classes.delete} onClick={handleDeleteSecret}>Delete Secret</a>
+            </div>
+            <div className={classes.actionsLine}>
+              <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkMetadata}>
+                Copy Link to Metadata
+              </Button>
+              <div className={classes.shim}/>
+            </div>
+          </div>
+        ) : (
+          <div className={classes.metadataActions}>
+            <div className={classes.copyActions}>
+              <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkSecret}>
+                Copy Link to Secret
+              </Button>
+              <Button appearance={Button.appearances.secondary} onClick={handleCopyLinkMetadata}>
+                Copy Link to Metadata
+              </Button>
+            </div>
+            <div className={classes.shim}/>
+            <a className={classes.delete} onClick={handleDeleteSecret}>Delete Secret</a>
+          </div>
+        )
+      }
     </>
   )
 }
