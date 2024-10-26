@@ -10,7 +10,7 @@ import {useMediaQuery} from "@mantine/hooks";
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width: 1000px)')
-  const isTinyMobile = useMediaQuery('(max-width: 400px)');
+  const isTinyMobile = useMediaQuery('(max-width: 393px)');
 
   const {
     id: secretId,

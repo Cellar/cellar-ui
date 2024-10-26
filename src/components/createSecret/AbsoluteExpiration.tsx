@@ -31,7 +31,7 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
   let tomorrow = new Date()
   tomorrow.setHours(24)
 
-  const isTinyMobile = useMediaQuery('(max-width: 400px)');
+  const isTinyMobile = useMediaQuery('(max-width: 300px)');
   const [date, setDate] = useState<Date>(tomorrow)
   const [time, setTime] = useState<string>('12:00')
   const [amPm, setAmPm] = useState<string>(AMPM.AM)

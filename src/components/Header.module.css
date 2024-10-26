@@ -46,7 +46,7 @@
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 393px) {
   .banner {
     height: 3.2rem;
   }

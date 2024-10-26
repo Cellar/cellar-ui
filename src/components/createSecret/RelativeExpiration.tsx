@@ -9,7 +9,7 @@ import {FlatInput} from "../Form";
 export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  const isTinyMobile = useMediaQuery('(max-width: 400px)');
+  const isTinyMobile = useMediaQuery('(max-width: 393px)');
 
   useEffect(() => {
     setHoursAndMinutes(expiration)

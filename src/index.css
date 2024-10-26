@@ -71,7 +71,7 @@ code {
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 393px) {
   body {
     font-size: .8rem;
   }

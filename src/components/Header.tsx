@@ -4,7 +4,7 @@ import classes from './Header.module.css'
 import {useMediaQuery} from "@mantine/hooks";
 
 export function Header() {
-  const isTinyMobile = useMediaQuery('(max-width: 400px)');
+  const isTinyMobile = useMediaQuery('(max-width: 393px)');
 
   return (
     <header>
