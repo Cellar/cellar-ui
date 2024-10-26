@@ -30,3 +30,17 @@
   font-size: 2rem;
   width: 100%;
 }
+
+@media screen and (max-width: 1000px) {
+  .message {
+    font-size: 1.8rem;
+  }
+
+  .center {
+    min-width: 35rem;
+  }
+
+  .cta {
+    font-size: 1.5rem;
+  }
+}
