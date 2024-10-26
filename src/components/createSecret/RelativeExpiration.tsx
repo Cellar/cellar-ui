@@ -2,10 +2,12 @@ import classes from "./CreateSecretForm.module.css";
 import {FC, useEffect, useState} from "react";
 import cx from "classnames";
 import {padNum} from "../../helpers/helpers";
+import {useMediaQuery} from "@mantine/hooks";
 
 
 export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
   let {hours, minutes} = getRelative(expiration)
+  const isTinyMobile = useMediaQuery('(max-width: 400px)');
 
   useEffect(() => {
     const {hours: newHours, minutes: newMinutes} = getRelative(expiration)
@@ -36,6 +38,7 @@ export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Disp
   return (
     <>
       <button className={classes.expirationMode}>Expires After (Relative)</button>
+      {isTinyMobile && <br />}
       <input
         value={padNum(hours, 3)}
         className={cx(classes.expirationInput, classes.hoursDropdown)}

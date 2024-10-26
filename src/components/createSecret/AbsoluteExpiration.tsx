@@ -4,6 +4,7 @@ import {FC, useEffect} from "react";
 import cx from "classnames";
 import {Time} from "../../helpers/time";
 import {padNum} from "../../helpers/helpers";
+import {useMediaQuery} from "@mantine/hooks";
 
 
 const AMPM = {
@@ -27,6 +28,7 @@ const timeOptions = [
 ];
 
 export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
+  const isTinyMobile = useMediaQuery('(max-width: 400px)');
   let tomorrow = new Date()
   tomorrow.setHours(24)
 
@@ -82,6 +84,7 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
   return (
     <>
       <button className={classes.expirationMode}>Expires On (Absolute)</button>
+      {isTinyMobile && <br />}
       <input
         value={formatDateForParsing(date)}
         className={cx(classes.dateDropdown, classes.expirationInput)}
