@@ -116,3 +116,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     line-height: 1.8rem;
   }
 }
+
+@media screen and (max-width: 393px) {
+  .label {
+    top: -.25rem;
+    font-size: .7rem;
+  }
+}
+
