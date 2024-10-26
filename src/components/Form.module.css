@@ -52,6 +52,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-transform: initial;
   padding-top: 1.8rem;
   padding-left: 1.7rem;
+  line-height: 1.92rem;
 }
 
 .formButton {
@@ -87,12 +88,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 @media screen and (max-width: 1000px) {
   .input {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
-}
 
-@media screen and (max-width: 400px) {
-  .input {
-    font-size: 1.6rem;
+  .textArea {
+    line-height: 1.8rem;
   }
 }

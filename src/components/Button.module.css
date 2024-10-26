@@ -52,7 +52,7 @@
   text-transform: uppercase;
   background-color: var(--color-green);
   color: var(--color-green);
-  padding: 20px 2.2rem;
+  padding: 2rem 2.2rem;
   letter-spacing: 4px;
   position: relative;
 }
@@ -97,19 +97,12 @@
 }
 
 @media screen and (max-width: 1000px) {
-  .button {
-    font-size: large;
-  }
-
   .primary {
-    padding: 20px 10px;
+    padding: 1.7rem 1.87rem;
+    font-size: 1.5rem;
   }
 
   .secondary {
-    font-size: small;
-  }
-
-  .round {
-    font-size: small;
+    font-size: 1.1rem;
   }
 }
