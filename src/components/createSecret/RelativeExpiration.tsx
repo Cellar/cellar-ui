@@ -38,7 +38,7 @@ export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Disp
 
   return (
     <>
-      <button className={classes.expirationMode}>Expires After (Relative)</button>
+      <button className={classes.expirationMode}>Expire After (Relative)</button>
       {isTinyMobile && <br />}
       <FlatInput
         label={'hours'}

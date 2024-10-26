@@ -83,7 +83,7 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
 
   return (
     <>
-      <button className={classes.expirationMode}>Expires On (Absolute)</button>
+      <button className={classes.expirationMode}>Expire On (Absolute)</button>
       {isTinyMobile && <br />}
       <FlatInput
         label={'date'}
