@@ -3,6 +3,7 @@ import {FC, useEffect, useState} from "react";
 import cx from "classnames";
 import {padNum} from "../../helpers/helpers";
 import {useMediaQuery} from "@mantine/hooks";
+import {FlatInput} from "../Form";
 
 
 export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Dispatch<React.SetStateAction<Date>>, className?: string}> = ({expiration, setExpiration, className, ...props}) => {
@@ -39,7 +40,8 @@ export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Disp
     <>
       <button className={classes.expirationMode}>Expires After (Relative)</button>
       {isTinyMobile && <br />}
-      <input
+      <FlatInput
+        label={'hours'}
         value={padNum(hours, 3)}
         className={cx(classes.expirationInput, classes.hoursDropdown)}
         type='number'
@@ -48,7 +50,8 @@ export const RelativeExpiration: FC<{expiration: Date, setExpiration: React.Disp
           setExpiration(getAbsoluteDate(+e.target.value, minutes))
         }}
       />
-      <input
+      <FlatInput
+        label={'minutes'}
         value={padNum(minutes, 3)}
         className={cx(classes.expirationInput, classes.minutesDropdown)}
         type='number'

@@ -2,7 +2,7 @@ import Button from '../Button'
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
 import {useLoaderData, useNavigate} from "react-router-dom";
 import {ISecretMetadata} from "../../models/secretMetadata";
-import {TextArea, TextInput} from "../Form";
+import {TextArea, NumericInput} from "../Form";
 import {deleteSecret} from "../../api/client";
 import {formatDate, formatDateAndTime, formatTime, getTimeZone} from "../../helpers/helpers";
 import {useMediaQuery} from "@mantine/hooks";

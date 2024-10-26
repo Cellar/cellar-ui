@@ -4,14 +4,35 @@
 }
 
 .label {
+  position: absolute;
+  top: -1rem;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-size: .8rem;
 }
 
-.inputWrapper {
+.flatInputWrapper {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.flatInput {
+  appearance: none;
+  background: none;
+  border: 2px solid var(--color-silver);
+  font-family: var(--font-monospace);
+  color: var(--color-black);
+  font-size: 1.6rem;
+  line-height: 1.6rem;
+  text-transform: uppercase;
+}
+
+.roundInputWrapper {
   display:inline-block;
 }
 
-.input {
+.roundInput {
   appearance: none;
   background-clip: padding-box;
   background-color: #fff;
@@ -87,7 +108,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 @media screen and (max-width: 1000px) {
-  .input {
+  .roundInput {
     font-size: 1.5rem;
   }
 

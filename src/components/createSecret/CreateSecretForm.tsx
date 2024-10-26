@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 
 import Button from '../Button'
-import {Form, FormButton, TextArea, TextInput, ToggleButton} from '../Form'
+import {Form, FormButton, TextArea, NumericInput, ToggleButton} from '../Form'
 
 import classes from './CreateSecretForm.module.css'
 import {RelativeExpiration} from "./RelativeExpiration";
@@ -78,8 +78,7 @@ export const CreateSecretForm = () => {
           <div className={classes.accessLimitSection}>
             <span className={classes.header}>Access Limit</span>
             <div className={classes.accessLimitElements}>
-              <TextInput
-                inputMode='numeric'
+              <NumericInput
                 value={accessLimit}
                 className={classes.accessLimitInput}
                 onChange={(e) => handleSetAccessLimit(+e.target.value)}/>

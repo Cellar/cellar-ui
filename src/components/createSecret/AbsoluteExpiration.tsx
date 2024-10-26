@@ -1,5 +1,5 @@
 import classes from "./CreateSecretForm.module.css";
-import {DropDown} from "../Form";
+import {FlatSelect, FlatInput} from "../Form";
 import {FC, useEffect} from "react";
 import cx from "classnames";
 import {Time} from "../../helpers/time";
@@ -85,7 +85,8 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
     <>
       <button className={classes.expirationMode}>Expires On (Absolute)</button>
       {isTinyMobile && <br />}
-      <input
+      <FlatInput
+        label={'date'}
         value={formatDateForParsing(date)}
         className={cx(classes.dateDropdown, classes.expirationInput)}
         type='date'
@@ -94,7 +95,8 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
           setExpiration(getAbsoluteDate(e.target.value, time, amPm))
         }}
       />
-      <DropDown
+      <FlatSelect
+        label={'time'}
         className={cx(classes.expirationInput, classes.timeDropdown)}
         items={Object.values(timeOptions).map(t => ({label: t, value: t}))}
         selected={time}
@@ -102,7 +104,8 @@ export const AbsoluteExpiration: FC<{expiration: Date, setExpiration: React.Disp
           setExpiration(getAbsoluteDate(formatDateForParsing(date), e.target.value, amPm))
         }}
       />
-      <DropDown
+      <FlatSelect
+        label={'am/pm'}
         className={cx(classes.expirationInput, classes.amPmDropdown)}
         items={Object.values(AMPM).map(t => ({label: t, value: t}))}
         selected={amPm}

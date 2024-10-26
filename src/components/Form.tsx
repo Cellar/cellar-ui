@@ -13,16 +13,50 @@ export const Form: FC<ComponentPropsWithoutRef<'form'>> = (props) => {
 }
 
 
-interface InputWrapperProps extends
+interface FlatInputWrapperProps extends
   ComponentPropsWithoutRef<'div'> {
   label?: string
 }
-export const InputWrapper: FC<InputWrapperProps> = (props) => {
+
+export const FlatInputWrapper: FC<FlatInputWrapperProps> = (props) => {
 
   const { children, className, label, ...rest } = props
 
   return (
-    <div className={cx(classes.inputWrapper, className)} {...rest} >
+    <div className={cx(classes.flatInputWrapper, className)} {...rest} >
+      {children}
+      {label && <label className={classes.label}>{label}</label>}
+    </div>
+  )
+}
+
+interface FlatInputProps extends
+  ComponentPropsWithoutRef<'input'> {
+  wrapperClassName?: string,
+  label?: string,
+}
+
+export const FlatInput: FC<FlatInputProps> = (props) => {
+  const { label, wrapperClassName, className, ...rest } = props
+
+  return (
+    <FlatInputWrapper label={label} className={wrapperClassName}>
+      <input className={cx(classes.flatInput, className)} {...rest} />
+    </FlatInputWrapper>
+  )
+}
+
+interface RoundInputWrapperProps extends
+  ComponentPropsWithoutRef<'div'> {
+  label?: string
+}
+
+export const RoundInputWrapper: FC<RoundInputWrapperProps> = (props) => {
+
+  const { children, className, label, ...rest } = props
+
+  return (
+    <div className={cx(classes.roundInputWrapper, className)} {...rest} >
       {label && <label className={classes.label}>{label}</label>}
       {children}
     </div>
@@ -40,25 +74,25 @@ export const TextArea: FC<TextAreaProps> = (props) => {
   const { wrapperClassName, className, label, ...rest } = props
 
   return (
-    <InputWrapper className={wrapperClassName} label={label}>
-      <textarea className={cx(classes.input, classes.textArea, className)}  {...rest} />
-    </InputWrapper>
+    <RoundInputWrapper className={wrapperClassName} label={label}>
+      <textarea className={cx(classes.roundInput, classes.textArea, className)}  {...rest} />
+    </RoundInputWrapper>
   )
 
 }
 
-interface TextInputProps extends
+interface NumericInputProps extends
   ComponentPropsWithoutRef<'input'> {
   wrapperClassName?: string,
 }
 
-export const TextInput: FC<TextInputProps> = (props) => {
+export const NumericInput: FC<NumericInputProps> = (props) => {
   const { wrapperClassName, className, ...rest } = props
 
   return (
-    <InputWrapper className={wrapperClassName}>
-      <input className={cx(classes.input, className)}  {...rest} />
-    </InputWrapper>
+    <RoundInputWrapper className={wrapperClassName}>
+      <input className={cx(classes.roundInput, className)} inputMode={'numeric'} {...rest} />
+    </RoundInputWrapper>
   )
 }
 
@@ -66,7 +100,7 @@ export const FormButton: FC<ComponentPropsWithoutRef<'button'>> = (props) => {
   const { children, className, ...rest } = props
 
   return (
-    <button type='button' className={cx(classes.input, classes.formButton, className)} {...rest}>
+    <button type='button' className={cx(classes.roundInput, classes.formButton, className)} {...rest}>
       {children}
     </button>
   )
@@ -97,18 +131,22 @@ interface DropdownItem {
   value: string;
 }
 
-interface DropdownProps extends
+interface FlatSelectProps extends
   ComponentPropsWithoutRef<'select'> {
   items: DropdownItem[],
   selected: string,
+  wrapperClassName?: string,
+  label?: string
 }
 
-export const DropDown: FC<DropdownProps> = (props) => {
-  const { className, items, selected, ...rest} = props
+export const FlatSelect: FC<FlatSelectProps> = (props) => {
+  const { label, wrapperClassName, className, items, selected, ...rest} = props
 
   return (
-    <select className={cx(classes.select, className)} value={selected} {...rest}>
-      {items.map(({value, label}) => <option key={value} value={value}>{label}</option>)}
-    </select>
+    <FlatInputWrapper label={label} className={wrapperClassName}>
+      <select className={cx(classes.select, className)} value={selected} {...rest}>
+        {items.map(({value, label}) => <option key={value} value={value}>{label}</option>)}
+      </select>
+    </FlatInputWrapper>
   )
 }
