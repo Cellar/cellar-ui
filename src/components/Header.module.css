@@ -39,9 +39,7 @@
 
 @media screen and (max-width: 1000px) {
   .banner {
-    font-size: .525rem;
-    padding-top: 2px;
-    padding-bottom: 1px;
+    font-size: .8rem;
   }
   .branding {
     align-items: center;

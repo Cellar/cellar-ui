@@ -28,17 +28,27 @@ h1 {
   text-decoration: none;
 }
 
+.shim {
+  flex: 1;
+}
+
 @media screen and (min-width: 1000px) {
-  .shim {
-    flex: 1;
-  }
   .main {
-    max-width: 840px;
+    max-width: 81.3rem;
   }
 }
 
 @media screen and (max-width: 1000px) {
   h1 {
-    margin: .5rem .5rem auto 0;
+    font-size: 2.2rem;
+  }
+
+  .main {
+    margin: 3.5rem auto 0 auto;
+    padding: 1.6rem;
+  }
+
+  .title {
+    margin-bottom: 1.3rem;
   }
 }
