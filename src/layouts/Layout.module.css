@@ -18,6 +18,19 @@ h1 {
   margin-inline: auto;
 }
 
+.lockImg {
+  height: 1rem;
+  margin: auto 1ch auto 0;
+}
+
+a:hover > .lockImg {
+  fill: var(--color-white);
+}
+
+.lockImg:hover {
+  fill: var(--color-white);
+}
+
 .footer {
   position: fixed;
   bottom: 0;

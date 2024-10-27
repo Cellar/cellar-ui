@@ -5,6 +5,7 @@ import { Header } from "../components/Header";
 import classes from './Layout.module.css'
 import Button from "../components/Button";
 import {Link, useNavigate} from "react-router-dom";
+import {Lock} from "../components/Lock"
 
 export const Layout: React.FC<{ title?: string, children: ReactNode }> = (props) => {
   const navigate = useNavigate();
@@ -18,7 +19,10 @@ export const Layout: React.FC<{ title?: string, children: ReactNode }> = (props)
             <h1>{props.title}</h1>
             <div className={classes.shim}/>
             <div className={classes.createButton}>
-              <Button appearance={Button.appearances.round} onClick={() => navigate('/secret/create')}>🔒 New Secret</Button>
+              <Button appearance={Button.appearances.round} onClick={() => navigate('/secret/create')}>
+                <Lock className={classes.lockImg} />
+                New Secret
+              </Button>
             </div>
           </div>
         )}

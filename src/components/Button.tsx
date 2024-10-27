@@ -4,7 +4,7 @@ import cx from 'classnames'
 import classes from './Button.module.css'
 
 interface ButtonProps extends ComponentPropsWithoutRef<'a'> {
-  appearance?: string
+  appearance?: string,
 }
 
 interface Btn extends FC<ButtonProps> {
