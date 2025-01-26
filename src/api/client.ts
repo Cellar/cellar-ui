@@ -15,7 +15,7 @@ export const createSecret = async (content: string, expiration: Date, accessLimi
 }
 
 export const getSecretMetadata = async (secretId: string): Promise<ISecretMetadata | IApiError>  => {
-  const res = await fetch(`/api/v1/secrets/${secretId}`);
+  const res = await fetch(`/api/v1/secrets/${secretId}`, { method: 'GET' });
   return res.json();
 }
 
