@@ -49,19 +49,13 @@ build-docker:
   script:
     - make docker-build APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
 
-test-unit:
+test:
   extends: .ui
   stage: test
-  rules:
-    - if: $CI_COMMIT_BRANCH == "react"
-      when: never
-  variables:
-    CHROME_BIN: /usr/bin/chromium-browser
   before_script:
-    - apk add --no-cache chromium make
     - npm install
   script:
-    - make test-unit
+    - make test
 
 test-e2e:
   extends: .ui

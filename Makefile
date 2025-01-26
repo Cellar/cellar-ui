@@ -41,13 +41,13 @@ build:
 	$(LOG) "Running build"
 	@npm run build
 
-test-unit:
-	$(LOG) "Running unit tests"
-	@npm run test:ci
+test:
+	$(LOG) "Running tests"
+	@npm run test
 
-test-e2e:
-	$(LOG) "Running e2e tests"
-	@npm run e2e:ci
+test-watch:
+	$(LOG) "Running tests"
+	@npm run test:watch
 
 publish:
 	$(LOG) "Setting build version ${APP_VERSION}"
