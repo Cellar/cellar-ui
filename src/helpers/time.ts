@@ -1,5 +1,4 @@
 export class Time {
-
   static Millisecond = 1;
   static Second = Time.Millisecond * 1000;
   static Minute = Time.Second * 60;
@@ -22,5 +21,4 @@ export class Time {
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
   }
-
 }

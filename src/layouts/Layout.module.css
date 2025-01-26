@@ -14,7 +14,7 @@ h1 {
   margin: 0;
 }
 
-.createButton{
+.createButton {
   margin-inline: auto;
 }
 
@@ -36,7 +36,7 @@ a:hover > .lockImg {
   bottom: 0;
   right: 0;
   padding: 1.1rem 1.6rem;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: var(--color-black);
   border: 0;
   text-decoration: none;
@@ -61,6 +61,6 @@ a:hover > .lockImg {
   }
 
   .footer {
-    padding: .8rem 1rem;
+    padding: 0.8rem 1rem;
   }
 }

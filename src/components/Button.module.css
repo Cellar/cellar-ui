@@ -35,20 +35,19 @@
   font-size: 1.6rem;
 }
 
-
 .primary::before {
-  content:attr(data-text);
-  position:absolute;
-  left:0;
-  right:0;
-  text-align:center;
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
   letter-spacing: initial;
   color: var(--color-black);
   transition: all 1s ease;
 }
 
 .primary {
-  font-family: 'DSE Typewriter', monospace;
+  font-family: "DSE Typewriter", monospace;
   text-transform: uppercase;
   background-color: var(--color-green);
   color: var(--color-green);
@@ -60,7 +59,6 @@
 .primary:hover::before {
   letter-spacing: 4px;
 }
-
 
 .secondary {
   background-color: var(--color-silver);
@@ -76,9 +74,8 @@
   color: var(--color-silver);
 }
 
-
 .round {
-  outline-width: .1rem;
+  outline-width: 0.1rem;
   border-radius: 2rem;
   background-color: white;
   border: 1px solid var(--color-blue);

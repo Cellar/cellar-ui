@@ -1,12 +1,13 @@
 .banner {
   background-color: var(--color-green);
-  font-size: .9rem;
-  padding: .5rem 0;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
   text-align: center;
   height: 2.2rem;
 }
-.banner p { margin-top: 0; }
-
+.banner p {
+  margin-top: 0;
+}
 
 .title {
   background-color: var(--color-silver);
@@ -39,7 +40,7 @@
 
 @media screen and (max-width: 1000px) {
   .banner {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
   .branding {
     align-items: center;

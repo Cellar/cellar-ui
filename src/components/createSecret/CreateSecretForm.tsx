@@ -1,46 +1,56 @@
-import React, {useState} from 'react'
+import React, { useState } from "react";
 
-import Button from '../Button'
-import {Form, FormButton, TextArea, NumericInput, ToggleButton} from '../Form'
+import Button from "../Button";
+import {
+  Form,
+  FormButton,
+  TextArea,
+  NumericInput,
+  ToggleButton,
+} from "../Form";
 
-import classes from './CreateSecretForm.module.css'
-import {RelativeExpiration} from "./RelativeExpiration";
-import {AbsoluteExpiration} from "./AbsoluteExpiration";
-import {createSecret} from "../../api/client";
-import {ISecretMetadata} from "../../models/secretMetadata";
-import {useNavigate} from "react-router-dom";
+import classes from "./CreateSecretForm.module.css";
+import { RelativeExpiration } from "./RelativeExpiration";
+import { AbsoluteExpiration } from "./AbsoluteExpiration";
+import { createSecret } from "../../api/client";
+import { ISecretMetadata } from "../../models/secretMetadata";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
-import {useMediaQuery} from "@mantine/hooks";
+import { useMediaQuery } from "@mantine/hooks";
 
 const ExpirationModes = {
-  Absolute: 'Expire On (Absolute)',
-  Relative: 'Expire After (Relative)',
-}
+  Absolute: "Expire On (Absolute)",
+  Relative: "Expire After (Relative)",
+};
 
 export const CreateSecretForm = () => {
-  const [secretContent, setSecretContent] = useState('')
-  const [expirationMode, setExpirationMode] = useState(ExpirationModes.Relative)
-  const [accessLimit, setAccessLimit] = useState(1)
-  const [accessLimitDisabled, setAccessLimitDisabled] = useState(false)
+  const [secretContent, setSecretContent] = useState("");
+  const [expirationMode, setExpirationMode] = useState(
+    ExpirationModes.Relative,
+  );
+  const [accessLimit, setAccessLimit] = useState(1);
+  const [accessLimitDisabled, setAccessLimitDisabled] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const isMobile = useMediaQuery('(max-width: 1000px)');
+  const isMobile = useMediaQuery("(max-width: 1000px)");
 
-
-  const now = new Date()
-  let inTwentyFourHours = new Date()
-  inTwentyFourHours.setHours(now.getHours() + 24, now.getMinutes(), 0, 0)
-  const [expirationDate, setExpirationDate] = useState(inTwentyFourHours)
+  const now = new Date();
+  let inTwentyFourHours = new Date();
+  inTwentyFourHours.setHours(now.getHours() + 24, now.getMinutes(), 0, 0);
+  const [expirationDate, setExpirationDate] = useState(inTwentyFourHours);
 
   function handleSetAccessLimit(newLimit: number) {
-    if (newLimit > 0)
-      setAccessLimit(newLimit)
+    if (newLimit > 0) setAccessLimit(newLimit);
   }
 
   async function handleCreateSecret() {
-    const metadata = await createSecret(secretContent, expirationDate, accessLimitDisabled ? -1 : accessLimit)
-    navigate(`/secret/${(metadata as ISecretMetadata).id}`)
+    const metadata = await createSecret(
+      secretContent,
+      expirationDate,
+      accessLimitDisabled ? -1 : accessLimit,
+    );
+    navigate(`/secret/${(metadata as ISecretMetadata).id}`);
   }
 
   return (
@@ -49,30 +59,43 @@ export const CreateSecretForm = () => {
         <TextArea
           rows={isMobile ? 13 : 14}
           placeholder="Enter Secret Content"
-          onChange={e => setSecretContent(e.target.value)}
-          required/>
+          onChange={(e) => setSecretContent(e.target.value)}
+          required
+        />
         <div className={cx(classes.formControls, classes.formSection)}>
           <div>
             <span className={classes.header}>Expiration</span>
             <div>
-              {
-                (expirationMode === ExpirationModes.Relative) &&
+              {expirationMode === ExpirationModes.Relative && (
                 <>
-                  <button className={classes.expirationModeOption}
-                          onClick={() => setExpirationMode(ExpirationModes.Absolute)}>{ExpirationModes.Absolute}</button>
-                  <br/>
-                  <RelativeExpiration expiration={expirationDate} setExpiration={setExpirationDate}/>
-                </>
-              }
-              {
-                (expirationMode === ExpirationModes.Absolute) &&
-                <>
-                  <AbsoluteExpiration expiration={expirationDate} setExpiration={setExpirationDate}/>
+                  <button
+                    className={classes.expirationModeOption}
+                    onClick={() => setExpirationMode(ExpirationModes.Absolute)}
+                  >
+                    {ExpirationModes.Absolute}
+                  </button>
                   <br />
-                  <button className={classes.expirationModeOption}
-                          onClick={() => setExpirationMode(ExpirationModes.Relative)}>{ExpirationModes.Relative}</button>
+                  <RelativeExpiration
+                    expiration={expirationDate}
+                    setExpiration={setExpirationDate}
+                  />
                 </>
-              }
+              )}
+              {expirationMode === ExpirationModes.Absolute && (
+                <>
+                  <AbsoluteExpiration
+                    expiration={expirationDate}
+                    setExpiration={setExpirationDate}
+                  />
+                  <br />
+                  <button
+                    className={classes.expirationModeOption}
+                    onClick={() => setExpirationMode(ExpirationModes.Relative)}
+                  >
+                    {ExpirationModes.Relative}
+                  </button>
+                </>
+              )}
             </div>
           </div>
           <div className={classes.accessLimitSection}>
@@ -81,21 +104,41 @@ export const CreateSecretForm = () => {
               <NumericInput
                 value={accessLimit}
                 className={classes.accessLimitInput}
-                onChange={(e) => handleSetAccessLimit(+e.target.value)}/>
-              <FormButton className={classes.accessLimitInputModifier} onClick={() => handleSetAccessLimit(accessLimit - 1)}>-</FormButton>
-              <FormButton className={classes.accessLimitInputModifier} onClick={() => handleSetAccessLimit(accessLimit + 1)}>+</FormButton>
+                onChange={(e) => handleSetAccessLimit(+e.target.value)}
+              />
+              <FormButton
+                className={classes.accessLimitInputModifier}
+                onClick={() => handleSetAccessLimit(accessLimit - 1)}
+              >
+                -
+              </FormButton>
+              <FormButton
+                className={classes.accessLimitInputModifier}
+                onClick={() => handleSetAccessLimit(accessLimit + 1)}
+              >
+                +
+              </FormButton>
               <p className={classes.orText}>or</p>
-              <ToggleButton className={classes.noLimitInput} setParentState={setAccessLimitDisabled}>No Limit</ToggleButton>
+              <ToggleButton
+                className={classes.noLimitInput}
+                setParentState={setAccessLimitDisabled}
+              >
+                No Limit
+              </ToggleButton>
               <div className={classes.shim} />
             </div>
           </div>
         </div>
         <div className={classes.formSection}>
-          <Button appearance={Button.appearances.primary} data-text="Create Secret" onClick={handleCreateSecret}>
+          <Button
+            appearance={Button.appearances.primary}
+            data-text="Create Secret"
+            onClick={handleCreateSecret}
+          >
             Create Secret
           </Button>
         </div>
       </Form>
     </div>
-  )
-}
+  );
+};

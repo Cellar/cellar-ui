@@ -1,0 +1,16 @@
+{
+  "overrides": [
+    {
+      "files": [
+        "src/**"
+      ]
+    }
+  ],
+  "extends":
+  [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/strict",
+    "plugin:@typescript-eslint/stylistic",
+    "prettier"
+  ]
+}

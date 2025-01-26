@@ -1,36 +1,46 @@
 @font-face {
-    font-family: 'Vremena Grotesk';
-    font-style: normal;
-    font-weight: normal;
-    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbook.otf') format('opentype');
+  font-family: "Vremena Grotesk";
+  font-style: normal;
+  font-weight: normal;
+  src:
+    local("Vremena Grotesk"),
+    url("@/fonts/vremenagroteskbook.otf") format("opentype");
 }
 @font-face {
-    font-family: 'Vremena Grotesk';
-    font-style: italic;
-    font-weight: normal;
-    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbookitalic.otf') format('opentype');
+  font-family: "Vremena Grotesk";
+  font-style: italic;
+  font-weight: normal;
+  src:
+    local("Vremena Grotesk"),
+    url("@/fonts/vremenagroteskbookitalic.otf") format("opentype");
 }
 @font-face {
-    font-family: 'Vremena Grotesk';
-    font-style: normal;
-    font-weight: bold;
-    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbold.otf') format('opentype');
+  font-family: "Vremena Grotesk";
+  font-style: normal;
+  font-weight: bold;
+  src:
+    local("Vremena Grotesk"),
+    url("@/fonts/vremenagroteskbold.otf") format("opentype");
 }
 @font-face {
-    font-family: 'Vremena Grotesk';
-    font-style: italic;
-    font-weight: bold;
-    src: local('Vremena Grotesk'), url('@/fonts/vremenagroteskbolditalic.otf') format('opentype');
+  font-family: "Vremena Grotesk";
+  font-style: italic;
+  font-weight: bold;
+  src:
+    local("Vremena Grotesk"),
+    url("@/fonts/vremenagroteskbolditalic.otf") format("opentype");
 }
 @font-face {
-    font-family: 'DSE Typewriter';
-    font-style: normal;
-    font-weight: normal;
-    src: local('DSE Typewriter'), url('@/fonts/dse-typewriter.ttf') format('truetype');
+  font-family: "DSE Typewriter";
+  font-style: normal;
+  font-weight: normal;
+  src:
+    local("DSE Typewriter"),
+    url("@/fonts/dse-typewriter.ttf") format("truetype");
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
@@ -41,24 +51,24 @@ body,
 }
 
 body {
-    font-family: var(--font-default);
-    font-size: 1.6rem;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-default);
+  font-size: 1.6rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 :root {
   --color-white: white;
-  --color-blue: #3376F9;
-  --color-green: #00FF00;
-  --color-silver: #E9E9E9;
-  --color-gray: #6E6E6E;
+  --color-blue: #3376f9;
+  --color-green: #00ff00;
+  --color-silver: #e9e9e9;
+  --color-gray: #6e6e6e;
   --color-black: #303030;
-  --color-red: #FF0000;
+  --color-red: #ff0000;
 
-  --font-default: 'Vremena Grotesk', Verdana, sans-serif;
-  --font-monospace: 'DSE Typewriter', Monaco, Consolas, 'Courier New', monospace;
+  --font-default: "Vremena Grotesk", Verdana, sans-serif;
+  --font-monospace: "DSE Typewriter", Monaco, Consolas, "Courier New", monospace;
 }
 
 code {
@@ -67,12 +77,12 @@ code {
 
 @media screen and (max-width: 1000px) {
   body {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 }
 
 @media screen and (max-width: 393px) {
   body {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
 }

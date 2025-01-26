@@ -1,6 +1,6 @@
-import { describe, expect, it} from 'vitest';
+import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import {Header} from "./Header";
+import { Header } from "./Header";
 
 describe("When rendering header component", () => {
   it("should display logo", () => {
