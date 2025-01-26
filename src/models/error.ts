@@ -1,4 +1,4 @@
 export interface IApiError {
   code: number;
-  messsage: string;
+  message: string;
 }
