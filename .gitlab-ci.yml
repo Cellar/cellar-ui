@@ -52,8 +52,6 @@ build-docker:
 test:
   extends: .ui
   stage: test
-  before_script:
-    - npm install
   script:
     - make test
 
