@@ -57,6 +57,7 @@ export const CreateSecretForm = () => {
     <div>
       <Form>
         <TextArea
+          data-testid="secret-content"
           rows={isMobile ? 13 : 14}
           placeholder="Enter Secret Content"
           onChange={(e) => setSecretContent(e.target.value)}

@@ -1,4 +1,4 @@
-import { describe, beforeEach, expect, it, vi, assertType } from 'vitest';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import {
   accessSecret,
   createSecret,
