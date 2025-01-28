@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 
 import classes from "./Layout.module.css";
 import Button from "../components/Button";

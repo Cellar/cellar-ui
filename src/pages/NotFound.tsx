@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "../pages/NotFound.module.css";
 import Button from "../components/Button";
-import { Header } from "../components/Header";
+import { Header } from "../components/header/Header";
 import { Link, useNavigate } from "react-router-dom";
 
 export const NotFound = () => {
