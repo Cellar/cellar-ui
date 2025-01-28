@@ -1,10 +1,9 @@
-import { describe, beforeEach, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom";
+import { describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { ISecretMetadata } from "../../models/secretMetadata";
-import { IApiError } from "../../models/error";
 import { SecretMetadataDisplay } from "./SecretMetadataDisplay";
-import React from "react";
 
 describe("When rendering SecretMetadataDisplay", () => {
   it("should display", async () => {
