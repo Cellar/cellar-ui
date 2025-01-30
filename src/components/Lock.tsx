@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, FC } from "react";
+import { FC } from "react";
 
 export const Lock: FC<{ className?: string }> = ({ className, ...props }) => (
   <svg

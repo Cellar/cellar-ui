@@ -1,18 +1,19 @@
 import "@testing-library/jest-dom";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import React from "react";
-import { ISecret } from "../../models/secret";
+import { ISecret } from "@/models/secret";
 import { AccessSecretDisplay } from "./AccessSecretDisplay";
+import { userEvent } from "@testing-library/user-event";
+import { mockClipboard } from "@tests/helpers";
 
 describe("When rendering SecretMetadataDisplay", () => {
-  it("should display", async () => {
-    const secret: ISecret = {
-      id: "V5nIvLMxZUYP4",
-      content: "TSJ271HWvlSM 0dkxJ0J Cp57zLGlJsgwIl1 Oe510U893sU 7zn",
-    };
+  const secret: ISecret = {
+    id: "V5nIvLMxZUYP4",
+    content: "TSJ271HWvlSM 0dkxJ0J Cp57zLGlJsgwIl1 Oe510U893sU 7zn",
+  };
 
+  beforeEach(async () => {
     const router = createMemoryRouter(
       [
         {
@@ -26,8 +27,23 @@ describe("When rendering SecretMetadataDisplay", () => {
 
     render(<RouterProvider router={router} />);
     await waitFor(() => {
-      const element = screen.getByText(secret.content);
+      const element = screen.getByTestId("access-secret-form");
       expect(element).toBeInTheDocument();
     });
+  });
+
+  it("should render secret content", async () => {
+    const element = screen.getByText(secret.content);
+    expect(element).toBeInTheDocument();
+  });
+
+  it("should have functioning copy button", async () => {
+    const element = screen.getByTestId("copy-secret-button");
+
+    const clipboard = mockClipboard();
+
+    await userEvent.click(element);
+
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(secret.content);
   });
 });

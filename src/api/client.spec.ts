@@ -5,9 +5,9 @@ import {
   deleteSecret,
   getSecretMetadata,
 } from './client';
-import { ISecretMetadata } from '../models/secretMetadata';
-import { IApiError } from '../models/error';
-import { ISecret } from '../models/secret';
+import { ISecretMetadata } from '@/models/secretMetadata';
+import { IApiError } from '@/models/error';
+import { ISecret } from '@/models/secret';
 
 describe('SecretsService', () => {
   const secretMetadata: ISecretMetadata = {

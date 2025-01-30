@@ -1,15 +1,15 @@
 import Button from "../Button";
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { ISecretMetadata } from "../../models/secretMetadata";
-import { TextArea, NumericInput } from "../Form";
-import { deleteSecret } from "../../api/client";
+import { ISecretMetadata } from "@/models/secretMetadata";
+import { TextArea } from "../Form";
+import { deleteSecret } from "@/api/client";
 import {
   formatDate,
   formatDateAndTime,
   formatTime,
   getTimeZone,
-} from "../../helpers/helpers";
+} from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
 
 export const SecretMetadataDisplay = () => {
@@ -45,7 +45,9 @@ export const SecretMetadataDisplay = () => {
 
   return (
     <>
-      <p className={classes.detailsLabel}>details</p>
+      <p data-testid="details-label" className={classes.detailsLabel}>
+        details
+      </p>
       <div className={classes.metadataRow}>
         <div>
           <div className={classes.headerWrapper}>

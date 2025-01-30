@@ -12,8 +12,8 @@ import {
 import classes from "./CreateSecretForm.module.css";
 import { RelativeExpiration } from "./RelativeExpiration";
 import { AbsoluteExpiration } from "./AbsoluteExpiration";
-import { createSecret } from "../../api/client";
-import { ISecretMetadata } from "../../models/secretMetadata";
+import { createSecret } from "@/api/client";
+import { ISecretMetadata } from "@/models/secretMetadata";
 import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { useMediaQuery } from "@mantine/hooks";

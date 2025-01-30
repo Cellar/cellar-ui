@@ -26,7 +26,7 @@ export function Header() {
       <div className={classes.title}>
         <div className={classes.shim} />
         <div className={classes.branding}>
-          <Logo className={classes.logo} />
+          <Logo data-testid="cellar-logo" className={classes.logo} />
         </div>
         <div className={classes.shim} />
       </div>

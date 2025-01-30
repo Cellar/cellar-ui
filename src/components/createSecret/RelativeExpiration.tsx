@@ -1,7 +1,7 @@
 import classes from "./CreateSecretForm.module.css";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
-import { padNum } from "../../helpers/helpers";
+import { padNum } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
 import { FlatInput } from "../Form";
 

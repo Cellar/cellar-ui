@@ -2,8 +2,8 @@ import classes from "./CreateSecretForm.module.css";
 import { FlatSelect, FlatInput } from "../Form";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
-import { Time } from "../../helpers/time";
-import { padNum } from "../../helpers/helpers";
+import { Time } from "@/helpers/time";
+import { padNum } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
 
 const AMPM = {
