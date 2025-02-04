@@ -43,7 +43,7 @@ export const AbsoluteExpiration: FC<{
   setExpiration: React.Dispatch<React.SetStateAction<Date>>;
   className?: string;
 }> = ({ expiration, setExpiration, className, ...props }) => {
-  let tomorrow = new Date();
+  const tomorrow = new Date();
   tomorrow.setHours(24);
 
   const isTinyMobile = useMediaQuery("(max-width: 393px)");
@@ -56,7 +56,7 @@ export const AbsoluteExpiration: FC<{
   }, [expiration]);
 
   function setDateTimeAndAmPm(newExpiration: Date) {
-    let {
+    const {
       date: newDate,
       time: newTime,
       amPm: newAmPm,
@@ -94,7 +94,7 @@ export const AbsoluteExpiration: FC<{
   function getAbsoluteDate(newDate: string, newTime: string, newAmPm: string) {
     const [hour, minute] = Time.fromString(newTime);
     const [year, month, day] = newDate.split("-").map((v) => +v);
-    let absoluteDate = new Date(year, month, day, 0, 0, 0, 0);
+    const absoluteDate = new Date(year, month, day, 0, 0, 0, 0);
     if (newAmPm === AMPM.PM) {
       absoluteDate.setHours(hour + 12, minute, 0, 0);
     } else {
@@ -111,7 +111,12 @@ export const AbsoluteExpiration: FC<{
 
   return (
     <>
-      <button className={classes.expirationMode}>Expire On (Absolute)</button>
+      <button
+        className={classes.expirationMode}
+        data-testid="expiration-absolute-button"
+      >
+        Expire On (Absolute)
+      </button>
       {isTinyMobile && <br />}
       <FlatInput
         label={"date"}

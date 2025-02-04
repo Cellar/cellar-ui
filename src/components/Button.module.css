@@ -23,6 +23,10 @@
   -webkit-appearance: none;
 }
 
+a.disabled {
+  cursor: not-allowed;
+}
+
 .resetBtn::-moz-focus-inner {
   border: 0;
   padding: 0;

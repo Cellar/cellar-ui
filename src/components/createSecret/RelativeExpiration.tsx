@@ -25,7 +25,7 @@ export const RelativeExpiration: FC<{
   }
 
   function getAbsoluteDate(hours: number, minutes: number) {
-    let newDate = new Date();
+    const newDate = new Date();
     newDate.setHours(
       newDate.getHours() + hours,
       newDate.getMinutes() + minutes,
@@ -37,7 +37,7 @@ export const RelativeExpiration: FC<{
   }
 
   function getRelative(target: Date): { hours: number; minutes: number } {
-    let diff = target.getTime() - Date.now();
+    const diff = target.getTime() - Date.now();
     let hours = Math.floor(diff / (1000 * 60 * 60));
     let minutes = Math.ceil((diff % (1000 * 60 * 60)) / (1000 * 60));
 
@@ -51,7 +51,10 @@ export const RelativeExpiration: FC<{
 
   return (
     <>
-      <button className={classes.expirationMode}>
+      <button
+        className={classes.expirationMode}
+        data-testid="expiration-relative-button"
+      >
         Expire After (Relative)
       </button>
       {isTinyMobile && <br />}

@@ -36,7 +36,7 @@ export const CreateSecretForm = () => {
   const isMobile = useMediaQuery("(max-width: 1000px)");
 
   const now = new Date();
-  let inTwentyFourHours = new Date();
+  const inTwentyFourHours = new Date();
   inTwentyFourHours.setHours(now.getHours() + 24, now.getMinutes(), 0, 0);
   const [expirationDate, setExpirationDate] = useState(inTwentyFourHours);
 
@@ -70,6 +70,7 @@ export const CreateSecretForm = () => {
               {expirationMode === ExpirationModes.Relative && (
                 <>
                   <button
+                    data-testid="expiration-absolute-option"
                     className={classes.expirationModeOption}
                     onClick={() => setExpirationMode(ExpirationModes.Absolute)}
                   >
@@ -90,6 +91,7 @@ export const CreateSecretForm = () => {
                   />
                   <br />
                   <button
+                    data-testid="expiration-relative-option"
                     className={classes.expirationModeOption}
                     onClick={() => setExpirationMode(ExpirationModes.Relative)}
                   >
@@ -103,17 +105,20 @@ export const CreateSecretForm = () => {
             <span className={classes.header}>Access Limit</span>
             <div className={classes.accessLimitElements}>
               <NumericInput
+                data-testid="access-limit-input"
                 value={accessLimit}
                 className={classes.accessLimitInput}
                 onChange={(e) => handleSetAccessLimit(+e.target.value)}
               />
               <FormButton
+                data-testid="access-limit-decrement-button"
                 className={classes.accessLimitInputModifier}
                 onClick={() => handleSetAccessLimit(accessLimit - 1)}
               >
                 -
               </FormButton>
               <FormButton
+                data-testid="access-limit-increment-button"
                 className={classes.accessLimitInputModifier}
                 onClick={() => handleSetAccessLimit(accessLimit + 1)}
               >
@@ -121,6 +126,7 @@ export const CreateSecretForm = () => {
               </FormButton>
               <p className={classes.orText}>or</p>
               <ToggleButton
+                data-testid="no-limit-toggle"
                 className={classes.noLimitInput}
                 setParentState={setAccessLimitDisabled}
               >
@@ -132,9 +138,11 @@ export const CreateSecretForm = () => {
         </div>
         <div className={classes.formSection}>
           <Button
+            disabled={secretContent.length <= 0}
+            data-testid="create-secret-button"
             appearance={Button.appearances.primary}
             data-text="Create Secret"
-            onClick={handleCreateSecret}
+            onClick={secretContent.length <= 0 ? undefined : handleCreateSecret}
           >
             Create Secret
           </Button>

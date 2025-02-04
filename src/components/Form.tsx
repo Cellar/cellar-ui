@@ -2,7 +2,6 @@ import { ComponentPropsWithoutRef, FC, useState } from "react";
 import cx from "classnames";
 
 import classes from "./Form.module.css";
-import { stringify } from "querystring";
 
 export const Form: FC<ComponentPropsWithoutRef<"form">> = (props) => {
   const { className, ...rest } = props;
@@ -110,7 +109,7 @@ interface ToggleButtonProps extends ComponentPropsWithoutRef<"button"> {
 }
 
 export const ToggleButton: FC<ToggleButtonProps> = (props) => {
-  const { setParentState, children, className } = props;
+  const { setParentState, children, className, ...rest } = props;
 
   const [isOn, setIsOn] = useState(false);
 
@@ -121,6 +120,7 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
         setIsOn(!isOn);
         setParentState(!isOn);
       }}
+      {...rest}
     >
       {children}
     </FormButton>
