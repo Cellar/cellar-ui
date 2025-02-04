@@ -1,5 +1,9 @@
 import { expect, vi } from "vitest";
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import {
+  createMemoryRouter,
+  LoaderFunction,
+  RouterProvider,
+} from "react-router-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 
@@ -37,7 +41,7 @@ export async function renderWithRouter(
     testId = undefined,
   }: {
     route?: string;
-    loader?: () => Promise<unknown> | unknown;
+    loader?: LoaderFunction;
     testId?: string;
   } = {},
   otherPaths: string[] = [],
@@ -49,7 +53,7 @@ export async function renderWithRouter(
       {
         path: route,
         element: ui,
-        loader: loader,
+        loader: loader as LoaderFunction | undefined,
       },
       ...otherPaths.map((path) => ({ path, element: EmptyReactNode })),
     ],
