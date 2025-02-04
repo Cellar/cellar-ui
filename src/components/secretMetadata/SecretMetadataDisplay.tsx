@@ -110,12 +110,14 @@ export const SecretMetadataDisplay = () => {
         <div className={classes.metadataActions}>
           <div className={classes.copyActions}>
             <Button
+              data-testid="copy-secret-link-button"
               appearance={Button.appearances.secondary}
               onClick={handleCopyLinkSecret}
             >
               Copy Link to Secret
             </Button>
             <Button
+              data-testid="copy-metadata-link-button"
               appearance={Button.appearances.secondary}
               onClick={handleCopyLinkMetadata}
             >
@@ -123,7 +125,11 @@ export const SecretMetadataDisplay = () => {
             </Button>
           </div>
           <div className={classes.shim} />
-          <a className={classes.delete} onClick={handleDeleteSecret}>
+          <a
+            data-testid="delete-secret-button"
+            className={classes.delete}
+            onClick={handleDeleteSecret}
+          >
             Delete Secret
           </a>
         </div>

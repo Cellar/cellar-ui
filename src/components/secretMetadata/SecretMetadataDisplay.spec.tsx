@@ -1,9 +1,11 @@
 import "@testing-library/jest-dom";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import { ISecretMetadata } from "@/models/secretMetadata";
 import { SecretMetadataDisplay } from "./SecretMetadataDisplay";
-import { renderWithRouter } from "@tests/helpers";
+import { mockClipboard, renderWithRouter } from "@tests/helpers";
+import { userEvent } from "@testing-library/user-event";
+import { deleteSecret } from "@/api/client";
 
 describe("When rendering SecretMetadataDisplay", () => {
   const secretMetadata: ISecretMetadata = {
@@ -13,11 +15,23 @@ describe("When rendering SecretMetadataDisplay", () => {
     expiration: new Date(),
   };
 
+  beforeAll(() => {
+    global.confirm = vi.fn(() => true);
+    vi.mock("@/api/client", () => ({
+      deleteSecret: vi.fn(),
+    }));
+  });
+
   beforeEach(async () => {
-    await renderWithRouter(<SecretMetadataDisplay />, {
-      loader: () => secretMetadata,
-      testId: "details-label",
-    });
+    vi.clearAllMocks();
+    await renderWithRouter(
+      <SecretMetadataDisplay />,
+      {
+        loader: () => secretMetadata,
+        testId: "details-label",
+      },
+      ["/secret/create"],
+    );
   });
 
   it("should display", async () => {
@@ -25,5 +39,37 @@ describe("When rendering SecretMetadataDisplay", () => {
       const element = screen.getByText(secretMetadata.id);
       expect(element).toBeInTheDocument();
     });
+  });
+
+  it("should have a functioning copy secret link button", async () => {
+    const element = screen.getByTestId("copy-secret-link-button");
+
+    const clipboard = mockClipboard();
+
+    await userEvent.click(element);
+
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(
+      `http://localhost:3000/secret/${secretMetadata.id}/access`,
+    );
+  });
+
+  it("should have a functioning copy metadata link button", async () => {
+    const element = screen.getByTestId("copy-metadata-link-button");
+
+    const clipboard = mockClipboard();
+
+    await userEvent.click(element);
+
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(
+      `http://localhost:3000/secret/${secretMetadata.id}`,
+    );
+  });
+
+  it("should call deleteSecret when the button is clicked", async () => {
+    const element = screen.getByTestId("delete-secret-button");
+
+    await userEvent.click(element);
+
+    expect(deleteSecret).toHaveBeenCalledExactlyOnceWith(secretMetadata.id);
   });
 });

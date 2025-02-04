@@ -3,6 +3,8 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 
+export const EmptyReactNode: ReactNode = ""; // Also empty
+
 export function mockClipboard(): Clipboard {
   Object.defineProperty(navigator, "clipboard", {
     value: {
@@ -25,6 +27,7 @@ export async function renderWithRouter(
     loader?: () => Promise<unknown> | unknown;
     testId?: string;
   } = {},
+  otherPaths: string[] = [],
 ) {
   window.history.pushState({}, "", route);
 
@@ -35,6 +38,7 @@ export async function renderWithRouter(
         element: ui,
         loader: loader,
       },
+      ...otherPaths.map((path) => ({ path, element: EmptyReactNode })),
     ],
     { initialEntries: [route] },
   );
