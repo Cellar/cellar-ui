@@ -1,12 +1,11 @@
 import "@testing-library/jest-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { ISecret } from "@/models/secret";
 import { AccessSecretDisplay } from "./AccessSecretDisplay";
 import { userEvent } from "@testing-library/user-event";
 import { mockClipboard } from "@tests/helpers";
-import { deleteSecret } from "../../api/client";
 
 describe("When rendering SecretMetadataDisplay", () => {
   const secret: ISecret = {

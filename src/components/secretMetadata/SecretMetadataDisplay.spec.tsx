@@ -15,7 +15,10 @@ describe("When rendering SecretMetadataDisplay", () => {
     expiration: new Date(),
   };
 
+  let clipboard: Clipboard;
+
   beforeAll(() => {
+    clipboard = mockClipboard();
     global.confirm = vi.fn(() => true);
     vi.mock("@/api/client", () => ({
       deleteSecret: vi.fn(),
@@ -44,8 +47,6 @@ describe("When rendering SecretMetadataDisplay", () => {
   it("should have a functioning copy secret link button", async () => {
     const element = screen.getByTestId("copy-secret-link-button");
 
-    const clipboard = mockClipboard();
-
     await userEvent.click(element);
 
     expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(
@@ -55,8 +56,6 @@ describe("When rendering SecretMetadataDisplay", () => {
 
   it("should have a functioning copy metadata link button", async () => {
     const element = screen.getByTestId("copy-metadata-link-button");
-
-    const clipboard = mockClipboard();
 
     await userEvent.click(element);
 
