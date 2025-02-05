@@ -68,3 +68,15 @@ export async function renderWithRouter(
     });
   }
 }
+
+export async function waitForVisible(
+  form: { self: HTMLElement },
+  timeout = 1000,
+) {
+  await waitFor(
+    () => {
+      expect(form.self).toBeInTheDocument();
+    },
+    { timeout },
+  );
+}

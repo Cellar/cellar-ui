@@ -17,6 +17,7 @@ export const AccessSecretDisplay = () => {
     <div>
       <Form data-testid="access-secret-form">
         <TextArea
+          data-testid="secret-content"
           className={classes.secretContent}
           readOnly={true}
           value={secretContent}
