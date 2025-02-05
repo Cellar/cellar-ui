@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, FC, MouseEventHandler } from "react";
+import { ComponentPropsWithoutRef, FC } from "react";
 import cx from "classnames";
 
 import classes from "./Button.module.css";

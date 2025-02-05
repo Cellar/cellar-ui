@@ -1,9 +1,9 @@
-import classes from "./CreateSecretForm.module.css";
-import { FlatSelect, FlatInput } from "../Form";
+import classes from "@/components/createSecret/CreateSecretForm.module.css";
+import { FlatSelect, FlatInput } from "@/components/Form";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
-import { Time } from "@/helpers/time";
-import { padNum } from "@/helpers/helpers";
+import { Time } from "src/helpers/time";
+import { padNum } from "src/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
 
 const AMPM = {
@@ -119,6 +119,7 @@ export const AbsoluteExpiration: FC<{
       </button>
       {isTinyMobile && <br />}
       <FlatInput
+        data-testid="expiration-absolute-date"
         label={"date"}
         value={formatDateForParsing(date)}
         className={cx(classes.dateDropdown, classes.expirationInput)}
@@ -129,6 +130,7 @@ export const AbsoluteExpiration: FC<{
         }}
       />
       <FlatSelect
+        data-testid="expiration-absolute-time"
         label={"time"}
         className={cx(classes.expirationInput, classes.timeDropdown)}
         items={Object.values(timeOptions).map((t) => ({ label: t, value: t }))}
@@ -140,6 +142,7 @@ export const AbsoluteExpiration: FC<{
         }}
       />
       <FlatSelect
+        data-testid="expiration-absolute-ampm"
         label={"am/pm"}
         className={cx(classes.expirationInput, classes.amPmDropdown)}
         items={Object.values(AMPM).map((t) => ({ label: t, value: t }))}

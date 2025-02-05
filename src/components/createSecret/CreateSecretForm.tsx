@@ -10,8 +10,8 @@ import {
 } from "../Form";
 
 import classes from "./CreateSecretForm.module.css";
-import { RelativeExpiration } from "./RelativeExpiration";
-import { AbsoluteExpiration } from "./AbsoluteExpiration";
+import { RelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration";
+import { AbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration";
 import { createSecret } from "@/api/client";
 import { ISecretMetadata } from "@/models/secretMetadata";
 import { useNavigate } from "react-router-dom";
