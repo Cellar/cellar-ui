@@ -161,3 +161,5 @@ clean-services:
 	@docker compose rm -svf
 	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
 
+format:
+	@npm run format
