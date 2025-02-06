@@ -159,3 +159,22 @@ export const FlatSelect: FC<FlatSelectProps> = (props) => {
     </FlatInputWrapper>
   );
 };
+
+interface ErrorWrapperProps extends ComponentPropsWithoutRef<"span"> {
+  message: string;
+}
+
+export const ErrorWrapper: FC<ErrorWrapperProps> = (props) => {
+  const { children, className, message, ...rest } = props;
+
+  return (
+    <div className={cx(classes.errorWrapper)}>
+      {children}
+      {message.length > 0 && (
+        <span className={cx(classes.error, className)} {...rest}>
+          {message}
+        </span>
+      )}
+    </div>
+  );
+};

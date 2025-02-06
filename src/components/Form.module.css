@@ -67,6 +67,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: transparent;
 }
 
+.errorWrapper {
+  position: relative;
+  width: 100%; /* Ensure wrapper takes full width */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: stretch; /* Child elements (textarea, etc.) take full width */
+}
+
+.error {
+  color: var(--color-red);
+  font-family: var(--font-default);
+  font-size: 1rem;
+  bottom: -2rem;
+  position: absolute;
+  margin-top: 0.5rem;
+}
+
+.error-indent {
+  padding-left: 8rem;
+}
+
 .textArea {
   font-family: var(--font-default);
   width: 100%;
