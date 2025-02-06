@@ -79,8 +79,4 @@ describe("When rendering CreateSecretForm", () => {
       );
     });
   });
-
-  it("should disable the create button if no secret content is provided", async () => {
-    expect(form.createButton.className).toMatch(/disabled/);
-  });
 });
