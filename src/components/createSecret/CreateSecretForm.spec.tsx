@@ -47,8 +47,6 @@ describe("When rendering CreateSecretForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("should display ");
-
   describe("and modifying the secret content", () => {
     it("should allow typing in the secret content field", async () => {
       await userEvent.type(form.secretContentInput, "This is a secret");
@@ -57,10 +55,31 @@ describe("When rendering CreateSecretForm", () => {
     });
   });
 
-  describe("and modifying the expiration", () => {
-    it("should toggle between relative and absolute expiration modes", async () => {
+  describe("and setting expiration to absolute", () => {
+    beforeEach(async () => {
       await setExpirationMode("absolute");
-      await setExpirationMode("relative");
+    });
+
+    it("should display absolute expiration date input field", () => {
+      expect(form.absoluteExpirationModel.expirationDate).toBeInTheDocument();
+    });
+
+    it("should display absolute expiration time input field", () => {
+      expect(form.absoluteExpirationModel.expirationTime).toBeInTheDocument();
+    });
+
+    it("should display absolute expiration ampm input field", () => {
+      expect(form.absoluteExpirationModel.expirationAmPm).toBeInTheDocument();
+    });
+  });
+
+  describe("and setting expiration to relative", () => {
+    it("should display relative expiration hours input field", () => {
+      expect(form.relativeExpirationModel.hoursInput).toBeInTheDocument();
+    });
+
+    it("should display relative expiration minutes input field", () => {
+      expect(form.relativeExpirationModel.minutesInput).toBeInTheDocument();
     });
   });
 
@@ -87,6 +106,12 @@ describe("When rendering CreateSecretForm", () => {
         await userEvent.click(form.noLimitToggle);
 
         expect(form.noLimitToggle.className).toMatch(/toggled/);
+      });
+
+      it("should empty access limit input value", async () => {
+        await userEvent.click(form.noLimitToggle);
+
+        expect(form.accessLimitInput).toHaveValue("");
       });
 
       it("should disable access limit input", async () => {

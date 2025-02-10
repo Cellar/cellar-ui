@@ -161,7 +161,7 @@ export const CreateSecretForm = () => {
                 <NumericInput
                   disabled={accessLimitDisabled}
                   data-testid="access-limit-input"
-                  value={accessLimit}
+                  value={accessLimitDisabled ? "" : accessLimit}
                   className={classes.accessLimitInput}
                   onChange={(e) => handleSetAccessLimit(+e.target.value)}
                 />
