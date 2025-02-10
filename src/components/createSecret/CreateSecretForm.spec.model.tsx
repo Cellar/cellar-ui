@@ -1,5 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { form as absoluteExpirationForm } from "./absoluteExpiration/AbsoluteExpiration.spec.model";
+import { form as relativeExpirationForm } from "./relativeExpiration/RelativeExpiration.spec.model";
 
 export const form = {
   get createButton() {
@@ -15,7 +17,7 @@ export const form = {
   get secretContentInput() {
     return screen.getByTestId("secret-content");
   },
-  get accessLimitInput() {
+  get accessLimitInput(): HTMLInputElement {
     return screen.getByTestId("access-limit-input");
   },
 
@@ -26,14 +28,25 @@ export const form = {
   get absoluteExpirationOption() {
     return screen.getByTestId("expiration-absolute-option");
   },
-  get absoluteExpirationButton() {
-    return screen.getByTestId("expiration-absolute-button");
-  },
   get relativeExpirationOption() {
     return screen.getByTestId("expiration-relative-option");
   },
-  get relativeExpirationButton() {
-    return screen.getByTestId("expiration-relative-button");
+
+  get secretContentError() {
+    return screen.getByTestId("secret-content-error");
+  },
+  get expirationError() {
+    return screen.getByTestId("expiration-error");
+  },
+  get accessLimitError() {
+    return screen.getByTestId("access-limit-error");
+  },
+
+  get absoluteExpirationModel() {
+    return absoluteExpirationForm;
+  },
+  get relativeExpirationModel() {
+    return relativeExpirationForm;
   },
 };
 
@@ -45,12 +58,12 @@ export async function setExpirationMode(mode: "absolute" | "relative") {
   switch (mode) {
     case "absolute":
       clickOption = form.absoluteExpirationOption;
-      expectedButton = () => form.absoluteExpirationButton;
+      expectedButton = () => absoluteExpirationForm.expirationAbsoluteButton;
       expectedOption = () => form.relativeExpirationOption;
       break;
     case "relative":
       clickOption = form.relativeExpirationOption;
-      expectedButton = () => form.relativeExpirationButton;
+      expectedButton = () => relativeExpirationForm.expirationRelativeButton;
       expectedOption = () => form.absoluteExpirationOption;
       break;
   }

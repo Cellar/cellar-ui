@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, waitFor } from "@testing-library/react";
 import { CreateSecretForm } from "./CreateSecretForm";
 import { userEvent } from "@testing-library/user-event";
 import { renderWithRouter } from "@tests/helpers";
@@ -34,15 +34,13 @@ describe("When rendering CreateSecretForm", () => {
   });
 
   it("should display secret content input field", () => {
-    const element = screen.getByTestId("secret-content");
-    expect(element).toBeInTheDocument();
+    expect(form.secretContentInput).toBeInTheDocument();
   });
 
   it("should allow typing in the secret content field", async () => {
-    const secretContentInput = screen.getByTestId("secret-content");
-    await userEvent.type(secretContentInput, "This is a secret");
+    await userEvent.type(form.secretContentInput, "This is a secret");
 
-    expect(secretContentInput).toHaveValue("This is a secret");
+    expect(form.secretContentInput).toHaveValue("This is a secret");
   });
 
   it("should toggle between relative and absolute expiration modes", async () => {
@@ -64,6 +62,14 @@ describe("When rendering CreateSecretForm", () => {
     expect(form.noLimitToggle.className).toMatch(/toggled/);
   });
 
+  it("should disable other access limit settings when 'No Limit' is enabled", async () => {
+    await userEvent.click(form.noLimitToggle);
+
+    expect(form.accessLimitInput).toBeDisabled();
+    expect(form.increaseAccessLimitButton).toBeDisabled();
+    expect(form.decreaseAccessLimitButton).toBeDisabled();
+  });
+
   it("should call 'createSecret' and navigate when the create button is clicked", async () => {
     await userEvent.type(form.secretContentInput, "My Secret");
 
@@ -77,6 +83,30 @@ describe("When rendering CreateSecretForm", () => {
         expect.any(Date), // Expiration
         1, // Access Limit
       );
+    });
+  });
+
+  it("should display an error message when submitting an empty secret", async () => {
+    await userEvent.clear(form.secretContentInput);
+    await userEvent.click(form.createButton);
+    await waitFor(() => {
+      expect(form.secretContentError).toBeInTheDocument();
+    });
+  });
+
+  it("should be unable to set access limit to a non-positive number", async () => {
+    fireEvent.change(form.accessLimitInput, { target: { value: "-1" } });
+    expect(+form.accessLimitInput.value).toBeGreaterThan(0);
+  });
+
+  it("should display an error when relative expiration is in 0 minutes", async () => {
+    await userEvent.clear(form.relativeExpirationModel.hoursInput);
+    await userEvent.type(form.relativeExpirationModel.hoursInput, "0");
+    await userEvent.clear(form.relativeExpirationModel.minutesInput);
+    await userEvent.type(form.relativeExpirationModel.minutesInput, "0");
+    await userEvent.click(form.createButton);
+    await waitFor(() => {
+      expect(form.expirationError).toBeInTheDocument();
     });
   });
 });

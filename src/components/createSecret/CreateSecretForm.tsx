@@ -54,6 +54,7 @@ export const CreateSecretForm = () => {
 
   function handleSetAccessLimit(newLimit: number) {
     if (newLimit > 0) setAccessLimit(newLimit);
+    else setAccessLimit(1);
   }
 
   async function handleCreateSecret() {
@@ -93,6 +94,7 @@ export const CreateSecretForm = () => {
         <ErrorWrapper
           className={classes.errorIndent}
           message={errors?.SecretContent ?? ""}
+          data-testid="secret-content-error"
         >
           <TextArea
             data-testid="secret-content"
@@ -105,7 +107,10 @@ export const CreateSecretForm = () => {
         <div className={cx(classes.formControls, classes.formSection)}>
           <div>
             <span className={classes.header}>Expiration</span>
-            <ErrorWrapper message={errors?.Expiration ?? ""}>
+            <ErrorWrapper
+              message={errors?.Expiration ?? ""}
+              data-testid="expiration-error"
+            >
               <div>
                 {expirationMode === ExpirationModes.Relative && (
                   <>
@@ -148,15 +153,20 @@ export const CreateSecretForm = () => {
           </div>
           <div className={classes.accessLimitSection}>
             <span className={classes.header}>Access Limit</span>
-            <ErrorWrapper message={errors?.AccessLimit ?? ""}>
+            <ErrorWrapper
+              message={errors?.AccessLimit ?? ""}
+              data-testid="access-limit-error"
+            >
               <div className={classes.accessLimitElements}>
                 <NumericInput
+                  disabled={accessLimitDisabled}
                   data-testid="access-limit-input"
                   value={accessLimit}
                   className={classes.accessLimitInput}
                   onChange={(e) => handleSetAccessLimit(+e.target.value)}
                 />
                 <FormButton
+                  disabled={accessLimitDisabled}
                   data-testid="access-limit-decrement-button"
                   className={classes.accessLimitInputModifier}
                   onClick={() => handleSetAccessLimit(accessLimit - 1)}
@@ -164,6 +174,7 @@ export const CreateSecretForm = () => {
                   -
                 </FormButton>
                 <FormButton
+                  disabled={accessLimitDisabled}
                   data-testid="access-limit-increment-button"
                   className={classes.accessLimitInputModifier}
                   onClick={() => handleSetAccessLimit(accessLimit + 1)}
