@@ -17,6 +17,7 @@ import {
 import { setRelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration.spec.model";
 import { setAbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration.spec.model";
 import { createSecret } from "@/api/client";
+import "react-router-dom";
 
 const mockMetadata: ISecretMetadata = {
   id: "V5nIvLMxZUYP4",
@@ -25,14 +26,19 @@ const mockMetadata: ISecretMetadata = {
   expiration: new Date(),
 };
 
-describe("When rendering CreateSecretForm", () => {
-  let navigateMock: MockInstance;
+const navigateMock = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: vi.fn(() => navigateMock),
+  };
+});
 
+describe("When rendering CreateSecretForm", () => {
   beforeAll(() => {
     vi.mock("@/api/client");
     createSecret.mockResolvedValue(mockMetadata);
-
-    navigateMock = mockNavigate();
   });
 
   beforeEach(() => {
@@ -181,6 +187,7 @@ describe("When rendering CreateSecretForm", () => {
           describe(`and hour is ${testParams.hours} and minutes is ${testParams.minutes}`, () => {
             beforeEach(async () => {
               vi.clearAllMocks();
+
               await userEvent.type(form.secretContentInput, testParams.content);
 
               await setRelativeExpiration(testParams.hours, testParams.minutes);
@@ -188,6 +195,14 @@ describe("When rendering CreateSecretForm", () => {
               await setAccessLimit(testParams.accessLimit);
 
               await userEvent.click(form.createButton);
+            });
+
+            it("should navigate to the secret details page", async () => {
+              await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledExactlyOnceWith(
+                  `/secret/${mockMetadata.id}`,
+                );
+              });
             });
 
             it("should call 'createSecret' with correct parameters", async () => {
@@ -251,51 +266,61 @@ describe("When rendering CreateSecretForm", () => {
       }
     }
 
-    for (const testParams of getAbsoluteTestParams()) {
-      describe(`and access limit to ${testParams.accessLimit}`, () => {
-        describe(`and date/time is ${testParams.year}-${testParams.month}-${testParams.day} ${testParams.hours}:${testParams.minutes} ${testParams.ampm}`, () => {
-          beforeEach(async () => {
-            vi.clearAllMocks();
-            await userEvent.type(form.secretContentInput, testParams.content);
+    describe("and setting expiration to absolute", () => {
+      for (const testParams of getAbsoluteTestParams()) {
+        describe(`and access limit to ${testParams.accessLimit}`, () => {
+          describe(`and date/time is ${testParams.year}-${testParams.month}-${testParams.day} ${testParams.hours}:${testParams.minutes} ${testParams.ampm}`, () => {
+            beforeEach(async () => {
+              vi.clearAllMocks();
+              await userEvent.type(form.secretContentInput, testParams.content);
 
-            await setExpirationMode("absolute");
-            await setAbsoluteExpiration(
-              testParams.year,
-              testParams.month,
-              testParams.day,
-              testParams.hours,
-              testParams.minutes,
-              testParams.ampm,
-            );
-
-            await setAccessLimit(testParams.accessLimit);
-
-            await userEvent.click(form.createButton);
-          });
-
-          it("should call 'createSecret' with correct parameters", async () => {
-            const expectedExpiration = new Date(
-              testParams.year,
-              testParams.month - 1,
-              testParams.day,
-              testParams.ampm == "AM"
-                ? +testParams.hours
-                : +testParams.hours + 12,
-              +testParams.minutes,
-              0,
-              0,
-            );
-            await waitFor(() => {
-              expect(createSecret).toHaveBeenCalledExactlyOnceWith(
-                testParams.content,
-                expectedExpiration,
-                testParams.accessLimit,
+              await setExpirationMode("absolute");
+              await setAbsoluteExpiration(
+                testParams.year,
+                testParams.month,
+                testParams.day,
+                testParams.hours,
+                testParams.minutes,
+                testParams.ampm,
               );
+
+              await setAccessLimit(testParams.accessLimit);
+
+              await userEvent.click(form.createButton);
+            });
+
+            it("should navigate to the secret details page", async () => {
+              await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledExactlyOnceWith(
+                  `/secret/${mockMetadata.id}`,
+                );
+              });
+            });
+
+            it("should call 'createSecret' with correct parameters", async () => {
+              const expectedExpiration = new Date(
+                testParams.year,
+                testParams.month - 1,
+                testParams.day,
+                testParams.ampm == "AM"
+                  ? +testParams.hours
+                  : +testParams.hours + 12,
+                +testParams.minutes,
+                0,
+                0,
+              );
+              await waitFor(() => {
+                expect(createSecret).toHaveBeenCalledExactlyOnceWith(
+                  testParams.content,
+                  expectedExpiration,
+                  testParams.accessLimit,
+                );
+              });
             });
           });
         });
-      });
-    }
+      }
+    });
   });
 
   describe("and inputs are not filled out correctly", () => {
