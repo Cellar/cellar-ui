@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { userEvent } from "@testing-library/user-event";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { expect } from "vitest";
 
 export const form = {
   get expirationRelativeButton() {
@@ -20,12 +20,12 @@ export const form = {
  * @param {number} hours - The number of hours to set.
  * @param {number} minutes - The number of minutes to set.
  */
-export async function setRelativeExpiration(hours: number, minutes: number) {
-  const hoursInput = form.hoursInput;
-  await userEvent.clear(hoursInput);
-  await userEvent.type(hoursInput, String(hours));
+export async function setRelativeExpiration(hours: string, minutes: string) {
+  fireEvent.change(form.hoursInput, { target: { value: hours } });
+  fireEvent.change(form.minutesInput, { target: { value: minutes } });
 
-  const minutesInput = form.minutesInput;
-  await userEvent.clear(minutesInput);
-  await userEvent.type(minutesInput, String(minutes));
+  await waitFor(() => {
+    expect(form.hoursInput).toHaveValue(+hours);
+    expect(form.minutesInput).toHaveValue(+minutes);
+  });
 }

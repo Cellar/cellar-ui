@@ -2,8 +2,8 @@ import classes from "@/components/createSecret/CreateSecretForm.module.css";
 import { FlatSelect, FlatInput } from "@/components/Form";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
-import { Time } from "src/helpers/time";
-import { padNum } from "src/helpers/helpers";
+import { Time } from "@/helpers/time";
+import { padNum } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
 
 const AMPM = {
@@ -41,10 +41,10 @@ const timeOptions = [
 export const AbsoluteExpiration: FC<{
   expiration: Date;
   setExpiration: React.Dispatch<React.SetStateAction<Date>>;
-  className?: string;
-}> = ({ expiration, setExpiration, className, ...props }) => {
+}> = ({ expiration, setExpiration }) => {
   const tomorrow = new Date();
-  tomorrow.setHours(24);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
 
   const isTinyMobile = useMediaQuery("(max-width: 393px)");
   const [date, setDate] = useState<Date>(tomorrow);
@@ -60,7 +60,7 @@ export const AbsoluteExpiration: FC<{
       date: newDate,
       time: newTime,
       amPm: newAmPm,
-    } = getAbsoluteParts(expiration);
+    } = getAbsoluteParts(newExpiration);
     setDate(newDate);
     setTime(newTime);
     setAmPm(newAmPm);
@@ -94,7 +94,7 @@ export const AbsoluteExpiration: FC<{
   function getAbsoluteDate(newDate: string, newTime: string, newAmPm: string) {
     const [hour, minute] = Time.fromString(newTime);
     const [year, month, day] = newDate.split("-").map((v) => +v);
-    const absoluteDate = new Date(year, month, day, 0, 0, 0, 0);
+    const absoluteDate = new Date(year, month - 1, day, 0, 0, 0, 0);
     if (newAmPm === AMPM.PM) {
       absoluteDate.setHours(hour + 12, minute, 0, 0);
     } else {
@@ -106,7 +106,7 @@ export const AbsoluteExpiration: FC<{
 
   function formatDateForParsing(date: Date | string): string {
     if (typeof date === "string") date = new Date(date);
-    return `${date.getFullYear()}-${padNum(date.getMonth(), 2)}-${padNum(date.getDate(), 2)}`;
+    return `${date.getFullYear()}-${padNum(date.getMonth() + 1, 2)}-${padNum(date.getDate(), 2)}`;
   }
 
   return (

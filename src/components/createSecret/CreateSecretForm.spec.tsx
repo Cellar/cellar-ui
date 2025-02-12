@@ -1,15 +1,22 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 import { fireEvent, waitFor } from "@testing-library/react";
 import { CreateSecretForm } from "./CreateSecretForm";
 import { userEvent } from "@testing-library/user-event";
-import { renderWithRouter } from "@tests/helpers";
-import { createSecret } from "@/api/client";
-import { ISecretMetadata } from "src/models/secretMetadata";
+import {
+  getSecretContent,
+  renderWithRouter,
+  mockNavigate,
+} from "@tests/helpers";
+import { ISecretMetadata } from "@/models/secretMetadata";
 import {
   form,
   setExpirationMode,
   adjustAccessLimit,
+  setAccessLimit,
 } from "./CreateSecretForm.spec.model";
+import { setRelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration.spec.model";
+import { setAbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration.spec.model";
+import { createSecret } from "@/api/client";
 
 const mockMetadata: ISecretMetadata = {
   id: "V5nIvLMxZUYP4",
@@ -19,10 +26,13 @@ const mockMetadata: ISecretMetadata = {
 };
 
 describe("When rendering CreateSecretForm", () => {
+  let navigateMock: MockInstance;
+
   beforeAll(() => {
-    vi.mock("@/api/client", () => ({
-      createSecret: vi.fn(),
-    }));
+    vi.mock("@/api/client");
+    createSecret.mockResolvedValue(mockMetadata);
+
+    navigateMock = mockNavigate();
   });
 
   beforeEach(() => {
@@ -33,18 +43,20 @@ describe("When rendering CreateSecretForm", () => {
     ]);
   });
 
-  it("should display secret content input field", () => {
-    expect(form.secretContentInput).toBeInTheDocument();
-  });
+  describe("and making no changes", () => {
+    it("should display secret content input field", () => {
+      expect(form.secretContentInput).toBeInTheDocument();
+    });
 
-  it("should display absolute expiration option", () => {
-    expect(form.absoluteExpirationOption).toBeInTheDocument();
-  });
+    it("should display absolute expiration option", () => {
+      expect(form.absoluteExpirationOption).toBeInTheDocument();
+    });
 
-  it("should display relative expiration inputs", () => {
-    expect(
-      form.relativeExpirationModel.expirationRelativeButton,
-    ).toBeInTheDocument();
+    it("should display relative expiration inputs", () => {
+      expect(
+        form.relativeExpirationModel.expirationRelativeButton,
+      ).toBeInTheDocument();
+    });
   });
 
   describe("and modifying the secret content", () => {
@@ -96,8 +108,7 @@ describe("When rendering CreateSecretForm", () => {
     });
 
     it("should allow typing into access limit", async () => {
-      await userEvent.dblClick(form.accessLimitInput); // in order to highlight and replace current value
-      await userEvent.keyboard("7");
+      await setAccessLimit(7);
       expect(form.accessLimitInput).toHaveValue("7");
     });
 
@@ -134,22 +145,157 @@ describe("When rendering CreateSecretForm", () => {
     });
   });
 
-  describe("and all inputs filled out correctly", () => {
-    it("should call 'createSecret' and navigate when the create button is clicked", async () => {
-      await userEvent.type(form.secretContentInput, "My Secret");
+  describe("and creating secret with all inputs filled out correctly", () => {
+    function* getRelativeTestParams(): Generator<{
+      content: string;
+      accessLimit: number;
+      hours:
+        | "01"
+        | "02"
+        | "03"
+        | "04"
+        | "05"
+        | "06"
+        | "07"
+        | "08"
+        | "09"
+        | "10"
+        | "11"
+        | "12";
+      minutes: "00" | "30";
+    }> {
+      const content = getSecretContent();
+      for (const accessLimit of [3, -1]) {
+        yield {
+          content,
+          accessLimit,
+          hours: "10",
+          minutes: "30",
+        };
+      }
+    }
 
-      vi.mocked(createSecret).mockResolvedValueOnce(mockMetadata);
+    describe("and setting expiration to relative", () => {
+      for (const testParams of getRelativeTestParams()) {
+        describe(`and access limit to ${testParams.accessLimit}`, () => {
+          describe(`and hour is ${testParams.hours} and minutes is ${testParams.minutes}`, () => {
+            beforeEach(async () => {
+              vi.clearAllMocks();
+              await userEvent.type(form.secretContentInput, testParams.content);
 
-      await userEvent.click(form.createButton);
+              await setRelativeExpiration(testParams.hours, testParams.minutes);
 
-      await waitFor(() => {
-        expect(createSecret).toHaveBeenCalledExactlyOnceWith(
-          "My Secret", // Content
-          expect.any(Date), // Expiration
-          1, // Access Limit
-        );
-      });
+              await setAccessLimit(testParams.accessLimit);
+
+              await userEvent.click(form.createButton);
+            });
+
+            it("should call 'createSecret' with correct parameters", async () => {
+              const expectedExpiration = new Date();
+              expectedExpiration.setHours(
+                expectedExpiration.getHours() + +testParams.hours,
+                expectedExpiration.getMinutes() + +testParams.minutes,
+                0,
+                0,
+              );
+              await waitFor(() => {
+                expect(createSecret).toHaveBeenCalledExactlyOnceWith(
+                  testParams.content,
+                  expectedExpiration,
+                  testParams.accessLimit,
+                );
+              });
+            });
+          });
+        });
+      }
     });
+
+    function* getAbsoluteTestParams(): Generator<{
+      content: string;
+      accessLimit: number;
+      year: number;
+      month: number;
+      day: number;
+      hours:
+        | "01"
+        | "02"
+        | "03"
+        | "04"
+        | "05"
+        | "06"
+        | "07"
+        | "08"
+        | "09"
+        | "10"
+        | "11"
+        | "12";
+      minutes: "00" | "30";
+      ampm: "AM" | "PM";
+    }> {
+      const content = getSecretContent();
+      for (const accessLimit of [3, -1]) {
+        const now = new Date();
+        for (const ampm of ["AM", "PM"] as const) {
+          yield {
+            content,
+            accessLimit,
+            year: now.getFullYear() + 1,
+            month: 1,
+            day: 1,
+            hours: "10",
+            minutes: "30",
+            ampm: ampm,
+          };
+        }
+      }
+    }
+
+    for (const testParams of getAbsoluteTestParams()) {
+      describe(`and access limit to ${testParams.accessLimit}`, () => {
+        describe(`and date/time is ${testParams.year}-${testParams.month}-${testParams.day} ${testParams.hours}:${testParams.minutes} ${testParams.ampm}`, () => {
+          beforeEach(async () => {
+            vi.clearAllMocks();
+            await userEvent.type(form.secretContentInput, testParams.content);
+
+            await setExpirationMode("absolute");
+            await setAbsoluteExpiration(
+              testParams.year,
+              testParams.month,
+              testParams.day,
+              testParams.hours,
+              testParams.minutes,
+              testParams.ampm,
+            );
+
+            await setAccessLimit(testParams.accessLimit);
+
+            await userEvent.click(form.createButton);
+          });
+
+          it("should call 'createSecret' with correct parameters", async () => {
+            const expectedExpiration = new Date(
+              testParams.year,
+              testParams.month - 1,
+              testParams.day,
+              testParams.ampm == "AM"
+                ? +testParams.hours
+                : +testParams.hours + 12,
+              +testParams.minutes,
+              0,
+              0,
+            );
+            await waitFor(() => {
+              expect(createSecret).toHaveBeenCalledExactlyOnceWith(
+                testParams.content,
+                expectedExpiration,
+                testParams.accessLimit,
+              );
+            });
+          });
+        });
+      });
+    }
   });
 
   describe("and inputs are not filled out correctly", () => {

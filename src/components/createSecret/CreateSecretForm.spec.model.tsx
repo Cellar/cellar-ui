@@ -42,6 +42,13 @@ export const form = {
     return screen.getByTestId("access-limit-error");
   },
 
+  get absoluteExpirationForm() {
+    return screen.getByTestId("absolute-expiration");
+  },
+  get relativeExpirationForm() {
+    return screen.getByTestId("relative-expiration");
+  },
+
   get absoluteExpirationModel() {
     return absoluteExpirationForm;
   },
@@ -73,6 +80,15 @@ export async function setExpirationMode(mode: "absolute" | "relative") {
     expect(expectedButton()).toBeInTheDocument();
     expect(expectedOption()).toBeInTheDocument();
   });
+}
+
+export async function setAccessLimit(limit: number) {
+  if (limit > 0) {
+    await userEvent.dblClick(form.accessLimitInput); // in order to highlight and replace current value
+    await userEvent.keyboard(limit.toString());
+  } else {
+    await userEvent.click(form.noLimitToggle);
+  }
 }
 
 export async function adjustAccessLimit(direction: "+" | "-", times: number) {

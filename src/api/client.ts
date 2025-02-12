@@ -4,10 +4,11 @@ import { ISecret } from '../models/secret';
 
 export const createSecret = async (
   content: string,
-  expiration: Date,
+  expirationUtc: Date,
   accessLimit: number,
 ): Promise<ISecretMetadata | IApiError> => {
-  const expirationEpoch = Math.floor(expiration.getTime() / 1000); // epoch in seconds (getTime returns milliseconds)
+  const expirationEpoch = Math.floor(expirationUtc.getTime() / 1000);
+
   const res = await fetch(`/api/v1/secrets`, {
     method: 'POST',
     body: JSON.stringify({

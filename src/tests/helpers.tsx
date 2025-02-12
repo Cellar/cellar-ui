@@ -1,4 +1,4 @@
-import { expect, vi } from "vitest";
+import { expect, vi, MockInstance } from "vitest";
 import {
   createMemoryRouter,
   LoaderFunction,
@@ -6,8 +6,21 @@ import {
 } from "react-router-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
+import { padNum } from "@/helpers/helpers";
 
 export const EmptyReactNode: ReactNode = "";
+
+export function mockNavigate(): MockInstance {
+  const mockFn = vi.fn();
+  vi.mock("react-router-dom", async () => {
+    const actual = await vi.importActual("react-router-dom");
+    return {
+      ...actual,
+      useNavigate: vi.fn(() => mockFn),
+    };
+  });
+  return mockFn;
+}
 
 /**
  * Mocks the clipboard functionality for tests.
@@ -22,6 +35,10 @@ export function mockClipboard(): Clipboard {
   });
 
   return navigator.clipboard;
+}
+
+export function getSecretContent() {
+  return `My secret - ${crypto.randomUUID()}`;
 }
 
 /**
@@ -79,4 +96,9 @@ export async function waitForVisible(
     },
     { timeout },
   );
+}
+
+export function formatDateForParsing(date: Date | string): string {
+  if (typeof date === "string") date = new Date(date);
+  return `${date.getFullYear()}-${padNum(date.getMonth() + 1, 2)}-${padNum(date.getDate(), 2)}`;
 }

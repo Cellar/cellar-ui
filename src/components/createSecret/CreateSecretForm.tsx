@@ -57,7 +57,7 @@ export const CreateSecretForm = () => {
     else setAccessLimit(1);
   }
 
-  async function handleCreateSecret() {
+  async function handleFormSubmit() {
     if (!validate()) return;
 
     const metadata = await createSecret(
@@ -90,7 +90,7 @@ export const CreateSecretForm = () => {
 
   return (
     <div>
-      <Form>
+      <Form noValidate onSubmit={(event) => event.preventDefault()}>
         <ErrorWrapper
           className={classes.errorIndent}
           message={errors?.SecretContent ?? ""}
@@ -111,7 +111,13 @@ export const CreateSecretForm = () => {
               message={errors?.Expiration ?? ""}
               data-testid="expiration-error"
             >
-              <div>
+              <div
+                data-testid={
+                  expirationMode === ExpirationModes.Relative
+                    ? "relative-expiration"
+                    : "absolute-expiration"
+                }
+              >
                 {expirationMode === ExpirationModes.Relative && (
                   <>
                     <button
@@ -199,7 +205,7 @@ export const CreateSecretForm = () => {
             data-testid="create-secret-button"
             appearance={Button.appearances.primary}
             data-text="Create Secret"
-            onClick={handleCreateSecret}
+            onClick={handleFormSubmit}
           >
             Create Secret
           </Button>

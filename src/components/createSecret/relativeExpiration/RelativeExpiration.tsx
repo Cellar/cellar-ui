@@ -1,9 +1,9 @@
-import classes from "src/components/createSecret/CreateSecretForm.module.css";
+import classes from "@/components/createSecret/CreateSecretForm.module.css";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
-import { padNum } from "src/helpers/helpers";
+import { padNum } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
-import { FlatInput } from "src/components/Form";
+import { FlatInput } from "@/components/Form";
 
 export const RelativeExpiration: FC<{
   expiration: Date;
