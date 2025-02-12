@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, waitFor } from "@testing-library/react";
 import { CreateSecretForm } from "./CreateSecretForm";
 import { userEvent } from "@testing-library/user-event";
-import {
-  getSecretContent,
-  renderWithRouter,
-  mockNavigate,
-} from "@tests/helpers";
+import { getSecretContent, renderWithRouter } from "@tests/helpers";
 import { ISecretMetadata } from "@/models/secretMetadata";
 import {
   form,
@@ -17,7 +13,6 @@ import {
 import { setRelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration.spec.model";
 import { setAbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration.spec.model";
 import { createSecret } from "@/api/client";
-import "react-router-dom";
 
 const mockMetadata: ISecretMetadata = {
   id: "V5nIvLMxZUYP4",
