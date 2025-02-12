@@ -18,7 +18,7 @@ export const NotFound = () => {
           to view could not be found
         </h2>
         <p className={classes.cta}>
-          Click <a href="/create">here</a> to create a new secret
+          Click <a href="/secret/create">here</a> to create a new secret
         </p>
         <div className={classes.createButton}>
           <Button
