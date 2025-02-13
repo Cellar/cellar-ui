@@ -37,6 +37,18 @@ LOG := @sh -c '\
 
 .PHONY: build publish
 
+targets:
+	@awk -F'::?[[:space:]]*' '/^[a-zA-Z0-9][^$#\/\t=]*::?([^=]|$$)/ { \
+		gsub(/^[[:space:]]+|[[:space:]]+$$/, "", $$1); \
+		gsub(/^[[:space:]]+|[[:space:]]+$$/, "", $$2); \
+		split($$1,A,/ /); \
+		target=A[1]; \
+		deps=$$2; \
+		printf "%s", target; \
+		if (deps) printf " → %s", deps; \
+		print "" \
+	}' $(MAKEFILE_LIST)
+
 build:
 	$(LOG) "Running build"
 	@npm run build
