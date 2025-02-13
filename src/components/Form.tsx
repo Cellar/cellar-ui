@@ -170,10 +170,10 @@ export const ErrorWrapper: FC<ErrorWrapperProps> = (props) => {
   return (
     <div className={cx(classes.errorWrapper)}>
       {children}
-      {message.length > 0 && (
-        <span className={cx(classes.error, className)} {...rest}>
+      {message && (
+        <div className={cx(className, classes.error)} {...rest}>
           {message}
-        </span>
+        </div>
       )}
     </div>
   );

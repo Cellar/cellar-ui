@@ -84,10 +84,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-top: 0.5rem;
 }
 
-.error-indent {
-  padding-left: 8rem;
-}
-
 .textArea {
   font-family: var(--font-default);
   width: 100%;
