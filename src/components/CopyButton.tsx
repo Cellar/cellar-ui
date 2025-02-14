@@ -7,7 +7,7 @@ interface CopyButtonProps extends ButtonProps {
   textToCopy: string;
   text?: string;
   confirmationText?: string;
-  useCheckmark?: boolean;
+  showCheckmark?: boolean;
 }
 
 export const CopyButton: FC<CopyButtonProps> = ({
@@ -15,24 +15,26 @@ export const CopyButton: FC<CopyButtonProps> = ({
   appearance,
   text = "Copy",
   confirmationText = "Copied",
+  showCheckmark = true,
   id,
-  useCheckmark = true,
   ...props
 }) => {
   const [displayText, setDisplayText] = useState(text);
   const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLSpanElement>(null);
   const [contentWidth, setContentWidth] = useState<number | null>(null);
+  const isPrimary = appearance === Button.appearances.primary;
 
   const checkMarkId = `${id}-checkmark`;
 
   function getCheckMarkWidth(): number {
+    if (!showCheckmark) return 0;
+
     const checkMark = document.getElementById(checkMarkId);
     if (checkMark) {
       const checkMarkStyles = window.getComputedStyle(checkMark);
       return +checkMarkStyles.width.split("px")[0];
     }
-
     return 0;
   }
 
@@ -54,12 +56,15 @@ export const CopyButton: FC<CopyButtonProps> = ({
       textSpan.textContent = text;
       confirmationSpan.textContent = confirmationText;
       spacedTextSpan.textContent = text;
-      spacedTextSpan.style.letterSpacing = "4px"; // Same value as hover state
+
+      if (isPrimary) {
+        spacedTextSpan.style.letterSpacing = "2px";
+      }
 
       const maxWidth = Math.max(
         textSpan.offsetWidth,
         confirmationSpan.offsetWidth,
-        spacedTextSpan.offsetWidth,
+        isPrimary ? spacedTextSpan.offsetWidth : 0,
       );
 
       textSpan.remove();
@@ -68,20 +73,22 @@ export const CopyButton: FC<CopyButtonProps> = ({
 
       return maxWidth;
     }
-
     return 0;
   }
 
   function getGapWidth(): number {
     if (contentRef.current)
       return parseInt(getComputedStyle(contentRef.current).gap) || 8;
-
     return 8;
   }
 
   useEffect(() => {
-    setContentWidth(getMaxContentWidth() + getGapWidth() + getCheckMarkWidth());
-  }, [text, confirmationText]);
+    setContentWidth(
+      getMaxContentWidth() +
+        (showCheckmark ? getGapWidth() : 0) +
+        getCheckMarkWidth(),
+    );
+  }, [text, confirmationText, showCheckmark]);
 
   const handleClick = async () => {
     await navigator.clipboard.writeText(textToCopy);
@@ -96,20 +103,20 @@ export const CopyButton: FC<CopyButtonProps> = ({
       appearance={appearance}
       {...props}
       onClick={handleClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => isPrimary && setIsHovered(true)}
+      onMouseLeave={() => isPrimary && setIsHovered(false)}
     >
       <span
         ref={contentRef}
         className={classes.buttonContent}
         style={{
           width: contentWidth ? `${contentWidth}px` : undefined,
-          letterSpacing: isHovered ? "4px" : "initial",
-          transition: "letter-spacing 1s ease",
+          letterSpacing: isPrimary && isHovered ? "4px" : "normal",
+          transition: isPrimary ? "letter-spacing 1s ease" : undefined,
         }}
       >
         {displayText}
-        {useCheckmark && displayText === confirmationText && (
+        {showCheckmark && displayText === confirmationText && (
           <Checkmark
             id={checkMarkId}
             className={(() => {
