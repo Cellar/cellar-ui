@@ -7,6 +7,7 @@ interface CopyButtonProps extends ButtonProps {
   textToCopy: string;
   text?: string;
   confirmationText?: string;
+  useCheckmark?: boolean;
 }
 
 export const CopyButton: FC<CopyButtonProps> = ({
@@ -15,6 +16,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   text = "Copy",
   confirmationText = "Copied",
   id,
+  useCheckmark = true,
   ...props
 }) => {
   const [displayText, setDisplayText] = useState(text);
@@ -107,7 +109,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
         }}
       >
         {displayText}
-        {displayText === confirmationText && (
+        {useCheckmark && displayText === confirmationText && (
           <Checkmark
             id={checkMarkId}
             className={(() => {

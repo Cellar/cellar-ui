@@ -28,6 +28,7 @@ export const AccessSecretDisplay = () => {
             text="Copy Secret"
             textToCopy={secretContent}
             confirmationText="Copied"
+            useCheckmark={false}
           />
         </div>
       </Form>
