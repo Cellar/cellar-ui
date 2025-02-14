@@ -1,9 +1,16 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, {
+  ComponentPropsWithoutRef,
+  FC,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Checkmark } from "src/components/characters/Checkmark";
-import { Button, ButtonProps } from "src/components/Button";
+import { Button } from "src/components/Button";
 import classes from "src/components/CopyButton.module.css";
 
-interface CopyButtonProps extends ButtonProps {
+interface CopyButtonProps extends ComponentPropsWithoutRef<"a"> {
+  appearance?: string;
   textToCopy: string;
   text?: string;
   confirmationText?: string;
@@ -20,10 +27,8 @@ export const CopyButton: FC<CopyButtonProps> = ({
   ...props
 }) => {
   const [displayText, setDisplayText] = useState(text);
-  const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLSpanElement>(null);
-  const [contentWidth, setContentWidth] = useState<number | null>(null);
-  const isPrimary = appearance === Button.appearances.primary;
+  const [extraContentWidth, setExtraContentWidth] = useState(0);
 
   const checkMarkId = `${id}-checkmark`;
 
@@ -38,44 +43,6 @@ export const CopyButton: FC<CopyButtonProps> = ({
     return 0;
   }
 
-  function getMaxContentWidth(): number {
-    if (contentRef.current) {
-      const textSpan = document.createElement("span");
-      const confirmationSpan = document.createElement("span");
-      const spacedTextSpan = document.createElement("span");
-
-      const styles = window.getComputedStyle(contentRef.current);
-      [textSpan, confirmationSpan, spacedTextSpan].forEach((span) => {
-        span.style.visibility = "hidden";
-        span.style.position = "absolute";
-        span.style.font = styles.font;
-        span.style.padding = styles.padding;
-        document.body.appendChild(span);
-      });
-
-      textSpan.textContent = text;
-      confirmationSpan.textContent = confirmationText;
-      spacedTextSpan.textContent = text;
-
-      if (isPrimary) {
-        spacedTextSpan.style.letterSpacing = "2px";
-      }
-
-      const maxWidth = Math.max(
-        textSpan.offsetWidth,
-        confirmationSpan.offsetWidth,
-        isPrimary ? spacedTextSpan.offsetWidth : 0,
-      );
-
-      textSpan.remove();
-      confirmationSpan.remove();
-      spacedTextSpan.remove();
-
-      return maxWidth;
-    }
-    return 0;
-  }
-
   function getGapWidth(): number {
     if (contentRef.current)
       return parseInt(getComputedStyle(contentRef.current).gap) || 8;
@@ -83,12 +50,10 @@ export const CopyButton: FC<CopyButtonProps> = ({
   }
 
   useEffect(() => {
-    setContentWidth(
-      getMaxContentWidth() +
-        (showCheckmark ? getGapWidth() : 0) +
-        getCheckMarkWidth(),
+    setExtraContentWidth(
+      showCheckmark ? getGapWidth() + getCheckMarkWidth() : 0,
     );
-  }, [text, confirmationText, showCheckmark]);
+  }, [showCheckmark]);
 
   const handleClick = async () => {
     await navigator.clipboard.writeText(textToCopy);
@@ -101,39 +66,29 @@ export const CopyButton: FC<CopyButtonProps> = ({
   return (
     <Button
       appearance={appearance}
-      {...props}
+      textstates={[text, confirmationText]}
       onClick={handleClick}
-      onMouseEnter={() => isPrimary && setIsHovered(true)}
-      onMouseLeave={() => isPrimary && setIsHovered(false)}
+      extracontentwidth={extraContentWidth}
+      {...props}
     >
-      <span
-        ref={contentRef}
-        className={classes.buttonContent}
-        style={{
-          width: contentWidth ? `${contentWidth}px` : undefined,
-          letterSpacing: isPrimary && isHovered ? "4px" : "normal",
-          transition: isPrimary ? "letter-spacing 1s ease" : undefined,
-        }}
-      >
-        {displayText}
-        {showCheckmark && displayText === confirmationText && (
-          <Checkmark
-            id={checkMarkId}
-            className={(() => {
-              switch (appearance) {
-                case Button.appearances.primary:
-                  return classes.checkPrimary;
-                case Button.appearances.secondary:
-                  return classes.checkSecondary;
-                case Button.appearances.round:
-                  return classes.checkRound;
-                default:
-                  return "";
-              }
-            })()}
-          />
-        )}
-      </span>
+      {displayText}
+      {showCheckmark && displayText === confirmationText && (
+        <Checkmark
+          id={checkMarkId}
+          className={(() => {
+            switch (appearance) {
+              case Button.appearances.primary:
+                return classes.checkPrimary;
+              case Button.appearances.secondary:
+                return classes.checkSecondary;
+              case Button.appearances.round:
+                return classes.checkRound;
+              default:
+                return "";
+            }
+          })()}
+        />
+      )}
     </Button>
   );
 };

@@ -204,7 +204,7 @@ export const CreateSecretForm = () => {
           <Button
             data-testid="create-secret-button"
             appearance={Button.appearances.primary}
-            data-text="Create Secret"
+            textstates={["Create Secret"]}
             onClick={handleFormSubmit}
           >
             Create Secret
