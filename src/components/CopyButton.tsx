@@ -71,24 +71,26 @@ export const CopyButton: FC<CopyButtonProps> = ({
       extracontentwidth={extraContentWidth}
       {...props}
     >
-      {displayText}
-      {showCheckmark && displayText === confirmationText && (
-        <Checkmark
-          id={checkMarkId}
-          className={(() => {
-            switch (appearance) {
-              case Button.appearances.primary:
-                return classes.checkPrimary;
-              case Button.appearances.secondary:
-                return classes.checkSecondary;
-              case Button.appearances.round:
-                return classes.checkRound;
-              default:
-                return "";
-            }
-          })()}
-        />
-      )}
+      <span className={classes.buttonContent}>
+        {displayText}
+        {showCheckmark && displayText === confirmationText && (
+          <Checkmark
+            id={checkMarkId}
+            className={(() => {
+              switch (appearance) {
+                case Button.appearances.primary:
+                  return classes.checkPrimary;
+                case Button.appearances.secondary:
+                  return classes.checkSecondary;
+                case Button.appearances.round:
+                  return classes.checkRound;
+                default:
+                  return "";
+              }
+            })()}
+          />
+        )}
+      </span>
     </Button>
   );
 };

@@ -54,7 +54,7 @@ a.disabled {
   border: 0;
   color: var(--color-black);
   font-size: 1.2rem;
-  padding: 1.4rem 1.85rem;
+  padding: 1.4rem 1.4rem;
 }
 
 .secondary:hover {
@@ -75,6 +75,8 @@ a.disabled {
   width: 10.5rem;
   height: 2.8rem;
   line-height: 2.8rem;
+  padding-left: 1.9rem;
+  padding-right: 1.9rem;
 }
 
 .round:hover {

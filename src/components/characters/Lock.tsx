@@ -1,7 +1,12 @@
 import { FC } from "react";
 
-export const Lock: FC<{ className?: string }> = ({ className, ...props }) => (
+export const Lock: FC<{ id?: string; className?: string }> = ({
+  id,
+  className,
+  ...props
+}) => (
   <svg
+    id={id}
     className={className}
     viewBox="0 0 366 521"
     xmlns="http://www.w3.org/2000/svg"

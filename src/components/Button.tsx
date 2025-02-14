@@ -92,7 +92,7 @@ export const Button: Btn = (props) => {
         disabled ? classes.disabled : "",
       )}
       style={{
-        width: isPrimary && contentWidth ? `${contentWidth}px` : undefined,
+        width: contentWidth ? `${contentWidth}px` : undefined,
         letterSpacing: isPrimary && isHovered ? "4px" : "normal",
         transition: isPrimary ? "letter-spacing 1s ease" : undefined,
       }}

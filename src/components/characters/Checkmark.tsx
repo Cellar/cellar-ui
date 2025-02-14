@@ -13,6 +13,6 @@ export const Checkmark: FC<{ className?: string; id?: string }> = ({
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <path d="M1 4L4 7L10 1" stroke="#303030" stroke-width="1.5" />
+    <path d="M1 4L4 7L10 1" stroke="#303030" strokeWidth="1.5" />
   </svg>
 );
