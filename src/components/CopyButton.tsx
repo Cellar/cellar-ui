@@ -60,7 +60,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
     setDisplayText(confirmationText);
     setTimeout(() => {
       setDisplayText(text);
-    }, 5000);
+    }, 3000);
   };
 
   return (
