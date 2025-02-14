@@ -5,7 +5,7 @@ import { Header } from "../components/header/Header";
 import classes from "./Layout.module.css";
 import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock } from "../components/Lock";
+import { Lock } from "src/components/characters/Lock";
 
 export const Layout: React.FC<{ title?: string; children: ReactNode }> = (
   props,

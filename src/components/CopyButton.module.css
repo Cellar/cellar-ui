@@ -1,0 +1,28 @@
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.checkPrimary {
+  height: 1.6rem;
+}
+
+.checkSecondary {
+  height: 1.2rem;
+}
+
+.checkRound {
+  height: 1rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .checkPrimary {
+    height: 1.5rem;
+  }
+
+  .checkSecondary {
+    height: 1.1rem;
+  }
+}

@@ -11,6 +11,7 @@ import {
   getTimeZone,
 } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
+import { CopyButton } from "src/components/CopyButton";
 
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate();
@@ -23,18 +24,6 @@ export const SecretMetadataDisplay = () => {
     access_count: accessCount,
     access_limit: accessLimit,
   } = useLoaderData() as ISecretMetadata;
-
-  async function handleCopyLinkSecret() {
-    await navigator.clipboard.writeText(
-      `${window.location.origin}/secret/${secretId}/access`,
-    );
-  }
-
-  async function handleCopyLinkMetadata() {
-    await navigator.clipboard.writeText(
-      `${window.location.origin}/secret/${secretId}`,
-    );
-  }
 
   async function handleDeleteSecret() {
     if (window.confirm("Are you sure you wish to delete this secret?")) {
@@ -85,44 +74,40 @@ export const SecretMetadataDisplay = () => {
       {isMobile ? (
         <div className={classes.metadataActions}>
           <div className={classes.actionsLine}>
-            <Button
+            <CopyButton
               appearance={Button.appearances.secondary}
-              onClick={handleCopyLinkSecret}
-            >
-              Copy Link to Secret
-            </Button>
+              text="Copy Link to Secret"
+              textToCopy={`${window.location.origin}/secret/${secretId}/access`}
+            />
             <div className={classes.shim} />
             <a className={classes.delete} onClick={handleDeleteSecret}>
               Delete Secret
             </a>
           </div>
           <div className={classes.actionsLine}>
-            <Button
+            <CopyButton
               appearance={Button.appearances.secondary}
-              onClick={handleCopyLinkMetadata}
-            >
-              Copy Link to Metadata
-            </Button>
+              text="Copy Link to Metadata"
+              textToCopy={`${window.location.origin}/secret/${secretId}`}
+            />
             <div className={classes.shim} />
           </div>
         </div>
       ) : (
         <div className={classes.metadataActions}>
           <div className={classes.copyActions}>
-            <Button
+            <CopyButton
               data-testid="copy-secret-link-button"
               appearance={Button.appearances.secondary}
-              onClick={handleCopyLinkSecret}
-            >
-              Copy Link to Secret
-            </Button>
-            <Button
+              text="Copy Link to Secret"
+              textToCopy={`${window.location.origin}/secret/${secretId}/access`}
+            />
+            <CopyButton
               data-testid="copy-metadata-link-button"
               appearance={Button.appearances.secondary}
-              onClick={handleCopyLinkMetadata}
-            >
-              Copy Link to Metadata
-            </Button>
+              text="Copy Link to Metadata"
+              textToCopy={`${window.location.origin}/secret/${secretId}`}
+            />
           </div>
           <div className={classes.shim} />
           <a

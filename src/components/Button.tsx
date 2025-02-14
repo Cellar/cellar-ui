@@ -3,7 +3,7 @@ import cx from "classnames";
 
 import classes from "./Button.module.css";
 
-interface ButtonProps extends ComponentPropsWithoutRef<"a"> {
+export interface ButtonProps extends ComponentPropsWithoutRef<"a"> {
   appearance?: string;
   disabled?: boolean;
 }
@@ -22,7 +22,7 @@ const appearances = {
   round: "round",
 };
 
-const Button: Btn = (props) => {
+export const Button: Btn = (props) => {
   const { appearance, disabled } = props;
 
   return (
