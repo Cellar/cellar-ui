@@ -18,6 +18,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   ...props
 }) => {
   const [displayText, setDisplayText] = useState(text);
+  const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLSpanElement>(null);
   const [contentWidth, setContentWidth] = useState<number | null>(null);
 
@@ -37,9 +38,10 @@ export const CopyButton: FC<CopyButtonProps> = ({
     if (contentRef.current) {
       const textSpan = document.createElement("span");
       const confirmationSpan = document.createElement("span");
+      const spacedTextSpan = document.createElement("span");
 
       const styles = window.getComputedStyle(contentRef.current);
-      [textSpan, confirmationSpan].forEach((span) => {
+      [textSpan, confirmationSpan, spacedTextSpan].forEach((span) => {
         span.style.visibility = "hidden";
         span.style.position = "absolute";
         span.style.font = styles.font;
@@ -49,14 +51,18 @@ export const CopyButton: FC<CopyButtonProps> = ({
 
       textSpan.textContent = text;
       confirmationSpan.textContent = confirmationText;
+      spacedTextSpan.textContent = text;
+      spacedTextSpan.style.letterSpacing = "4px"; // Same value as hover state
 
       const maxWidth = Math.max(
         textSpan.offsetWidth,
         confirmationSpan.offsetWidth,
+        spacedTextSpan.offsetWidth,
       );
 
       textSpan.remove();
       confirmationSpan.remove();
+      spacedTextSpan.remove();
 
       return maxWidth;
     }
@@ -84,11 +90,21 @@ export const CopyButton: FC<CopyButtonProps> = ({
   };
 
   return (
-    <Button appearance={appearance} {...props} onClick={handleClick}>
+    <Button
+      appearance={appearance}
+      {...props}
+      onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <span
         ref={contentRef}
         className={classes.buttonContent}
-        style={contentWidth ? { width: `${contentWidth}px` } : undefined}
+        style={{
+          width: contentWidth ? `${contentWidth}px` : undefined,
+          letterSpacing: isHovered ? "4px" : "initial",
+          transition: "letter-spacing 1s ease",
+        }}
       >
         {displayText}
         {displayText === confirmationText && (

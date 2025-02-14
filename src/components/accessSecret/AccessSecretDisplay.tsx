@@ -4,14 +4,11 @@ import { useLoaderData } from "react-router-dom";
 import { ISecret } from "@/models/secret";
 import classes from "./AccessSecretDisplay.module.css";
 import { useMediaQuery } from "@mantine/hooks";
+import { CopyButton } from "src/components/CopyButton";
 
 export const AccessSecretDisplay = () => {
   const { content: secretContent } = useLoaderData() as ISecret;
   const isMobile = useMediaQuery("(max-width: 1000px)");
-
-  async function handleCopySecret() {
-    await navigator.clipboard.writeText(secretContent);
-  }
 
   return (
     <div>
@@ -25,14 +22,13 @@ export const AccessSecretDisplay = () => {
           required
         />
         <div className={classes.formSection}>
-          <Button
+          <CopyButton
             data-testid="copy-secret-button"
             appearance={Button.appearances.primary}
-            data-text="Copy Secret"
-            onClick={handleCopySecret}
-          >
-            Create Secret
-          </Button>
+            text="Copy Secret"
+            textToCopy={secretContent}
+            confirmationText="Copied"
+          />
         </div>
       </Form>
     </div>
