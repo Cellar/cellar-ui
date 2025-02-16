@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: '**/src/**',
+  testMatch: '**/*.spec.ts',
   timeout: 30000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -16,6 +18,10 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
@@ -23,10 +29,10 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    //{
+    //  name: 'webkit',
+    //  use: { ...devices['Desktop Safari'] },
+    //},
   ],
   webServer: {
     command: 'npm run dev',

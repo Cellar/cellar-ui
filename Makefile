@@ -57,6 +57,10 @@ test:
 	$(LOG) "Running tests"
 	@npm run test
 
+test-e2e:
+	$(LOG) "Running tests"
+	@npm run test:e2e
+
 test-watch:
 	$(LOG) "Running tests"
 	@npm run test:watch
