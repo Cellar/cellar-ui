@@ -83,6 +83,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
         {showCheckmark && displayText === confirmationText && (
           <Checkmark
             id={checkMarkId}
+            data-testid={checkMarkId}
             className={(() => {
               switch (appearance) {
                 case Button.appearances.primary:

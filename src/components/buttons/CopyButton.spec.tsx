@@ -2,14 +2,40 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
   fireEvent,
-  getByTestId,
   render,
   screen,
   waitFor,
 } from "@testing-library/react";
 import { CopyButton } from "./CopyButton";
-import { userEvent } from "@testing-library/user-event";
+import { getRandomString } from "@tests/helpers";
 
+function renderCopyButton({
+  text = "Copy",
+  confirmationText = "Copied",
+  textToCopy = "Test text",
+  ...props
+}): { testId: string; unmount: () => void } {
+  const id = `test-button-${getRandomString()}`;
+  const { unmount } = render(
+    <CopyButton
+      id={id}
+      text={text}
+      confirmationText={confirmationText}
+      textToCopy={textToCopy}
+      {...props}
+    />,
+  );
+
+  return { testId: `${id}-copy-button`, unmount };
+}
+
+function clickCopyButton(testId: string) {
+  fireEvent.click(screen.getByTestId(testId));
+}
+
+const checkmark = () => screen.queryByTestId(/checkmark/i);
+
+const copyButtonByText = (text: string) => screen.getByText(text);
 describe("When rendering CopyButton", () => {
   const mockWriteText = vi.fn();
 
@@ -24,31 +50,28 @@ describe("When rendering CopyButton", () => {
 
   describe("and initially displaying the button", () => {
     it("should show the correct initial text", () => {
-      render(<CopyButton textToCopy="Hello, World!" text="Copy" />);
-      expect(screen.getByText("Copy")).toBeInTheDocument();
+      const text = getRandomString();
+      renderCopyButton({ text });
+      expect(copyButtonByText(text)).toBeInTheDocument();
     });
   });
 
   describe("and clicking the button", () => {
     it("should copy the text to the clipboard", async () => {
-      render(<CopyButton textToCopy="Hello, World!" text="Copy" />);
-      fireEvent.click(screen.getByText("Copy"));
+      const textToCopy = `${getRandomString()} ${getRandomString()} ${getRandomString()}`;
+      const { testId } = renderCopyButton({ textToCopy });
+      clickCopyButton(testId);
       await waitFor(() =>
-        expect(mockWriteText).toHaveBeenCalledWith("Hello, World!"),
+        expect(mockWriteText).toHaveBeenCalledWith(textToCopy),
       );
     });
 
     it("should display the confirmation text", async () => {
-      render(
-        <CopyButton
-          textToCopy="Hello, World!"
-          text="Copy"
-          confirmationText="Copied"
-        />,
-      );
-      fireEvent.click(screen.getByText("Copy"));
+      const confirmationText = getRandomString();
+      const { testId } = renderCopyButton({ confirmationText });
+      clickCopyButton(testId);
       await waitFor(() =>
-        expect(screen.getByText("Copied")).toBeInTheDocument(),
+        expect(copyButtonByText(confirmationText)).toBeInTheDocument(),
       );
     });
 
@@ -56,31 +79,21 @@ describe("When rendering CopyButton", () => {
       it("should reset the display text back to original", async () => {
         vi.useFakeTimers();
 
-        const clipboardWriteMock = vi.fn(() => Promise.resolve());
-        Object.assign(navigator, {
-          clipboard: {
-            writeText: clipboardWriteMock,
-          },
-        });
-        render(
-          <CopyButton
-            textToCopy="Hello, World!"
-            text="Copy"
-            confirmationText="Copied"
-          />,
-        );
+        const text = getRandomString();
+        const confirmationText = getRandomString();
+        const { testId } = renderCopyButton({ text, confirmationText });
 
         await act(async () => {
-          fireEvent.click(screen.getByText("Copy"));
-          await clipboardWriteMock();
+          clickCopyButton(testId);
+          await mockWriteText();
         });
 
-        expect(screen.getByText("Copied")).toBeInTheDocument();
+        expect(copyButtonByText(confirmationText)).toBeInTheDocument();
         await act(async () => {
           await vi.advanceTimersByTimeAsync(3000);
         });
 
-        expect(screen.getByText("Copy")).toBeInTheDocument();
+        expect(copyButtonByText(text)).toBeInTheDocument();
 
         vi.useRealTimers();
       });
@@ -90,40 +103,26 @@ describe("When rendering CopyButton", () => {
   describe("and configuring checkmark visibility", () => {
     describe("and showCheckmark is false", () => {
       it("should not display the checkmark", async () => {
-        render(
-          <CopyButton
-            textToCopy="Hello, World!"
-            text="Copy"
-            showCheckmark={false}
-          />,
-        );
+        const { testId } = renderCopyButton({ showCheckmark: false });
         await act(async () => {
-          fireEvent.click(screen.getByText("Copy"));
+          clickCopyButton(testId);
         });
-        expect(screen.queryByTestId(/checkmark/i)).not.toBeInTheDocument();
+        expect(checkmark()).not.toBeInTheDocument();
       });
     });
 
     describe("and showCheckmark is true", () => {
       it("should display the checkmark when confirmation text is shown", async () => {
-        render(
-          <CopyButton
-            id="test-button"
-            textToCopy="Hello, World!"
-            text="Copy"
-            confirmationText="Copied"
-            showCheckmark={true}
-          />,
-        );
+        const text = getRandomString();
+        const { testId } = renderCopyButton({ text, showCheckmark: true });
 
-        fireEvent.click(screen.getByText("Copy"));
+        clickCopyButton(testId);
 
         await waitFor(() => {
-          expect(screen.getByText("Copied")).toBeInTheDocument();
-          expect(
-            document.getElementById("test-button-checkmark"),
-          ).toBeInTheDocument();
+          expect(copyButtonByText(text)).toBeInTheDocument();
         });
+
+        expect(checkmark()).toBeInTheDocument();
       });
     });
   });
@@ -149,23 +148,20 @@ describe("When rendering CopyButton", () => {
             it("should maintain the same width through all states", async () => {
               vi.useFakeTimers();
 
-              render(
-                <CopyButton
-                  textToCopy="Hello, World!"
-                  text={text}
-                  confirmationText={confirmationText}
-                  showCheckmark={showCheckmark}
-                />,
-              );
+              renderCopyButton({
+                text,
+                confirmationText,
+                showCheckmark: showCheckmark,
+              });
 
-              const buttonBefore = screen.getByText(text);
+              const buttonBefore = copyButtonByText(text);
               const initialWidth = buttonBefore.getBoundingClientRect().width;
 
               await act(async () => {
                 fireEvent.click(buttonBefore);
               });
 
-              const buttonDuringCopied = screen.getByText(confirmationText);
+              const buttonDuringCopied = copyButtonByText(confirmationText);
               const widthDuringCopied =
                 buttonDuringCopied.getBoundingClientRect().width;
 
@@ -173,7 +169,7 @@ describe("When rendering CopyButton", () => {
                 await vi.advanceTimersByTimeAsync(3000);
               });
 
-              const buttonAfter = screen.getByText(text);
+              const buttonAfter = copyButtonByText(text);
               const finalWidth = buttonAfter.getBoundingClientRect().width;
 
               expect(widthDuringCopied).toBe(initialWidth);
@@ -196,23 +192,16 @@ describe("When rendering CopyButton", () => {
 
     appearances.forEach(({ type, expectedClass }) => {
       it(`should apply correct checkmark class for ${type} appearance`, async () => {
-        render(
-          <CopyButton
-            textToCopy="test"
-            text="Copy"
-            confirmationText="Copied"
-            appearance={type}
-            showCheckmark={true}
-            id="test-button"
-          />,
-        );
+        const { testId } = renderCopyButton({
+          showCheckmark: true,
+          appearance: type,
+        });
 
-        fireEvent.click(screen.getByText("Copy"));
+        clickCopyButton(testId);
 
         await waitFor(() => {
-          const checkmark = document.getElementById("test-button-checkmark");
-          expect(checkmark).toBeInTheDocument();
-          expect(Array.from(checkmark?.classList ?? []).join(", ")).toContain(
+          expect(checkmark()).toBeInTheDocument();
+          expect(Array.from(checkmark()?.classList ?? []).join(", ")).toContain(
             expectedClass,
           );
         });
@@ -222,48 +211,34 @@ describe("When rendering CopyButton", () => {
 
   describe("and handling multiple interactions", () => {
     it("should handle multiple rapid clicks correctly", async () => {
-      const clipboardWriteMock = vi.fn();
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: clipboardWriteMock,
-        },
-      });
       vi.useFakeTimers();
 
-      const id = "test";
-      const textToCopy = "test";
-      render(<CopyButton textToCopy={textToCopy} id={id} />);
-      const button = screen.getByTestId(`${id}-copy-button`);
+      const textToCopy = getRandomString();
+      const { testId } = renderCopyButton({ textToCopy });
 
       for (let i = 0; i < 5; i++) {
         await act(async () => {
-          fireEvent.click(button);
+          clickCopyButton(testId);
           await vi.advanceTimersByTimeAsync(100);
         });
       }
 
-      expect(clipboardWriteMock).toHaveBeenCalledExactlyOnceWith(textToCopy);
+      expect(mockWriteText).toHaveBeenCalledExactlyOnceWith(textToCopy);
       vi.useRealTimers();
     });
 
     it("should cleanup timeouts on unmount", async () => {
       vi.useFakeTimers();
-      const clipboardWriteMock = vi.fn(() => Promise.resolve());
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: clipboardWriteMock,
-        },
-      });
 
-      const { unmount } = render(
-        <CopyButton textToCopy="test" text="Copy" confirmationText="Copied" />,
-      );
+      const text = getRandomString();
+      const confirmationText = getRandomString();
+      const { testId, unmount } = renderCopyButton({ text, confirmationText });
 
       await act(async () => {
-        fireEvent.click(screen.getByText("Copy"));
-        await clipboardWriteMock();
+        clickCopyButton(testId);
+        await mockWriteText();
       });
-      expect(screen.getByText("Copied")).toBeInTheDocument();
+      expect(copyButtonByText(confirmationText)).toBeInTheDocument();
 
       unmount();
 
@@ -271,8 +246,8 @@ describe("When rendering CopyButton", () => {
         await vi.advanceTimersByTimeAsync(3000);
       });
 
-      expect(screen.queryByText("Copied")).not.toBeInTheDocument();
-      expect(screen.queryByText("Copy")).not.toBeInTheDocument();
+      expect(screen.queryByText(text)).not.toBeInTheDocument();
+      expect(screen.queryByText(confirmationText)).not.toBeInTheDocument();
 
       vi.useRealTimers();
     });

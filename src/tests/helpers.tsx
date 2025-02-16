@@ -10,6 +10,12 @@ import { padNum } from "@/helpers/helpers";
 
 export const EmptyReactNode: ReactNode = "";
 
+export function getRandomString(n = 5): string {
+  return Array.from({ length: n }, () =>
+    String.fromCharCode(97 + Math.floor(Math.random() * 26)),
+  ).join("");
+}
+
 export function mockNavigate(): MockInstance {
   const mockFn = vi.fn();
   vi.mock("react-router-dom", async () => {
