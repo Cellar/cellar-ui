@@ -1,8 +1,8 @@
-import Button from "../Button";
+import Button from "src/components/buttons/Button";
 import classes from "../secretMetadata/SecretMetadataDisplay.module.css";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { ISecretMetadata } from "@/models/secretMetadata";
-import { TextArea } from "../Form";
+import { TextArea } from "src/components/form/Form";
 import { deleteSecret } from "@/api/client";
 import {
   formatDate,
@@ -11,7 +11,7 @@ import {
   getTimeZone,
 } from "@/helpers/helpers";
 import { useMediaQuery } from "@mantine/hooks";
-import { CopyButton } from "src/components/CopyButton";
+import { CopyButton } from "src/components/buttons/CopyButton";
 
 export const SecretMetadataDisplay = () => {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef, FC, useState } from "react";
 import cx from "classnames";
 
-import classes from "./Form.module.css";
+import classes from "src/components/form/Form.module.css";
 
 export const Form: FC<ComponentPropsWithoutRef<"form">> = (props) => {
   const { className, ...rest } = props;

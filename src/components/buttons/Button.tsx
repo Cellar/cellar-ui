@@ -7,7 +7,7 @@ import {
 } from "react";
 import cx from "classnames";
 
-import classes from "./Button.module.css";
+import classes from "src/components/buttons/Button.module.css";
 
 export interface ButtonProps extends ComponentPropsWithoutRef<"a"> {
   appearance?: string;

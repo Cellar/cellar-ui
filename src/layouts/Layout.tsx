@@ -3,7 +3,7 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { Header } from "../components/header/Header";
 
 import classes from "./Layout.module.css";
-import Button from "../components/Button";
+import Button from "src/components/buttons/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock } from "src/components/characters/Lock";
 

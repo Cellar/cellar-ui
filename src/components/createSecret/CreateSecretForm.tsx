@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../Button";
+import Button from "src/components/buttons/Button";
 import {
   Form,
   FormButton,
@@ -8,7 +8,7 @@ import {
   NumericInput,
   ToggleButton,
   ErrorWrapper,
-} from "../Form";
+} from "src/components/form/Form";
 
 import classes from "./CreateSecretForm.module.css";
 import { RelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration";

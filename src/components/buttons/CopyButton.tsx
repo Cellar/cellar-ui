@@ -6,8 +6,8 @@ import React, {
   useState,
 } from "react";
 import { Checkmark } from "src/components/characters/Checkmark";
-import { Button } from "src/components/Button";
-import classes from "src/components/CopyButton.module.css";
+import { Button } from "src/components/buttons/Button";
+import classes from "src/components/buttons/CopyButton.module.css";
 
 interface CopyButtonProps extends ComponentPropsWithoutRef<"a"> {
   appearance?: string;
