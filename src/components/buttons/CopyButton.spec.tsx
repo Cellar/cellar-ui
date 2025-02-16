@@ -123,4 +123,103 @@ describe("When rendering CopyButton", () => {
       });
     });
   });
+
+  describe("and measuring button dimensions", () => {
+    const testScenarios = [
+      {
+        name: "and confirmation text is shorter",
+        text: "Copy this long text",
+        confirmationText: "Done",
+      },
+      {
+        name: "and initial text is shorter",
+        text: "Copy",
+        confirmationText: "Copied Successfully",
+      },
+    ];
+
+    testScenarios.forEach(({ name, text, confirmationText }) => {
+      describe(name, () => {
+        describe("and showCheckmark is false", () => {
+          it("should maintain the same width through all states", async () => {
+            vi.useFakeTimers();
+
+            render(
+              <CopyButton
+                textToCopy="Hello, World!"
+                text={text}
+                confirmationText={confirmationText}
+                showCheckmark={false}
+              />,
+            );
+
+            const buttonBefore = screen.getByText(text);
+            const initialWidth = buttonBefore.getBoundingClientRect().width;
+
+            await act(async () => {
+              fireEvent.click(buttonBefore);
+            });
+
+            const buttonDuringCopied = screen.getByText(confirmationText);
+            const widthDuringCopied =
+              buttonDuringCopied.getBoundingClientRect().width;
+
+            await act(async () => {
+              await vi.advanceTimersByTimeAsync(3000);
+            });
+
+            const buttonAfter = screen.getByText(text);
+            const finalWidth = buttonAfter.getBoundingClientRect().width;
+
+            expect(widthDuringCopied).toBe(initialWidth);
+            expect(finalWidth).toBe(initialWidth);
+
+            vi.useRealTimers();
+          });
+        });
+
+        describe("and showCheckmark is true", () => {
+          it("should maintain the same width through all states including checkmark space", async () => {
+            vi.useFakeTimers();
+
+            render(
+              <CopyButton
+                id="test-button"
+                textToCopy="Hello, World!"
+                text={text}
+                confirmationText={confirmationText}
+                showCheckmark={true}
+              />,
+            );
+
+            const buttonBefore = screen.getByText(text);
+            const initialWidth = buttonBefore.getBoundingClientRect().width;
+
+            await act(async () => {
+              fireEvent.click(buttonBefore);
+            });
+
+            const buttonDuringCopied = screen.getByText(confirmationText);
+            const checkmark = document.getElementById("test-button-checkmark");
+            const widthDuringCopied =
+              buttonDuringCopied.getBoundingClientRect().width;
+
+            expect(checkmark).toBeInTheDocument();
+
+            await act(async () => {
+              await vi.advanceTimersByTimeAsync(3000);
+            });
+
+            const buttonAfter = screen.getByText(text);
+            const finalWidth = buttonAfter.getBoundingClientRect().width;
+
+            expect(widthDuringCopied).toBe(initialWidth);
+            expect(finalWidth).toBe(initialWidth);
+
+            vi.useRealTimers();
+          });
+        });
+      });
+    });
+  });
 });
