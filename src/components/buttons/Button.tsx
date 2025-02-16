@@ -11,7 +11,6 @@ import classes from "src/components/buttons/Button.module.css";
 
 export interface ButtonProps extends ComponentPropsWithoutRef<"a"> {
   appearance?: string;
-  disabled?: boolean;
   textstates?: string[];
   extracontentwidth?: number;
 }
@@ -31,12 +30,7 @@ const appearances = {
 };
 
 export const Button: Btn = (props) => {
-  const {
-    appearance,
-    disabled,
-    textstates = [],
-    extracontentwidth = 0,
-  } = props;
+  const { appearance, textstates = [], extracontentwidth = 0 } = props;
 
   const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLAnchorElement>(null);
@@ -89,7 +83,6 @@ export const Button: Btn = (props) => {
         appearance === appearances.primary && classes.primary,
         appearance === appearances.secondary && classes.secondary,
         appearance === appearances.round && classes.round,
-        disabled ? classes.disabled : "",
       )}
       style={{
         width: contentWidth ? `${contentWidth}px` : undefined,
