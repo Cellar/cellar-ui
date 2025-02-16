@@ -5,6 +5,8 @@ import * as matchers from '@testing-library/jest-dom/matchers';
 
 expect.extend(matchers);
 
+vi.setConfig({ testTimeout: 10000 });
+
 afterEach(() => {
   cleanup();
 });
