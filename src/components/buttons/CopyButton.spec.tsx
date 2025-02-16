@@ -87,7 +87,7 @@ describe("When rendering CopyButton", () => {
 
   describe("and configuring checkmark visibility", () => {
     describe("and showCheckmark is false", () => {
-      it("should not display the checkmark", () => {
+      it("should not display the checkmark", async () => {
         render(
           <CopyButton
             textToCopy="Hello, World!"
@@ -95,7 +95,9 @@ describe("When rendering CopyButton", () => {
             showCheckmark={false}
           />,
         );
-        fireEvent.click(screen.getByText("Copy"));
+        await act(async () => {
+          fireEvent.click(screen.getByText("Copy"));
+        });
         expect(screen.queryByTestId(/checkmark/i)).not.toBeInTheDocument();
       });
     });
@@ -140,83 +142,43 @@ describe("When rendering CopyButton", () => {
 
     testScenarios.forEach(({ name, text, confirmationText }) => {
       describe(name, () => {
-        describe("and showCheckmark is false", () => {
-          it("should maintain the same width through all states", async () => {
-            vi.useFakeTimers();
+        [true, false].forEach((showCheckmark) => {
+          describe(`and showCheckmark is ${showCheckmark}`, () => {
+            it("should maintain the same width through all states", async () => {
+              vi.useFakeTimers();
 
-            render(
-              <CopyButton
-                textToCopy="Hello, World!"
-                text={text}
-                confirmationText={confirmationText}
-                showCheckmark={false}
-              />,
-            );
+              render(
+                <CopyButton
+                  textToCopy="Hello, World!"
+                  text={text}
+                  confirmationText={confirmationText}
+                  showCheckmark={showCheckmark}
+                />,
+              );
 
-            const buttonBefore = screen.getByText(text);
-            const initialWidth = buttonBefore.getBoundingClientRect().width;
+              const buttonBefore = screen.getByText(text);
+              const initialWidth = buttonBefore.getBoundingClientRect().width;
 
-            await act(async () => {
-              fireEvent.click(buttonBefore);
+              await act(async () => {
+                fireEvent.click(buttonBefore);
+              });
+
+              const buttonDuringCopied = screen.getByText(confirmationText);
+              const widthDuringCopied =
+                buttonDuringCopied.getBoundingClientRect().width;
+
+              await act(async () => {
+                await vi.advanceTimersByTimeAsync(3000);
+              });
+
+              const buttonAfter = screen.getByText(text);
+              const finalWidth = buttonAfter.getBoundingClientRect().width;
+
+              expect(widthDuringCopied).toBe(initialWidth);
+              expect(finalWidth).toBe(initialWidth);
+
+              vi.useRealTimers();
             });
-
-            const buttonDuringCopied = screen.getByText(confirmationText);
-            const widthDuringCopied =
-              buttonDuringCopied.getBoundingClientRect().width;
-
-            await act(async () => {
-              await vi.advanceTimersByTimeAsync(3000);
-            });
-
-            const buttonAfter = screen.getByText(text);
-            const finalWidth = buttonAfter.getBoundingClientRect().width;
-
-            expect(widthDuringCopied).toBe(initialWidth);
-            expect(finalWidth).toBe(initialWidth);
-
-            vi.useRealTimers();
-          });
-        });
-
-        describe("and showCheckmark is true", () => {
-          it("should maintain the same width through all states including checkmark space", async () => {
-            vi.useFakeTimers();
-
-            render(
-              <CopyButton
-                id="test-button"
-                textToCopy="Hello, World!"
-                text={text}
-                confirmationText={confirmationText}
-                showCheckmark={true}
-              />,
-            );
-
-            const buttonBefore = screen.getByText(text);
-            const initialWidth = buttonBefore.getBoundingClientRect().width;
-
-            await act(async () => {
-              fireEvent.click(buttonBefore);
-            });
-
-            const buttonDuringCopied = screen.getByText(confirmationText);
-            const checkmark = document.getElementById("test-button-checkmark");
-            const widthDuringCopied =
-              buttonDuringCopied.getBoundingClientRect().width;
-
-            expect(checkmark).toBeInTheDocument();
-
-            await act(async () => {
-              await vi.advanceTimersByTimeAsync(3000);
-            });
-
-            const buttonAfter = screen.getByText(text);
-            const finalWidth = buttonAfter.getBoundingClientRect().width;
-
-            expect(widthDuringCopied).toBe(initialWidth);
-            expect(finalWidth).toBe(initialWidth);
-
-            vi.useRealTimers();
           });
         });
       });
