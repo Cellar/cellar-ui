@@ -29,6 +29,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   const [displayText, setDisplayText] = useState(text);
   const contentRef = useRef<HTMLSpanElement>(null);
   const [extraContentWidth, setExtraContentWidth] = useState(0);
+  const [copying, setCopying] = useState(false);
 
   const checkMarkId = `${id}-checkmark`;
 
@@ -56,15 +57,21 @@ export const CopyButton: FC<CopyButtonProps> = ({
   }, [showCheckmark]);
 
   const handleClick = async () => {
+    if (copying) return;
+
+    setCopying(true);
     await navigator.clipboard.writeText(textToCopy);
     setDisplayText(confirmationText);
     setTimeout(() => {
       setDisplayText(text);
+      setCopying(false);
     }, 3000);
   };
 
   return (
     <Button
+      id={`${id}-copy-button`}
+      data-testid={`${id}-copy-button`}
       appearance={appearance}
       textstates={[text, confirmationText]}
       onClick={handleClick}

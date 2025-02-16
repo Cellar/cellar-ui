@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
   fireEvent,
+  getByTestId,
   render,
   screen,
   waitFor,
 } from "@testing-library/react";
 import { CopyButton } from "./CopyButton";
+import { userEvent } from "@testing-library/user-event";
 
 describe("When rendering CopyButton", () => {
   const mockWriteText = vi.fn();
@@ -182,6 +184,97 @@ describe("When rendering CopyButton", () => {
           });
         });
       });
+    });
+  });
+
+  describe("and setting different appearances", () => {
+    const appearances = [
+      { type: "primary", expectedClass: "checkPrimary" },
+      { type: "secondary", expectedClass: "checkSecondary" },
+      { type: "round", expectedClass: "checkRound" },
+    ];
+
+    appearances.forEach(({ type, expectedClass }) => {
+      it(`should apply correct checkmark class for ${type} appearance`, async () => {
+        render(
+          <CopyButton
+            textToCopy="test"
+            text="Copy"
+            confirmationText="Copied"
+            appearance={type}
+            showCheckmark={true}
+            id="test-button"
+          />,
+        );
+
+        fireEvent.click(screen.getByText("Copy"));
+
+        await waitFor(() => {
+          const checkmark = document.getElementById("test-button-checkmark");
+          expect(checkmark).toBeInTheDocument();
+          expect(Array.from(checkmark?.classList ?? []).join(", ")).toContain(
+            expectedClass,
+          );
+        });
+      });
+    });
+  });
+
+  describe("and handling multiple interactions", () => {
+    it("should handle multiple rapid clicks correctly", async () => {
+      const clipboardWriteMock = vi.fn();
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: clipboardWriteMock,
+        },
+      });
+      vi.useFakeTimers();
+
+      const id = "test";
+      const textToCopy = "test";
+      render(<CopyButton textToCopy={textToCopy} id={id} />);
+      const button = screen.getByTestId(`${id}-copy-button`);
+
+      for (let i = 0; i < 5; i++) {
+        await act(async () => {
+          fireEvent.click(button);
+          await vi.advanceTimersByTimeAsync(100);
+        });
+      }
+
+      expect(clipboardWriteMock).toHaveBeenCalledExactlyOnceWith(textToCopy);
+      vi.useRealTimers();
+    });
+
+    it("should cleanup timeouts on unmount", async () => {
+      vi.useFakeTimers();
+      const clipboardWriteMock = vi.fn(() => Promise.resolve());
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: clipboardWriteMock,
+        },
+      });
+
+      const { unmount } = render(
+        <CopyButton textToCopy="test" text="Copy" confirmationText="Copied" />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Copy"));
+        await clipboardWriteMock();
+      });
+      expect(screen.getByText("Copied")).toBeInTheDocument();
+
+      unmount();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3000);
+      });
+
+      expect(screen.queryByText("Copied")).not.toBeInTheDocument();
+      expect(screen.queryByText("Copy")).not.toBeInTheDocument();
+
+      vi.useRealTimers();
     });
   });
 });
