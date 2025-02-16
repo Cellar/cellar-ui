@@ -8,7 +8,7 @@ export function Header() {
 
   return (
     <header>
-      <div className={classes.banner}>
+      <div id="banner" data-testid="banner" className={classes.banner}>
         {isTinyMobile ? (
           <p>
             Share sensitive information securely with cellar.
