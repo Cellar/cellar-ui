@@ -73,7 +73,7 @@ test-e2e:
   services:
     - name: redis:7-alpine
       alias: redis
-    - name: vault:1.17
+    - name: hashicorp/vault:1.17
       alias: vault
   before_script:
     - apt-get update && apt-get install -y curl make jq
