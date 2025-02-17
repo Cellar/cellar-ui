@@ -75,6 +75,13 @@ test-e2e:
       alias: redis
     - name: hashicorp/vault:1.17
       alias: vault
+  artifacts:
+    reports:
+      junit: test-results/junit.xml
+    paths:
+      - test-results/html/
+      - playwright-report/
+      - test-results/
   before_script:
     - apt-get update && apt-get install -y curl make jq
     - npm ci
