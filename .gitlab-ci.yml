@@ -75,16 +75,11 @@ test-e2e:
     VAULT_LOCAL_ADDR: http://vault:8200
     VAULT_ROOT_TOKEN: vault-admin
     VAULT_TOKEN_NAME: cellar-testing
-    PW_TEST_CONNECT_WS_ENDPOINT: ws://playwright:3000/
   services:
     - name: redis:7-alpine
       alias: redis
     - name: hashicorp/vault:1.17
       alias: vault
-    - name: mcr.microsoft.com/playwright:v1.50.1-jammy
-      alias: playwright
-      entrypoint: ["/bin/sh", "-c"]
-      command: ["npx -y playwright@1.50.1 run-server --port 3000 --host 0.0.0.0"]
   artifacts:
     reports:
       junit: test-results/e2e/junit.xml
@@ -99,6 +94,7 @@ test-e2e:
     - export VAULT_ROLE_ID=$(make vault-role-id)
     - export VAULT_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
+    - npx playwright install --with-deps
   script:
     - make test-e2e
 
