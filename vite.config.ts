@@ -21,6 +21,10 @@ export default defineConfig({
     testTransformMode: {
       web: ['tsx', 'ts'],
     },
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: 'test-results/unit/junit.xml',
+    },
     css: true,
   },
   server: {

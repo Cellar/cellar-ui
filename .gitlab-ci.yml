@@ -49,11 +49,16 @@ build-docker:
   script:
     - make docker-build APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
 
-test:
+test-unit:
   extends: .ui
   stage: test
   script:
-    - make test
+    - make test-unit
+  artifacts:
+    reports:
+      junit: test-results/unit/junit.xml
+    paths:
+      - test-results/unit
 
 test-e2e:
   extends: .ui
@@ -77,11 +82,11 @@ test-e2e:
       alias: vault
   artifacts:
     reports:
-      junit: test-results/junit.xml
+      junit: test-results/e2e/junit.xml
     paths:
-      - test-results/html/
+      - test-results/e2e/html/
       - playwright-report/
-      - test-results/
+      - test-results/e2e
   before_script:
     - apt-get update && apt-get install -y curl make jq
     - npm ci

@@ -53,12 +53,14 @@ build:
 	$(LOG) "Running build"
 	@npm run build
 
-test:
-	$(LOG) "Running tests"
+test: test-unit test-e2e
+
+test-unit:
+	$(LOG) "Running unit tests"
 	@npm run test
 
 test-e2e:
-	$(LOG) "Running tests"
+	$(LOG) "Running e2e tests"
 	@npm run test:e2e
 
 test-watch:

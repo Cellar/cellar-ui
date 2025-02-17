@@ -10,8 +10,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html', { outputFile: 'test-results/html' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['html', { outputFile: 'test-results/e2e/html' }],
+    ['junit', { outputFile: 'test-results/e2e/junit.xml' }],
   ],
   use: {
     baseURL: 'http://localhost:5173',
