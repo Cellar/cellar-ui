@@ -58,9 +58,6 @@ test:
 test-e2e:
   extends: .ui
   stage: test
-  rules:
-    - if: $CI_COMMIT_BRANCH == "react"
-      when: never
   image: node:20-slim
   variables:
     CHROME_BIN: /usr/bin/chromium
@@ -74,18 +71,18 @@ test-e2e:
     VAULT_ROOT_TOKEN: vault-admin
     VAULT_TOKEN_NAME: cellar-testing
   services:
-    - name: redis:6.0-alpine
+    - name: redis:7-alpine
       alias: redis
-    - name: vault:1.5.5
+    - name: vault:1.17
       alias: vault
   before_script:
-    - mkdir -p /usr/share/man/man1
-    - apt-get update && apt-get install -y chromium chromium-driver curl procps make jq
-    - npm install
+    - apt-get update && apt-get install -y curl make jq
+    - npm ci
     - make vault-configure
     - export VAULT_ROLE_ID=$(make vault-role-id)
     - export VAULT_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
+    - npx playwright install --with-deps
   script:
     - make test-e2e
 
