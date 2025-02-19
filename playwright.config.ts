@@ -24,17 +24,49 @@ export default defineConfig({
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
     },
+    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit-desktop', use: { ...devices['Desktop Safari'] } },
+    { name: 'chromium-mobile', use: { ...devices['Pixel 7'] } },
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'chromium-mobile-landscape',
+      use: { ...devices['Pixel 7 landscape'] },
+    },
+    { name: 'chromium-mobile-old', use: { ...devices['Pixel 3'] } },
+    {
+      name: 'chromium-mobile-old-landscape',
+      use: { ...devices['Pixel 3 landscape'] },
+    },
+    { name: 'webkit-mobile', use: { ...devices['iPhone 15 Pro Max'] } },
+    {
+      name: 'webkit-mobile-landscape',
+      use: { ...devices['iPhone 15 Pro Max landscape'] },
+    },
+    { name: 'webkit-mobile-old', use: { ...devices['iPhone X'] } },
+    {
+      name: 'webkit-mobile-old-landscape',
+      use: { ...devices['iPhone X landscape'] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'figma',
+      use: {
+        viewport: { width: 1194, height: 834 },
+        ...devices['Desktop Chrome'],
+      },
     },
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'figma-mobile',
+      use: {
+        viewport: { width: 393, height: 852 },
+        ...devices['Pixel 7'],
+      },
+    },
+    {
+      name: 'figma-mobile-tiny',
+      use: {
+        viewport: { width: 350, height: 852 },
+        ...devices['Pixel 7'],
+      },
     },
   ],
   webServer: {
