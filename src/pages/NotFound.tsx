@@ -1,12 +1,10 @@
 import React from "react";
 import classes from "../pages/NotFound.module.css";
-import Button from "src/components/buttons/Button";
 import { Header } from "../components/header/Header";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { NewSecretButton } from "src/components/buttons/NewSecretButton";
 
 export const NotFound = () => {
-  const navigate = useNavigate();
-
   return (
     <>
       <Header />
@@ -20,14 +18,7 @@ export const NotFound = () => {
         <p className={classes.cta}>
           Click <a href="/secret/create">here</a> to create a new secret
         </p>
-        <div className={classes.createButton}>
-          <Button
-            appearance={Button.appearances.round}
-            onClick={() => navigate("/secret/create")}
-          >
-            🔒 New Secret
-          </Button>
-        </div>
+        <NewSecretButton />
       </div>
       <Link
         className={classes.footer}
