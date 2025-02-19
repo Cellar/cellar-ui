@@ -26,6 +26,8 @@ VAULT_ROLE_NAME ?= cellar-testing
 
 VAULT_REQUEST := @curl --header "X-Vault-Token: ${VAULT_ROOT_TOKEN}"
 
+E2E_PARAMS ?=
+
 
 LOG := @sh -c '\
 	   printf ${GREEN}; \
@@ -61,7 +63,7 @@ test-unit:
 
 test-e2e:
 	$(LOG) "Running e2e tests"
-	@npm run test:e2e
+	@npm run test:e2e  -- ${E2E_PARAMS}
 
 test-watch:
 	$(LOG) "Running tests"

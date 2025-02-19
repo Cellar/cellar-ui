@@ -63,6 +63,14 @@ test-unit:
 test-e2e:
   extends: .ui
   stage: test
+  parallel:
+    matrix:
+      - BROWSER: [
+        'chromium-desktop', 'firefox-desktop', 'webkit-desktop',
+        'chromium-mobile', 'chromium-mobile-landscape', 'chromium-mobile-old', 'chromium-mobile-old-landscape',
+        'webkit-mobile', 'webkit-mobile-landscape', 'webkit-mobile-old', 'webkit-mobile-old-landscape',
+        'figma', 'figma-mobile', 'figma-mobile-tiny',
+      ]
   image: node:20-slim
   variables:
     CHROME_BIN: /usr/bin/chromium
@@ -94,7 +102,7 @@ test-e2e:
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
     - npx playwright install --with-deps
   script:
-    - make test-e2e
+    - make test-e2e E2E_PARAMS="--project=$BROWSER"
 
 
 publish:
