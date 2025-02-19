@@ -14,17 +14,6 @@ h1 {
   margin: 0;
 }
 
-.footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 1.1rem 1.6rem;
-  font-size: 0.9rem;
-  color: var(--color-black);
-  border: 0;
-  text-decoration: none;
-}
-
 .shim {
   flex: 1;
 }
@@ -41,9 +30,5 @@ h1 {
 
   .title {
     margin-bottom: 1.3rem;
-  }
-
-  .footer {
-    padding: 0.8rem 1rem;
   }
 }

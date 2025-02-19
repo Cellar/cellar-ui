@@ -1,0 +1,26 @@
+.footerContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  margin-left: auto;
+  margin-top: auto; /* Push to bottom when content is short */
+  padding: 1.1rem 1.6rem;
+  font-size: 0.9rem;
+  color: var(--color-black);
+  border: 0;
+  text-decoration: none;
+  z-index: 1;
+  width: fit-content;
+}
+
+@media screen and (max-width: 1000px) {
+  .footer {
+    padding: 0.8rem 1rem;
+  }
+}

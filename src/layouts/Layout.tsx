@@ -1,10 +1,10 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode } from "react";
 
 import { Header } from "../components/header/Header";
 
 import classes from "./Layout.module.css";
-import { Link } from "react-router-dom";
 import { NewSecretButton } from "src/components/buttons/NewSecretButton";
+import { Footer } from "src/components/footer/footer";
 
 export const Layout: React.FC<{ title?: string; children: ReactNode }> = (
   props,
@@ -22,13 +22,7 @@ export const Layout: React.FC<{ title?: string; children: ReactNode }> = (
         )}
         {props.children}
       </main>
-      <Link
-        className={classes.footer}
-        to={"https://cellar-app.io/"}
-        target="_blank"
-      >
-        About Cellar
-      </Link>
+      <Footer />
     </div>
   );
 };

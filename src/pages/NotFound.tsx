@@ -1,8 +1,8 @@
 import React from "react";
 import classes from "../pages/NotFound.module.css";
 import { Header } from "../components/header/Header";
-import { Link } from "react-router-dom";
 import { NewSecretButton } from "src/components/buttons/NewSecretButton";
+import { Footer } from "src/components/footer/footer";
 
 export const NotFound = () => {
   return (
@@ -20,13 +20,7 @@ export const NotFound = () => {
         </p>
         <NewSecretButton />
       </div>
-      <Link
-        className={classes.footer}
-        to={"https://cellar-app.io/"}
-        target="_blank"
-      >
-        About Cellar
-      </Link>
+      <Footer />
     </>
   );
 };

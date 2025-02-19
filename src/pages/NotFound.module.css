@@ -31,17 +31,6 @@
   width: 100%;
 }
 
-.footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 1.1rem 1.6rem;
-  font-size: 0.9rem;
-  color: var(--color-black);
-  border: 0;
-  text-decoration: none;
-}
-
 @media screen and (max-width: 1000px) {
   .message {
     font-size: 1.8rem;
@@ -53,9 +42,5 @@
 
   .cta {
     font-size: 1.5rem;
-  }
-
-  .footer {
-    padding: 0.8rem 1rem;
   }
 }
