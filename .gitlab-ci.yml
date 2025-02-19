@@ -73,6 +73,7 @@ test-e2e:
       ]
   image: node:20-slim
   variables:
+    CI: true
     CHROME_BIN: /usr/bin/chromium
     APP_BIND_ADDRESS: ":8081"
     REDIS_HOST: redis
