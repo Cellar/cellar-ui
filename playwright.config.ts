@@ -50,22 +50,22 @@ export default defineConfig({
     {
       name: 'figma',
       use: {
-        viewport: { width: 1194, height: 834 },
         ...devices['Desktop Chrome'],
+        viewport: { width: 1194, height: 834 },
       },
     },
     {
       name: 'figma-mobile',
       use: {
-        viewport: { width: 393, height: 852 },
         ...devices['Pixel 7'],
+        viewport: { width: 393, height: 852 },
       },
     },
     {
       name: 'figma-mobile-tiny',
       use: {
-        viewport: { width: 350, height: 852 },
         ...devices['Pixel 7'],
+        viewport: { width: 350, height: 852 },
       },
     },
   ],
