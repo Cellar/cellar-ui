@@ -71,7 +71,7 @@ test-e2e:
         'webkit-mobile', 'webkit-mobile-landscape', 'webkit-mobile-old', 'webkit-mobile-old-landscape',
         'figma', 'figma-mobile', 'figma-mobile-tiny',
       ]
-        SHARD: [ '1/3', '2/3', '3/3', ]
+        #SHARD: [ '1/3', '2/3', '3/3', ]
   image: mcr.microsoft.com/playwright:v1.50.1-noble
   variables:
     CI: true
@@ -103,7 +103,8 @@ test-e2e:
     - export VAULT_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
   script:
-    - make test-e2e E2E_PARAMS="--project=$BROWSER --shard=$SHARD"
+    #- make test-e2e E2E_PARAMS="--project=$BROWSER --shard=$SHARD"
+    - make test-e2e E2E_PARAMS="--project=$BROWSER"
 
 
 publish:
