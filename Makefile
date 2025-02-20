@@ -26,7 +26,7 @@ VAULT_ROLE_NAME ?= cellar-testing
 
 VAULT_REQUEST := @curl --header "X-Vault-Token: ${VAULT_ROOT_TOKEN}"
 
-E2E_PARAMS ?=
+E2E_PARAMS ?= --project='figma' --project='figma-mobile' --project='figma-mobile-tiny'
 
 
 LOG := @sh -c '\
