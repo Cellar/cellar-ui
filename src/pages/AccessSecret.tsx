@@ -18,7 +18,7 @@ export const AccessSecretLoader = async ({
 export const AccessSecret = () => {
   return (
     <Layout title="The Secret">
-      <AccessSecretDisplay />
+      <AccessSecretDisplay data-testid="access-secret-display" />
     </Layout>
   );
 };

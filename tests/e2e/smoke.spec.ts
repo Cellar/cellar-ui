@@ -7,6 +7,7 @@ import {
   getSecretMetadata,
 } from 'tests/helpers/api/client';
 import { ISecretMetadata } from 'tests/helpers/models/secretMetadata';
+import { goToCreateSecretPage } from './createsecret';
 
 test.describe('smoke test', () => {
   test.describe('with secret', () => {
@@ -43,12 +44,13 @@ test.describe('smoke test', () => {
     });
 
     test('can create secret with defaults', async ({ page }) => {
-      await page.goto(config.appUrl);
-      await page.getByTestId('secret-content').click();
-      await page.getByTestId('secret-content').fill('Test content');
-      await page.getByTestId('create-secret-button').click();
-      await page.waitForURL('**/secret/**');
-      await page.waitForLoadState('load');
+      const secretPage = await goToCreateSecretPage(page);
+      await secretPage.secretContent.fill('Test content');
+      await secretPage.createSecretButton
+        .withWaitForUrl('**/secret/**')
+        .withWaitForLoadState('load')
+        .click();
+
       const url = page.url();
 
       const idMatch = url.match(/\/secret\/([^/]+)/);

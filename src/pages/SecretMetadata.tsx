@@ -18,7 +18,7 @@ export const SecretMetadataLoader = async ({
 export const SecretMetadata = () => {
   return (
     <Layout title="Secret Metadata">
-      <SecretMetadataDisplay />
+      <SecretMetadataDisplay data-testid="secret-metadata-display" />
     </Layout>
   );
 };

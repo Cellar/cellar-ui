@@ -5,7 +5,7 @@ import React from "react";
 export const CreateSecret = () => {
   return (
     <Layout title="Create a Secret">
-      <CreateSecretForm />
+      <CreateSecretForm data-testid="create-secret-form" />
     </Layout>
   );
 };
