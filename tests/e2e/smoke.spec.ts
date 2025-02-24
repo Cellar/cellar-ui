@@ -7,7 +7,12 @@ import {
   getSecretMetadata,
 } from 'tests/helpers/api/client';
 import { ISecretMetadata } from 'tests/helpers/models/secretMetadata';
-import { goToCreateSecretPage } from './createsecret';
+import {
+  CreateSecretForm,
+  goToCreateSecretPage,
+} from 'tests/e2e/models/createsecret';
+import { SecretMetadataDisplay } from 'tests/e2e/models/secretmetadata';
+import { AccessSecretDisplay } from 'tests/e2e/models/accesssecret';
 
 test.describe('smoke test', () => {
   test.describe('with secret', () => {
@@ -23,17 +28,28 @@ test.describe('smoke test', () => {
     });
 
     test('can navigate to metadata page', async ({ page }) => {
-      await page.goto(`${config.appUrl}/${secretMetadata.id}`);
+      await SecretMetadataDisplay.open(page, secretMetadata.id);
+      expect(page.url()).toBe(`${config.appUrl}/secret/${secretMetadata.id}`);
     });
 
     test('can navigate to access page', async ({ page }) => {
-      await page.goto(`${config.appUrl}/${secretMetadata.id}/access`);
+      await AccessSecretDisplay.open(page, secretMetadata.id);
+      expect(page.url()).toBe(
+        `${config.appUrl}/secret/${secretMetadata.id}/access`,
+      );
     });
   });
 
   test('can navigate to home page', async ({ page }) => {
-    await page.goto(config.appUrl);
-    expect(page.url()).toBe(`${config.appUrl}/`.replace(/\/+$/, '/'));
+    await page.goto(`${config.appUrl}`);
+    expect(page.url().replace(/\/$/, '')).toBe(
+      config.appUrl.replace(/\/$/, ''),
+    );
+  });
+
+  test('can navigate to create secret page', async ({ page }) => {
+    await CreateSecretForm.open(page);
+    expect(page.url()).toBe(`${config.appUrl}/secret/create`);
   });
 
   test.describe('with secret deletion', () => {
@@ -44,12 +60,8 @@ test.describe('smoke test', () => {
     });
 
     test('can create secret with defaults', async ({ page }) => {
-      const secretPage = await goToCreateSecretPage(page);
-      await secretPage.secretContent.fill('Test content');
-      await secretPage.createSecretButton
-        .withWaitForUrl('**/secret/**')
-        .withWaitForLoadState('load')
-        .click();
+      const secretPage = await CreateSecretForm.open(page);
+      await secretPage.createSecret('Test content');
 
       const url = page.url();
 
@@ -57,6 +69,7 @@ test.describe('smoke test', () => {
       id = idMatch ? idMatch[1] : null;
 
       expect(id).not.toBeNull();
+
       const secretMetadata = await getSecretMetadata(id);
       expect(secretMetadata.id).toBe(id);
       expect(secretMetadata.access_limit).toBe(1);

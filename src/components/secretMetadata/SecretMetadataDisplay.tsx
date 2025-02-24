@@ -58,7 +58,7 @@ export const SecretMetadataDisplay = () => {
           <div className={classes.headerWrapper}>
             <span className={classes.header}>Accessed</span>
           </div>
-          <p className={classes.metadataText}>
+          <p className={classes.metadataText} data-testid="access-count">
             {(accessLimit > 0 && `${accessCount} of ${accessLimit} times`) ||
               `${accessCount} times`}
           </p>

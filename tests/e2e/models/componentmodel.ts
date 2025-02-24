@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 
 export abstract class ComponentModel {
-  constructor(protected page: Page) {}
+  protected constructor(protected page: Page) {}
 
   get baseElement(): Locator {
     return this.page.getByTestId(this.baseTestId);
@@ -47,7 +47,17 @@ export class Tag<T extends ComponentModel> {
   }
 }
 
-export class Hoverable<T extends ComponentModel> extends Tag<T> {
+export class Readable<T extends ComponentModel> extends Tag<T> {
+  public async getText() {
+    return await this.baseElement.innerText();
+  }
+
+  public async isVisible() {
+    return await this.baseElement.isVisible();
+  }
+}
+
+export class Hoverable<T extends ComponentModel> extends Readable<T> {
   public async hover() {
     await this.baseElement.hover();
     await this.awaitHandlers();
@@ -66,6 +76,20 @@ export class Clickable<T extends ComponentModel> extends Hoverable<T> {
 export class Fillable<T extends ComponentModel> extends Clickable<T> {
   public async fill(value: string) {
     await this.baseElement.fill(value);
+    await this.awaitHandlers();
+    return new this.type(this.page);
+  }
+}
+
+export class Checkable<T extends ComponentModel> extends Clickable<T> {
+  public async check() {
+    await this.baseElement.check();
+    await this.awaitHandlers();
+    return new this.type(this.page);
+  }
+
+  public async uncheck() {
+    await this.baseElement.uncheck();
     await this.awaitHandlers();
     return new this.type(this.page);
   }
