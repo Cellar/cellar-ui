@@ -7,5 +7,7 @@ export function getRelativeDate(hoursFromNow: number, minutesFromNow = 0) {
 }
 
 export function getRelativeEpoch(hoursFromNow: number, minutesFromNow = 0) {
-  return getRelativeDate(hoursFromNow, minutesFromNow).getTime() / 1000;
+  return Math.round(
+    getRelativeDate(hoursFromNow, minutesFromNow).getTime() / 1000,
+  );
 }

@@ -7,6 +7,16 @@ export abstract class ComponentModel {
     return this.page.getByTestId(this.baseTestId);
   }
 
+  private async reload<T extends ComponentModel>(type: new (page: Page) => T) {
+    await this.page.reload();
+    await this.page.waitForLoadState();
+    return new type(this.page);
+  }
+
+  private async displayed(): Promise<boolean> {
+    return await this.baseElement.isVisible();
+  }
+
   abstract get baseTestId(): string;
 }
 

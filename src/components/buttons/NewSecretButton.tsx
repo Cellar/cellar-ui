@@ -29,7 +29,11 @@ export const NewSecretButton: React.FC = () => {
   }, [contentRef]);
 
   return (
-    <div ref={contentRef} className={classes.createButton}>
+    <div
+      ref={contentRef}
+      className={classes.createButton}
+      data-testid="new-secret-button"
+    >
       <Button
         extracontentwidth={extraContentWidth}
         appearance={Button.appearances.round}

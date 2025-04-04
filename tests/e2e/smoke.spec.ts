@@ -24,7 +24,13 @@ test.describe('smoke test', () => {
     });
 
     test.afterEach(async () => {
-      if (secretMetadata?.id) await deleteSecret(secretMetadata.id);
+      if (secretMetadata?.id) {
+        try {
+          await deleteSecret(secretMetadata.id);
+        } catch {
+          // ignore
+        }
+      }
     });
 
     test('can navigate to metadata page', async ({ page }) => {
