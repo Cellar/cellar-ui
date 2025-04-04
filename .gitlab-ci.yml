@@ -92,9 +92,9 @@ test-e2e:
       alias: vault
   artifacts:
     reports:
-      junit: test-results/e2e/junit-*.xml
+      junit: junit-*.xml
     paths:
-      - test-results/e2e
+      - test-results/e2e/**/*
     when: always
   before_script:
     - apt-get update && apt-get install -y curl make jq

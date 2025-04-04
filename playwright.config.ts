@@ -4,10 +4,13 @@ function getReporter(browserName: string): [string, object] {
   return [
     'junit',
     {
-      outputFile: `./test-results/e2e/junit-${browserName}.xml`,
+      outputFile: process.env.CI
+        ? `junit-${browserName}.xml`
+        : `test-results/e2e/junit-${browserName}.xml`,
       testSuiteTitle: `${browserName} Tests`,
       suiteNameFormat: `[${browserName}] {suite}`,
       testCaseNameFormat: `[${browserName}] {title}`,
+      attachmentBaseDirectory: 'test-results/e2e',
     },
   ];
 }
@@ -98,9 +101,7 @@ export default defineConfig({
   testDir: './tests/e2e',
   testIgnore: '**/src/**',
   testMatch: '**/*.spec.ts',
-  outputDir: process.env.CI
-    ? 'test-results/e2e/test-results/e2e'
-    : 'test-results/e2e',
+  outputDir: 'test-results/e2e',
   snapshotDir: './tests/e2e/snapshots',
   timeout: 30000,
   fullyParallel: true,
