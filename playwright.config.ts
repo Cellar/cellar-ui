@@ -10,7 +10,6 @@ function getReporter(browserName: string): [string, object] {
       testSuiteTitle: `${browserName} Tests`,
       suiteNameFormat: `[${browserName}] {suite}`,
       testCaseNameFormat: `[${browserName}] {title}`,
-      attachmentBaseDirectory: 'test-results/e2e',
     },
   ];
 }
@@ -109,7 +108,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   use: {
     baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
