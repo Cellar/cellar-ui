@@ -98,6 +98,8 @@ export default defineConfig({
   testDir: './tests/e2e',
   testIgnore: '**/src/**',
   testMatch: '**/*.spec.ts',
+  outputDir: 'test-results/e2e',
+  snapshotDir: './tests/e2e/snapshots',
   timeout: 30000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
