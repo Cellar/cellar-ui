@@ -15,13 +15,15 @@ test.describe('secret metadata', () => {
     let secretMetadata: ISecretMetadata;
     const startingAccessCount = 3;
 
-    test.beforeEach(async () => {
+    test.beforeEach(async ({ page }) => {
       const expiration = getRelativeEpoch(24);
       secretMetadata = await createSecret(
         'Test content',
         expiration,
         startingAccessCount,
       );
+
+      await page.waitForTimeout(2000);
     });
 
     test.afterEach(async () => {
