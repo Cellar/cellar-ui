@@ -95,6 +95,7 @@ test-e2e:
       junit: test-results/e2e/junit-*.xml
     paths:
       - test-results
+    when: always
   before_script:
     - apt-get update && apt-get install -y curl make jq
     - npm ci
