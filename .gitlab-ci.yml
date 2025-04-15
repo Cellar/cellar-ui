@@ -97,12 +97,16 @@ test-e2e:
       - test-results/e2e/**/*
     when: always
   before_script:
-    - apt-get update && apt-get install -y curl make jq
+    # Install dependencies including WebKit requirements
+    - apt-get update && apt-get install -y curl make jq libicu-dev libwebp-dev libffi-dev
     - npm ci
     - make vault-configure
     - export VAULT_ROLE_ID=$(make vault-role-id)
     - export VAULT_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
+    # Verify browser installation
+    - npx playwright install-deps webkit
+    - npx playwright install webkit
   script:
     #- make test-e2e E2E_PARAMS="--project=$BROWSER --shard=$SHARD"
     - make test-e2e E2E_PARAMS="--project=$BROWSER"
