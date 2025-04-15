@@ -98,38 +98,18 @@ test-e2e:
     when: always
   before_script:
     # Install dependencies including WebKit requirements
-    - apt-get update && apt-get install -y curl make jq
-    # Install comprehensive WebKit dependencies
-    - apt-get install -y libicu-dev libwebp-dev libffi-dev libwoff1 libopus0 libharfbuzz-icu0 
-      libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libegl1 libxcomposite1 libxdamage1 
-      libxrandr2 libxtst6 libasound2 libatk1.0-0 libatk-bridge2.0-0 libepoxy0 libgtk-3-0
+    - apt-get update && apt-get install -y curl make jq libicu-dev libwebp-dev libffi-dev
     - npm ci
     - make vault-configure
     - export VAULT_ROLE_ID=$(make vault-role-id)
     - export VAULT_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
-    # Verify browser installation with explicit debugging
-    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright npx playwright install-deps webkit --debug
-    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright npx playwright install webkit --debug
-    - npx playwright install-deps webkit --debug
-    - npx playwright install webkit --debug
-    - ls -la /ms-playwright || true
-    - ls -la $(npx playwright browsers path) || true
+    # Verify browser installation
+    - npx playwright install-deps webkit
+    - npx playwright install webkit
   script:
     #- make test-e2e E2E_PARAMS="--project=$BROWSER --shard=$SHARD"
-    - |
-      if [[ $BROWSER == *webkit* ]]; then
-        # For WebKit browsers, attempt with retry and more debugging
-        echo "Running WebKit browser test with extra debugging..."
-        export DEBUG=pw:browser* 
-        make test-e2e E2E_PARAMS="--project=$BROWSER" || \
-        (echo "First attempt failed, reinstalling WebKit and retrying..." && \
-         npx playwright install webkit --debug && \
-         make test-e2e E2E_PARAMS="--project=$BROWSER")
-      else
-        # For other browsers, run normally
-        make test-e2e E2E_PARAMS="--project=$BROWSER"
-      fi
+    - make test-e2e E2E_PARAMS="--project=$BROWSER"
 
 
 publish:
