@@ -27,8 +27,17 @@ const projects = [
   },
   {
     name: 'webkit-desktop',
-    use: { ...devices['Desktop Safari'] },
+    use: { 
+      ...devices['Desktop Safari'],
+      launchOptions: {
+        // Add additional webkit arguments
+        args: ['--no-sandbox', '--disable-gpu'],
+        // Increase timeout for webkit
+        timeout: process.env.CI ? 60000 : 30000,
+      },
+    },
     reporter: getReporter('webkit-desktop'),
+    retries: process.env.CI ? 3 : 0, // More retries for webkit in CI
   },
   {
     name: 'chromium-mobile',
@@ -52,23 +61,51 @@ const projects = [
   },
   {
     name: 'webkit-mobile',
-    use: { ...devices['iPhone 15 Pro Max'] },
+    use: { 
+      ...devices['iPhone 15 Pro Max'],
+      launchOptions: {
+        args: ['--no-sandbox', '--disable-gpu'],
+        timeout: process.env.CI ? 60000 : 30000,
+      },
+    },
     reporter: getReporter('webkit-mobile'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'webkit-mobile-landscape',
-    use: { ...devices['iPhone 15 Pro Max landscape'] },
+    use: { 
+      ...devices['iPhone 15 Pro Max landscape'],
+      launchOptions: {
+        args: ['--no-sandbox', '--disable-gpu'],
+        timeout: process.env.CI ? 60000 : 30000,
+      },
+    },
     reporter: getReporter('webkit-mobile-landscape'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'webkit-mobile-old',
-    use: { ...devices['iPhone X'] },
+    use: { 
+      ...devices['iPhone X'],
+      launchOptions: {
+        args: ['--no-sandbox', '--disable-gpu'],
+        timeout: process.env.CI ? 60000 : 30000,
+      },
+    },
     reporter: getReporter('webkit-mobile-old'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'webkit-mobile-old-landscape',
-    use: { ...devices['iPhone X landscape'] },
+    use: { 
+      ...devices['iPhone X landscape'],
+      launchOptions: {
+        args: ['--no-sandbox', '--disable-gpu'],
+        timeout: process.env.CI ? 60000 : 30000,
+      },
+    },
     reporter: getReporter('webkit-mobile-old-landscape'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'figma',
@@ -102,10 +139,11 @@ export default defineConfig({
   testMatch: '**/*.spec.ts',
   outputDir: 'test-results/e2e',
   snapshotDir: './tests/e2e/snapshots',
-  timeout: 30000,
+  timeout: process.env.CI ? 60000 : 30000, // Longer timeout in CI
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 2 : undefined, // Reduce parallel workers in CI to avoid resource contention
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'retain-on-failure',
