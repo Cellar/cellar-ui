@@ -39,9 +39,41 @@ services:
     env_file:
       - .env
 
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.50.1-noble
+    networks:
+      - datastore
+    depends_on:
+      - api
+      - redis
+      - vault
+    ports:
+      - "5173:5173" # Expose UI port for debugging
+    environment:
+      DOCKER: "true"
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      BIND_ADDRESS: api:8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      VAULT_ADDRESS: http://vault:8200
+      VAULT_DEV_ROOT_TOKEN_ID: vault-admin
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      VAULT_LOCAL_ADDR: http://vault:8200
+      VAULT_ROOT_TOKEN: vault-admin
+      VAULT_TOKEN_NAME: cellar-testing
+      # Host variables
+      HOST: "0.0.0.0" # Allow connections from outside container
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    working_dir: /app
+    env_file:
+      - .env
+
 
 volumes:
   redis_data:
+  node_modules:
 
 
 networks:

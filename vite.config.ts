@@ -28,9 +28,11 @@ export default defineConfig({
     css: true,
   },
   server: {
+    host: '0.0.0.0', // Allow connections from outside the container
     proxy: {
       '/api': {
-        target: 'http://localhost:8081',
+        // Use API service name when in Docker, localhost otherwise
+        target: process.env.DOCKER ? 'http://api:8080' : 'http://localhost:8081',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

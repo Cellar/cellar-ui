@@ -148,7 +148,7 @@ api-run-binary:
 	$(LOG) "Starting Cellar"
 	@./cellar-api & sleep 5
 
-services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api
+services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api services-playwright services-playwright-wait playwright-configure
 
 dotenv-clean:
 	$(LOG) "Generating empty .env file"
@@ -180,6 +180,37 @@ clean-services:
 	@docker compose down
 	@docker compose rm -svf
 	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
+
+services-playwright:
+	$(LOG) "Starting services for Docker E2E tests"
+	@docker compose up -d playwright
+
+services-playwright-wait:
+	@timeout 10 \
+		sh -c "until [[ $$(docker compose ps --format=json playwright | jq '.Status' ) =~ Up ]]; do echo \"waiting for playwright\"; sleep 1; done;" || \
+		{ echo "Timed out waiting for playwright to startup"; exit 1; }
+
+playwright-configure:
+	$(LOG) "Setting up playwright for running tests"
+	@docker compose run playwright /bin/bash -c "\
+		npm ci && \
+		npx playwright install && \
+		npx playwright install-deps"
+
+test-e2e-docker:
+	@docker compose run --rm playwright /bin/bash -c "\
+		echo 'Running tests...' && \
+		npx playwright test --project=$(BROWSER)"
+
+# Run specific browser tests in Docker container
+test-e2e-docker-browser:
+	$(LOG) "Running $(BROWSER) tests in Docker"
+	@make test-e2e-docker BROWSER=$(BROWSER)
+
+# Run WebKit tests specifically in Docker
+test-webkit-docker:
+	$(LOG) "Running WebKit tests in Docker"
+	@make test-e2e-docker-browser BROWSER=webkit-desktop
 
 format:
 	@npm run format
