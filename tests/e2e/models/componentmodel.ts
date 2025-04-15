@@ -27,9 +27,12 @@ export class Tag<T extends ComponentModel> {
   public constructor(
     protected type: new (page: Page) => T,
     protected page: Page,
-    protected testId: string,
+    protected testIdOrLocator: string | Locator,
   ) {
-    this.baseElement = page.getByTestId(testId);
+    this.baseElement =
+      typeof testIdOrLocator === 'string'
+        ? page.getByTestId(testIdOrLocator)
+        : testIdOrLocator;
     this.handlers = [];
   }
 

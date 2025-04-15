@@ -32,8 +32,18 @@ export default defineConfig({
     proxy: {
       '/api': {
         // Use API service name when in Docker, localhost otherwise
-        target: process.env.DOCKER ? 'http://api:8080' : 'http://localhost:8081',
+        target: process.env.DOCKER
+          ? 'http://api:8080'
+          : 'http://localhost:8081',
         changeOrigin: true,
+        secure: false,
+        ws: true,
+        cookieDomainRewrite: {
+          '*': '',
+        },
+        headers: {
+          Connection: 'keep-alive',
+        },
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },

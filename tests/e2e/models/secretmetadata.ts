@@ -15,12 +15,41 @@ export class SecretMetadataDisplay extends ComponentModel {
   }
 
   public static async open(page: Page, id: string) {
-    await page.goto(`${config.appUrl}/secret/${id}`);
+    console.log(`Opening secret metadata page for ID: ${id}`);
+
+    try {
+      const response = await page.request.get(
+        `${config.apiUrl}/v1/secrets/${id}`,
+      );
+      if (!response.ok()) {
+        console.error(
+          `Error checking secret metadata for ${id}: Status ${response.status()}`,
+        );
+      } else {
+        console.log(`Secret metadata for ${id} exists in API`);
+      }
+    } catch (error) {
+      console.error(`Exception checking secret metadata: ${error}`);
+    }
+
+    await page.goto(`${config.appUrl}/secret/${id}`, {
+      timeout: 30000,
+      waitUntil: 'networkidle',
+    });
+
+    // Log the current URL to see if we got redirected
+    console.log(`Current URL after navigation: ${page.url()}`);
+
+    await page.waitForTimeout(1000);
+
     return new SecretMetadataDisplay(page);
   }
 
   get accessCount() {
-    return new Readable(SecretMetadataDisplay, this.page, 'access-count');
+    const accessCountLocator = this.page.locator('#access-count');
+    console.log('Using ID selector for access count: #access-count');
+
+    return new Readable(SecretMetadataDisplay, this.page, accessCountLocator);
   }
 
   get copySecretLink() {

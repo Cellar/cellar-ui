@@ -27,13 +27,24 @@ const projects = [
   },
   {
     name: 'webkit-desktop',
-    use: { 
+    use: {
       ...devices['Desktop Safari'],
       launchOptions: {
-        // Add additional webkit arguments
-        args: ['--no-sandbox', '--disable-gpu'],
         // Increase timeout for webkit
         timeout: process.env.CI ? 60000 : 30000,
+      },
+      // Add additional timeouts for WebKit
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
+      // WebKit specific settings for better security handling
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15',
+      bypassCSP: true,
+      ignoreHTTPSErrors: true,
+      locale: 'en-US',
+      storageState: {
+        cookies: [],
+        origins: [],
       },
     },
     reporter: getReporter('webkit-desktop'),
@@ -61,10 +72,9 @@ const projects = [
   },
   {
     name: 'webkit-mobile',
-    use: { 
+    use: {
       ...devices['iPhone 15 Pro Max'],
       launchOptions: {
-        args: ['--no-sandbox', '--disable-gpu'],
         timeout: process.env.CI ? 60000 : 30000,
       },
     },
@@ -73,10 +83,9 @@ const projects = [
   },
   {
     name: 'webkit-mobile-landscape',
-    use: { 
+    use: {
       ...devices['iPhone 15 Pro Max landscape'],
       launchOptions: {
-        args: ['--no-sandbox', '--disable-gpu'],
         timeout: process.env.CI ? 60000 : 30000,
       },
     },
@@ -85,10 +94,9 @@ const projects = [
   },
   {
     name: 'webkit-mobile-old',
-    use: { 
+    use: {
       ...devices['iPhone X'],
       launchOptions: {
-        args: ['--no-sandbox', '--disable-gpu'],
         timeout: process.env.CI ? 60000 : 30000,
       },
     },
@@ -97,10 +105,9 @@ const projects = [
   },
   {
     name: 'webkit-mobile-old-landscape',
-    use: { 
+    use: {
       ...devices['iPhone X landscape'],
       launchOptions: {
-        args: ['--no-sandbox', '--disable-gpu'],
         timeout: process.env.CI ? 60000 : 30000,
       },
     },
@@ -145,6 +152,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined, // Reduce parallel workers in CI to avoid resource contention
   use: {
+    // When running in Docker, we'll be accessing the UI on localhost
+    // since the UI and tests will be in the same container
     baseURL: 'http://localhost:5173',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
