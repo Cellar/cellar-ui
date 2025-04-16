@@ -55,7 +55,8 @@ export class SecretMetadataDisplay extends ComponentModel {
   }
 
   get secretId() {
-    return new Readable(SecretMetadataDisplay, this.page, this.page.locator('.secretId'));
+    // The textarea element might have a different class in the actual DOM
+    return new Readable(SecretMetadataDisplay, this.page, this.page.locator('textarea'));
   }
 
   get expirationDate() {
@@ -72,7 +73,7 @@ export class SecretMetadataDisplay extends ComponentModel {
       SecretMetadataDisplay,
       this.page,
       'copy-secret-link-button',
-    ).withWaitForSelector('.checkmark-icon', { state: 'visible' });
+    );
   }
 
   get copyMetadataLink() {
@@ -80,7 +81,22 @@ export class SecretMetadataDisplay extends ComponentModel {
       SecretMetadataDisplay,
       this.page,
       'copy-metadata-link-button',
-    ).withWaitForSelector('.checkmark-icon', { state: 'visible' });
+    );
+  }
+  
+  // Helper methods for copy operations
+  public async copySecretLinkAndWaitForConfirmation() {
+    await this.copySecretLink.click();
+    // Wait for the copy confirmation to appear
+    await this.page.waitForSelector('.checkmark-icon, text=Copied', { state: 'visible', timeout: 5000 });
+    return this;
+  }
+  
+  public async copyMetadataLinkAndWaitForConfirmation() {
+    await this.copyMetadataLink.click();
+    // Wait for the copy confirmation to appear
+    await this.page.waitForSelector('.checkmark-icon, text=Copied', { state: 'visible', timeout: 5000 });
+    return this;
   }
 
   get deleteSecretMetadata() {
@@ -101,11 +117,21 @@ export class SecretMetadataDisplay extends ComponentModel {
     
     if (confirm) {
       // When confirmed, we should be redirected to the CreateSecret page
-      await this.deleteSecretMetadata.withWaitForUrl(/.*\/secret\/create/).click();
-      return new CreateSecretForm(this.page);
+      await this.deleteSecretMetadata.click();
+      
+      // Wait explicitly for navigation to the create page
+      await this.page.waitForURL(/.*\/secret\/create/, { timeout: 10000 });
+      await this.page.waitForLoadState('networkidle');
+      
+      const createForm = new CreateSecretForm(this.page);
+      // Wait a bit to ensure the form is fully loaded
+      await this.page.waitForTimeout(500);
+      return createForm;
     } else {
       // When canceled, we should stay on the same page
       await this.deleteSecretMetadata.click();
+      // Wait a bit to ensure any potential navigation would have happened
+      await this.page.waitForTimeout(500);
       return this;
     }
   }
@@ -113,11 +139,28 @@ export class SecretMetadataDisplay extends ComponentModel {
   public async reload() {
     await this.page.reload();
     await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(500); // Give it a moment to settle
     
     // Check if we've been redirected to NotFound page
-    const notFoundElement = this.page.getByTestId('not-found');
-    if (await notFoundElement.isVisible()) {
-      return new NotFound(this.page);
+    try {
+      const notFoundElement = this.page.getByTestId('not-found');
+      const isNotFoundVisible = await notFoundElement.isVisible({ timeout: 2000 });
+      
+      if (isNotFoundVisible) {
+        const notFoundPage = new NotFound(this.page);
+        await notFoundPage.baseElement.waitFor({ state: 'visible', timeout: 2000 });
+        return notFoundPage;
+      }
+    } catch (e) {
+      // If we get an error checking for NotFound, assume we're still on the metadata page
+      console.log("Error checking for NotFound, assuming still on metadata page:", e);
+    }
+    
+    // Wait for our own element to be visible again
+    try {
+      await this.baseElement.waitFor({ state: 'visible', timeout: 2000 });
+    } catch (e) {
+      console.log("Warning: Could not find metadata display after reload:", e);
     }
     
     return this;

@@ -147,13 +147,16 @@ test.describe('when opening the secret metadata', () => {
       });
 
       test('it should redirect to not found on refresh', async ({ page }) => {
-        const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
+        await SecretMetadataDisplay.open(page, secretMetadata.id);
         
-        // Reload and check for redirect to NotFound
-        const resultAfterReload = await display.reload();
+        // Reload the page and check if redirected to NotFound
+        await page.reload();
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(1000);
         
-        expect(resultAfterReload instanceof NotFound).toBe(true);
-        await resultAfterReload.expectVisible();
+        // Check that we're on the NotFound page
+        const notFoundElement = page.getByTestId('not-found');
+        expect(await notFoundElement.isVisible()).toBe(true);
       });
     });
 
@@ -163,13 +166,16 @@ test.describe('when opening the secret metadata', () => {
       });
 
       test('it should continue to display the metadata', async ({ page, browserName }) => {
-        const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
+        await SecretMetadataDisplay.open(page, secretMetadata.id);
         
-        // Reload and verify we're still on the metadata page
-        const resultAfterReload = await display.reload();
+        // Reload the page and check we're still on metadata page
+        await page.reload();
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(1000);
         
-        expect(resultAfterReload instanceof SecretMetadataDisplay).toBe(true);
-        await resultAfterReload.expectVisible();
+        // Verify metadata page is still visible
+        const metadataElement = page.getByTestId('secret-metadata-display');
+        expect(await metadataElement.isVisible()).toBe(true);
       });
     });
   });
@@ -200,8 +206,8 @@ test.describe('when opening the secret metadata', () => {
       const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
       
       if (browserName !== 'webkit') {
-        await display.copySecretLink.click();
-        // The copySecretLink already has a withWaitForSelector for the checkmark icon
+        // Use the enhanced method that waits for confirmation
+        await display.copySecretLinkAndWaitForConfirmation();
       }
     });
     
@@ -209,8 +215,8 @@ test.describe('when opening the secret metadata', () => {
       const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
       
       if (browserName !== 'webkit') {
-        await display.copyMetadataLink.click();
-        // The copyMetadataLink already has a withWaitForSelector for the checkmark icon
+        // Use the enhanced method that waits for confirmation
+        await display.copyMetadataLinkAndWaitForConfirmation();
       }
     });
   });
@@ -222,8 +228,18 @@ test.describe('when opening the secret metadata', () => {
         const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
         
         if (browserName !== 'webkit') {
-          const createForm = await display.deleteWithConfirmation(true);
-          await createForm.expectVisible();
+          // Set up window.confirm mock to return true
+          await page.evaluate(() => {
+            window.confirm = () => true;
+          });
+          
+          // Click the delete button and wait for navigation
+          await display.deleteSecretMetadata.click();
+          await page.waitForURL(/.*\/secret\/create/, { timeout: 10000 });
+          
+          // Make sure we're on the create page
+          const createFormElement = page.getByTestId('create-secret-form');
+          expect(await createFormElement.isVisible()).toBe(true);
         }
       });
     });
@@ -233,11 +249,24 @@ test.describe('when opening the secret metadata', () => {
         const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
         
         if (browserName !== 'webkit') {
-          const sameDisplay = await display.deleteWithConfirmation(false);
-          await sameDisplay.expectVisible();
+          // Set up window.confirm mock to return false
+          await page.evaluate(() => {
+            window.confirm = () => false;
+          });
+          
+          // Click the delete button - should stay on same page
+          await display.deleteSecretMetadata.click();
+          await page.waitForTimeout(500);
+          
+          // Verify we're still on the same page
+          expect(page.url()).toContain(secretMetadata.id);
+          
+          // Secret metadata element should still be visible
+          const metadataElement = page.getByTestId('secret-metadata-display');
+          expect(await metadataElement.isVisible()).toBe(true);
         }
         
-        // Secret should still exist
+        // Secret should still exist via API
         await verifySecretAccess(secretMetadata.id, 0, standardAccessLimit);
       });
     });
