@@ -1,10 +1,10 @@
 import { ISecretMetadata } from '../models/secretMetadata';
 import { IApiError } from '../models/error';
 import { ISecret } from '../models/secret';
-import { config } from 'tests/e2e/config';
-import { Iapiclient } from 'tests/helpers/api/iapiclient';
+import { config } from '../../e2e/config';
+import { IApiClient } from './iapiclient';
 
-export class StandardApiClient implements Iapiclient {
+export class StandardApiClient implements IApiClient {
   private baseUrl: string;
 
   constructor() {

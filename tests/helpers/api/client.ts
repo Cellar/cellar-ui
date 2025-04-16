@@ -2,7 +2,7 @@ import { ISecretMetadata } from '../models/secretMetadata';
 import { IApiError } from '../models/error';
 import { ISecret } from '../models/secret';
 import { APIRequestContext } from '@playwright/test';
-import { getApiClient } from 'tests/helpers/api/iapiclient';
+import { getApiClient } from './iapiclient';
 import { WebkitApiClient } from './webkitapiclient';
 
 let currentClient = getApiClient();

@@ -1,15 +1,11 @@
-import {
-  Clickable,
-  Readable,
-  ComponentModel,
-} from 'tests/e2e/models/componentmodel';
+import { Clickable, Readable, ComponentModel } from './componentmodel';
 import { Page } from '@playwright/test';
-import { config } from 'tests/e2e/config';
+import { config } from '../config';
 
 export class NotFound extends ComponentModel {
   readonly baseTestId = 'not-found';
 
-  protected constructor(protected page: Page) {
+  public constructor(protected page: Page) {
     super(page);
   }
 

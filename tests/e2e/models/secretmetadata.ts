@@ -1,16 +1,12 @@
-import {
-  Clickable,
-  Readable,
-  ComponentModel,
-} from 'tests/e2e/models/componentmodel';
-import { CreateSecretForm } from 'tests/e2e/models/createsecret';
+import { Clickable, Readable, ComponentModel } from './componentmodel';
+import { CreateSecretForm } from './createsecret';
 import { Page } from '@playwright/test';
-import { config } from 'tests/e2e/config';
+import { config } from '../config';
 
 export class SecretMetadataDisplay extends ComponentModel {
   readonly baseTestId = 'secret-metadata-display';
 
-  protected constructor(protected page: Page) {
+  public constructor(protected page: Page) {
     super(page);
   }
 

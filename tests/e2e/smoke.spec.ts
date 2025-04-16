@@ -1,18 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { config } from 'tests/e2e/config';
-import { getRelativeEpoch } from 'tests/helpers/date';
+import { config } from './config';
+import { getRelativeEpoch } from '../helpers/date';
 import {
   createSecret,
   deleteSecret,
   getSecretMetadata,
-} from 'tests/helpers/api/client';
-import { ISecretMetadata } from 'tests/helpers/models/secretMetadata';
-import {
-  CreateSecretForm,
-  goToCreateSecretPage,
-} from 'tests/e2e/models/createsecret';
-import { SecretMetadataDisplay } from 'tests/e2e/models/secretmetadata';
-import { AccessSecretDisplay } from 'tests/e2e/models/accesssecret';
+} from '../helpers/api/client';
+import { ISecretMetadata } from '../helpers/models/secretMetadata';
+import { CreateSecretForm } from './models/createsecret';
+import { SecretMetadataDisplay } from './models/secretmetadata';
+import { AccessSecretDisplay } from './models/accesssecret';
 
 test.describe('smoke test', () => {
   test.describe('with secret', () => {
@@ -20,7 +17,14 @@ test.describe('smoke test', () => {
 
     test.beforeEach(async () => {
       const expiration = getRelativeEpoch(24);
-      secretMetadata = await createSecret('Test content', expiration, 1);
+      const result = await createSecret('Test content', expiration, 1);
+
+      // Check if the result is an API error
+      if ('error' in result) {
+        throw new Error(`Failed to create secret: ${result.error}`);
+      }
+
+      secretMetadata = result as ISecretMetadata;
     });
 
     test.afterEach(async () => {
@@ -62,7 +66,7 @@ test.describe('smoke test', () => {
     let id: string | null = null;
 
     test.afterEach(async () => {
-      if (id) await deleteSecret(id);
+      if (id !== null) await deleteSecret(id);
     });
 
     test('can create secret with defaults', async ({ page }) => {
@@ -76,11 +80,20 @@ test.describe('smoke test', () => {
 
       expect(id).not.toBeNull();
 
-      const secretMetadata = await getSecretMetadata(id);
-      expect(secretMetadata.id).toBe(id);
-      expect(secretMetadata.access_limit).toBe(1);
-      expect(secretMetadata.access_count).toBe(0);
-      expect(secretMetadata.expiration).toBeTruthy();
+      if (id !== null) {
+        const result = await getSecretMetadata(id);
+
+        // Check if the result is an API error
+        if ('error' in result) {
+          throw new Error(`Failed to get secret metadata: ${result.error}`);
+        }
+
+        const secretMetadata = result as ISecretMetadata;
+        expect(secretMetadata.id).toBe(id);
+        expect(secretMetadata.access_limit).toBe(1);
+        expect(secretMetadata.access_count).toBe(0);
+        expect(secretMetadata.expiration).toBeTruthy();
+      }
     });
   });
 });

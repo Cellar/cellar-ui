@@ -1,14 +1,13 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/apiFixture';
-import { getRelativeEpoch } from 'tests/helpers/date';
+import { getRelativeEpoch } from '../helpers/date';
 import {
   accessSecret,
   createSecret,
   deleteSecret,
-} from 'tests/helpers/api/client';
-import { ISecretMetadata } from 'tests/helpers/models/secretMetadata';
-import { SecretMetadataDisplay } from 'tests/e2e/models/secretmetadata';
-import { NotFound } from 'tests/e2e/models/notfound';
+} from '../helpers/api/client';
+import { ISecretMetadata } from '../helpers/models/secretMetadata';
+import { SecretMetadataDisplay } from './models/secretmetadata';
 
 test.describe('secret metadata', () => {
   test.describe('with max access count', () => {
@@ -16,7 +15,7 @@ test.describe('secret metadata', () => {
     const startingAccessCount = 3;
 
     test.beforeEach(async ({ page, initApi }) => {
-      await initApi;
+      await initApi();
 
       const expiration = getRelativeEpoch(24);
       const browserName = page.context().browser()?.browserType().name();
@@ -26,11 +25,18 @@ test.describe('secret metadata', () => {
         `Creating test secret with expiration: ${expiration} and access limit: ${startingAccessCount}`,
       );
 
-      secretMetadata = await createSecret(
+      const result = await createSecret(
         'Test content',
         expiration,
         startingAccessCount,
       );
+
+      // Check if the result is an API error
+      if ('error' in result) {
+        throw new Error(`Failed to create secret: ${result.error}`);
+      }
+
+      secretMetadata = result as ISecretMetadata;
 
       console.log(`Created secret with ID: ${secretMetadata.id}`);
 
@@ -56,16 +62,15 @@ test.describe('secret metadata', () => {
       verifySecretAccess,
       browserName,
     }) => {
-      const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
+      // Open the secret metadata page
+      await SecretMetadataDisplay.open(page, secretMetadata.id);
 
       // For non-WebKit browsers, verify through UI
       if (browserName !== 'webkit') {
-        const notFound = new NotFound(page);
-        expect(await notFound.displayed()).toBe(
-          false,
-          'Secret page was not found - got 404 page instead',
-        );
-        expect(display.accessCount.baseElement).toContainText('0 of');
+        // Check that we're not on the NotFound page
+        const notFoundElement = page.getByTestId('not-found');
+        expect(await notFoundElement.isVisible()).toBe(false);
+        await expect(page.locator('#access-count')).toContainText('0 of');
       }
 
       await verifySecretAccess(secretMetadata.id, 0, startingAccessCount);
@@ -76,16 +81,15 @@ test.describe('secret metadata', () => {
       verifySecretAccess,
       browserName,
     }) => {
-      const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
+      // Open the secret metadata page
+      await SecretMetadataDisplay.open(page, secretMetadata.id);
 
       // For non-WebKit browsers, verify through UI
       if (browserName !== 'webkit') {
-        const notFound = new NotFound(page);
-        expect(await notFound.displayed()).toBe(
-          false,
-          'Secret page was not found - got 404 page instead',
-        );
-        expect(display.accessCount.baseElement).toContainText(
+        // Check that we're not on the NotFound page
+        const notFoundElement = page.getByTestId('not-found');
+        expect(await notFoundElement.isVisible()).toBe(false);
+        await expect(page.locator('#access-count')).toContainText(
           `of ${startingAccessCount.toString()}`,
         );
       }
@@ -101,19 +105,15 @@ test.describe('secret metadata', () => {
       }) => {
         await accessSecret(secretMetadata.id);
 
-        const display = await SecretMetadataDisplay.open(
-          page,
-          secretMetadata.id,
-        );
+        // Open the secret metadata page
+        await SecretMetadataDisplay.open(page, secretMetadata.id);
 
         // For non-WebKit browsers, verify through UI
         if (browserName !== 'webkit') {
-          const notFound = new NotFound(page);
-          expect(await notFound.displayed()).toBe(
-            false,
-            'Secret page was not found - got 404 page instead',
-          );
-          expect(display.accessCount.baseElement).toContainText('1');
+          // Check that we're not on the NotFound page
+          const notFoundElement = page.getByTestId('not-found');
+          expect(await notFoundElement.isVisible()).toBe(false);
+          await expect(page.locator('#access-count')).toContainText('1');
         }
 
         await verifySecretAccess(secretMetadata.id, 1, startingAccessCount);
@@ -125,9 +125,12 @@ test.describe('secret metadata', () => {
         page,
         verifySecretAccess,
       }) => {
-        const display = await SecretMetadataDisplay.open(
-          page,
-          secretMetadata.id,
+        // Open the secret metadata page
+        await SecretMetadataDisplay.open(page, secretMetadata.id);
+
+        // Store the locator for the secret metadata element to check later
+        const secretMetadataElement = page.getByTestId(
+          'secret-metadata-display',
         );
 
         for (let i = 0; i < startingAccessCount; i++) {
@@ -140,9 +143,16 @@ test.describe('secret metadata', () => {
           startingAccessCount,
         );
 
-        const notFound = await display.reload(NotFound);
-        expect(await notFound.displayed()).toBe(true);
-        expect(await display.displayed()).toBe(false);
+        // Reload the page and check if we're redirected to NotFound
+        await page.reload();
+        await page.waitForLoadState();
+
+        // We should now be on the NotFound page
+        const notFoundElement = page.getByTestId('not-found');
+        expect(await notFoundElement.isVisible()).toBe(true);
+
+        // And the secret metadata display should no longer be visible
+        expect(await secretMetadataElement.isVisible()).toBe(false);
       });
     });
   });

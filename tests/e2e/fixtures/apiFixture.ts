@@ -1,11 +1,9 @@
-import { test as base, APIRequestContext, expect } from '@playwright/test';
-import { ISecretMetadata } from 'tests/helpers/models/secretMetadata';
-import { IApiError } from 'tests/helpers/models/error';
-import { ISecret } from 'tests/helpers/models/secret';
-import { setBrowserType, setPlaywrightRequest } from 'tests/helpers/api/client';
+import { test as base, expect } from '@playwright/test';
+import { ISecretMetadata } from '../../helpers/models/secretMetadata';
+import { setBrowserType, setPlaywrightRequest } from '../../helpers/api/client';
 
 export interface ApiFixtures {
-  initApi: void;
+  initApi: () => Promise<void>;
   verifySecretAccess: (
     secretId: string,
     expectedCount: number,
@@ -25,12 +23,12 @@ export const test = base.extend<ApiFixtures>({
       }
     }
 
-    await use();
+    await use(async () => {
+      // Initialize API configuration
+    });
   },
 
   verifySecretAccess: async ({ page, request }, use) => {
-    const browserName = page.context().browser()?.browserType().name();
-
     const verifyFn = async (
       secretId: string,
       expectedCount: number,

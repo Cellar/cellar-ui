@@ -1,11 +1,11 @@
 import { ISecretMetadata } from '../models/secretMetadata';
 import { IApiError } from '../models/error';
 import { ISecret } from '../models/secret';
-import { config } from 'tests/e2e/config';
-import { Iapiclient } from 'tests/helpers/api/iapiclient';
+import { config } from '../../e2e/config';
+import { IApiClient } from './iapiclient';
 import { APIRequestContext } from '@playwright/test';
 
-export class WebkitApiClient implements Iapiclient {
+export class WebkitApiClient implements IApiClient {
   private baseUrl: string;
   private request: APIRequestContext | null = null;
 
