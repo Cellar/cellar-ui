@@ -169,6 +169,129 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Mobile Safari: `webkit-mobile`, `webkit-mobile-landscape`, `webkit-mobile-old`, `webkit-mobile-old-landscape`
 - Design Specs: `figma`, `figma-mobile`, `figma-mobile-tiny`
 
+## Application Overview
+The web application has three main pages for secret management:
+
+1. **Create Secret Page**:
+   - Allows users to create a new secret with configurable options
+   - Features a textarea for entering the secret content
+   - Provides two expiration modes:
+     - Relative: Set time period after which secret expires (default 24 hours)
+     - Absolute: Set specific date/time for expiration
+   - Includes access limit configuration:
+     - Numeric input to set how many times the secret can be accessed
+     - Default access limit is 1
+     - "No Limit" toggle option for unlimited access
+   - Validates inputs (secret content, expiration at least 30 minutes in future)
+   - Creates secret via API call and redirects to metadata page
+
+2. **Secret Metadata Page**:
+   - Displays information about the secret without revealing content
+   - Shows expiration date/time and access count (with limit if set)
+   - Displays the secret ID
+   - Provides buttons to copy links to both the secret and metadata page
+   - Includes delete button for permanent removal
+   - Responsive design for mobile/desktop
+
+3. **Access Secret Page**:
+   - Displays the actual secret content
+   - Simple interface with the secret in a readonly textarea
+   - Provides "Copy Secret" button for easy copying
+   - Each access increments the access count on the metadata page
+   - When access limit is reached, redirects to a "Not Found" page
+
+## E2E Testing Process
+
+When asked to work with E2E tests, follow these step-by-step instructions. You can request specific phases to be completed:
+- `"Identify e2e tests for <component>"` - Complete only phase 1
+- `"Update models for e2e tests for <component>"` - Complete phases 1-2
+- `"Implement e2e tests for <component>"` - Complete all phases 1-3
+
+### Phase 1: Test Identification
+
+1. First, examine the existing tests for the component to understand the current coverage
+   - Look in `tests/e2e/*.spec.ts` files related to the component
+   - Review component model files in `tests/e2e/models/` directory
+
+2. Identify component functionality by examining:
+   - The component source code
+   - Any related page components
+   - API integrations and data models it uses
+
+3. Create a hierarchical test structure in this format:
+   ```
+   When <condition/context>
+   - it should <expected behavior>
+   - it should <expected behavior>
+   
+       and <additional condition>
+       - it should <expected behavior>
+       
+           and <further nested condition>
+           - it should <expected behavior>
+   ```
+
+4. Each "When" or "and" statement maps to a potential `test.describe` block
+5. Each "it should" statement maps to a potential `test` function
+6. Structure tests by user interaction flows and feature conditions
+7. Include tests for:
+   - Basic component rendering and functionality
+   - Component state variations (e.g., with/without data)
+   - User interactions (clicks, form inputs)
+   - Error states and edge cases
+   - Responsive behavior (desktop/mobile differences)
+   - Integration with API/backend services
+
+8. Present the complete test hierarchy for review before implementation
+
+### Phase 2: Model Enhancement
+
+1. Ensure component models follow these principles:
+   - Models match the actual component implementation hierarchy
+   - All UI elements accessed via getter methods returning typed objects
+   - Helper methods for common interactions (e.g., `deleteWithConfirmation()`)
+   - Models return other models when actions cause page transitions
+   - Built-in waiting and visibility checks for all interactions
+
+2. Component Model Implementation Guidelines:
+   - Extend appropriate base classes (ComponentModel, etc.)
+   - Implement getters for all UI elements needed by tests
+   - Use proper typing for all element interactions
+   - Add helper methods for complex interactions
+   - Ensure automatic waiting for all element interactions
+   - Return appropriate model instances from actions (same model or new page)
+
+3. Required Base Functionality:
+   - Automatic waiting before interactions (30 second default timeout)
+   - Methods to check visibility/existence
+   - Page transition handling
+   - Error state detection
+
+4. Present model updates separately for review before implementation
+
+### Phase 3: Test Implementation
+
+1. Follow these practices for test implementation:
+   - All page interactions should be encapsulated in component models
+   - Tests should never directly use `page.locator()`, `page.getBy...()`, or raw selectors
+   - Tests should only receive `page` to pass to models, not interact with it directly
+   - No explicit waits in test code; all waiting handled by models
+   - Clear separation between test logic and page interaction details
+
+2. Implement tests following the identified hierarchy:
+   - Create `test.describe` blocks for each "When" and "and" condition
+   - Create `test` functions for each "it should" assertion
+   - Handle WebKit-specific limitations with browser detection
+   - Use API verification as fallback for all browsers
+
+3. Key implementation patterns:
+   - Use model-returned models for page transitions
+   - Check instance types for page redirects (e.g., `expect(result instanceof NotFound).toBe(true)`)
+   - Avoid raw Playwright API calls in test files
+   - Keep test code focused on assertions, not interaction details
+
+4. Present test implementation for review
+
 ## Code Style
 - **TypeScript**: Strict mode enabled, use explicit typing
 - **Components**: React functional components with hooks
