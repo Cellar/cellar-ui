@@ -10,7 +10,14 @@ export class NotFound extends ComponentModel {
   }
 
   public static async open(page: Page) {
-    await page.goto(`${config.appUrl}/404`);
+    await page.goto(`${config.appUrl}/404`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
+    return new NotFound(page);
+  }
+
+  public static async openWithInvalidId(page: Page, invalidId: string) {
+    await page.goto(`${config.appUrl}/secret/${invalidId}`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
     return new NotFound(page);
   }
 
