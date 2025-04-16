@@ -55,16 +55,46 @@ export class SecretMetadataDisplay extends ComponentModel {
   }
 
   get secretId() {
-    // The textarea element might have a different class in the actual DOM
+    // The textarea element containing the secret ID
     return new Readable(SecretMetadataDisplay, this.page, this.page.locator('textarea'));
   }
 
   get expirationDate() {
-    return new Readable(SecretMetadataDisplay, this.page, this.page.locator('.metadataText').first());
+    // Using a more specific selector to ensure we find the element
+    return new Readable(
+      SecretMetadataDisplay, 
+      this.page, 
+      this.page.locator('.metadataText').first()
+    );
+  }
+  
+  // Helper method to check if expiration date is displayed
+  public async hasExpirationDate(): Promise<boolean> {
+    // First ensure page is loaded
+    await this.page.waitForLoadState('networkidle');
+    
+    try {
+      // Use a shorter timeout to avoid long test delays
+      const expirationText = this.page.locator('.metadataText').first();
+      await expirationText.waitFor({ state: 'visible', timeout: 5000 });
+      const text = await expirationText.innerText();
+      return text.length > 0;
+    } catch (error) {
+      console.log("Error checking expiration date: ", error);
+      return false;
+    }
+  }
+  
+  // Helper method to verify secret ID
+  public async getSecretIdText(): Promise<string> {
+    await this.page.waitForLoadState('networkidle');
+    const textarea = this.page.locator('textarea');
+    await textarea.waitFor({ state: 'visible' });
+    return await textarea.inputValue();
   }
 
   get detailsLabel() {
-    return new Readable(SecretMetadataDisplay, this.page, 'details-label');
+    return new Readable(SecretMetadataDisplay, this.page, this.page.getByTestId('details-label'));
   }
 
   // Action buttons
@@ -102,6 +132,25 @@ export class SecretMetadataDisplay extends ComponentModel {
   get deleteSecretMetadata() {
     return new Clickable(SecretMetadataDisplay, this.page, 'delete-secret-button');
   }
+  
+  // Helper method to verify all UI buttons are present
+  public async verifyButtonsPresent(): Promise<boolean> {
+    await this.page.waitForLoadState('networkidle');
+    
+    const copySecretBtn = this.page.getByTestId('copy-secret-link-button');
+    const copyMetadataBtn = this.page.getByTestId('copy-metadata-link-button');
+    const deleteBtn = this.page.getByTestId('delete-secret-button');
+    
+    await copySecretBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await copyMetadataBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await deleteBtn.waitFor({ state: 'visible', timeout: 10000 });
+    
+    return (
+      await copySecretBtn.isVisible() && 
+      await copyMetadataBtn.isVisible() && 
+      await deleteBtn.isVisible()
+    );
+  }
 
   // Mobile-specific elements
   get actionsLine() {
@@ -117,29 +166,42 @@ export class SecretMetadataDisplay extends ComponentModel {
     
     if (confirm) {
       // When confirmed, we should be redirected to the CreateSecret page
-      await this.deleteSecretMetadata.click();
+      // Use click with chained waitForURL to handle the transition properly
+      await this.deleteSecretMetadata
+        .withWaitForUrl(/.*\/secret\/create/)
+        .withWaitForLoadState('networkidle')
+        .click();
       
-      // Wait explicitly for navigation to the create page
-      await this.page.waitForURL(/.*\/secret\/create/, { timeout: 10000 });
-      await this.page.waitForLoadState('networkidle');
-      
+      // Create and return the new page model
       const createForm = new CreateSecretForm(this.page);
-      // Wait a bit to ensure the form is fully loaded
-      await this.page.waitForTimeout(500);
       return createForm;
     } else {
       // When canceled, we should stay on the same page
+      const currentUrl = this.page.url();
       await this.deleteSecretMetadata.click();
-      // Wait a bit to ensure any potential navigation would have happened
+      
+      // Give a moment for any navigation that might happen
       await this.page.waitForTimeout(500);
+      
+      // Return self (verification of URL happens in the test)
       return this;
     }
   }
 
-  public async reload() {
+  /**
+   * Reloads the page and determines what page we're on after reload
+   * 
+   * @returns Either SecretMetadataDisplay if still on metadata page or NotFound if redirected
+   */
+  public async reload(): Promise<SecretMetadataDisplay | NotFound> {
+    // Store the current URL and ID to help with verification
+    const currentUrl = this.page.url();
+    const secretId = currentUrl.split('/').pop();
+    
+    // Perform the reload
     await this.page.reload();
     await this.page.waitForLoadState('networkidle');
-    await this.page.waitForTimeout(500); // Give it a moment to settle
+    await this.page.waitForTimeout(1000); // Give a moment for any JS to execute
     
     // Check if we've been redirected to NotFound page
     try {
@@ -147,23 +209,30 @@ export class SecretMetadataDisplay extends ComponentModel {
       const isNotFoundVisible = await notFoundElement.isVisible({ timeout: 2000 });
       
       if (isNotFoundVisible) {
-        const notFoundPage = new NotFound(this.page);
-        await notFoundPage.baseElement.waitFor({ state: 'visible', timeout: 2000 });
-        return notFoundPage;
+        // We've been redirected to a NotFound page
+        return new NotFound(this.page);
       }
     } catch (e) {
-      // If we get an error checking for NotFound, assume we're still on the metadata page
-      console.log("Error checking for NotFound, assuming still on metadata page:", e);
+      // NotFound check failed, but that's expected if we're on metadata page
     }
     
-    // Wait for our own element to be visible again
+    // If we're still on the same page with the secret ID, we're on metadata page
     try {
-      await this.baseElement.waitFor({ state: 'visible', timeout: 2000 });
-    } catch (e) {
-      console.log("Warning: Could not find metadata display after reload:", e);
+      // Check if our base element is visible
+      await this.baseElement.waitFor({ state: 'visible', timeout: 5000 });
+      return this;
+    } catch (metadataErr) {
+      // If base element not found, try one more check
+      console.log("Warning: Could not find metadata display after reload");
+      
+      // Even if we can't find the element, if URL contains the secretId, assume we're still on metadata
+      if (this.page.url().includes(secretId)) {
+        return this;
+      }
+      
+      // As fallback, return a new instance to be safe
+      return new SecretMetadataDisplay(this.page);
     }
-    
-    return this;
   }
 
   public async hasMaxAccessCount(): Promise<boolean> {

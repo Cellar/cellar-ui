@@ -10,10 +10,11 @@ export abstract class ComponentModel {
     return this.page.getByTestId(this.baseTestId);
   }
 
-  public async reload<T extends ComponentModel>(type: new (page: Page) => T) {
+  public async reload() {
     await this.page.reload();
     await this.page.waitForLoadState('networkidle');
-    return new type(this.page);
+    // Return the same instance, derived classes will override this
+    return this;
   }
 
   public async displayed(): Promise<boolean> {
@@ -75,7 +76,12 @@ export class Tag<T extends ComponentModel> {
 
   // Wait for the element to be visible before any interaction
   protected async ensureVisible() {
-    await this.baseElement.waitFor({ state: 'visible', timeout: DEFAULT_TIMEOUT });
+    try {
+      await this.baseElement.waitFor({ state: 'visible', timeout: DEFAULT_TIMEOUT });
+    } catch (error) {
+      console.error(`Element ${this.baseTestId} not visible in time: ${error}`);
+      throw error;
+    }
   }
 
   public withWaitForUrl(url: string | RegExp) {
