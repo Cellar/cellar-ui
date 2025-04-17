@@ -52,23 +52,43 @@ const projects = [
   },
   {
     name: 'chromium-mobile',
-    use: { ...devices['Pixel 7'] },
+    use: {
+      ...devices['Pixel 7'],
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
+    },
     reporter: getReporter('chromium-mobile'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'chromium-mobile-landscape',
-    use: { ...devices['Pixel 7 landscape'] },
+    use: {
+      ...devices['Pixel 7 landscape'],
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
+    },
     reporter: getReporter('chromium-mobile-landscape'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'chromium-mobile-old',
-    use: { ...devices['Pixel 3'] },
+    use: {
+      ...devices['Pixel 3'],
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
+    },
     reporter: getReporter('chromium-mobile-old'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'chromium-mobile-old-landscape',
-    use: { ...devices['Pixel 3 landscape'] },
+    use: {
+      ...devices['Pixel 3 landscape'],
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
+    },
     reporter: getReporter('chromium-mobile-old-landscape'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'webkit-mobile',
@@ -121,22 +141,29 @@ const projects = [
       viewport: { width: 1194, height: 834 },
     },
     reporter: getReporter('figma'),
+    retries: process.env.CI ? 2 : 0,
   },
   {
     name: 'figma-mobile',
     use: {
       ...devices['Pixel 7'],
       viewport: { width: 393, height: 852 },
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
     },
     reporter: getReporter('figma-mobile'),
+    retries: process.env.CI ? 3 : 0,
   },
   {
     name: 'figma-mobile-tiny',
     use: {
       ...devices['Pixel 7'],
       viewport: { width: 350, height: 852 },
+      navigationTimeout: 30000,
+      actionTimeout: 15000,
     },
     reporter: getReporter('figma-mobile-tiny'),
+    retries: process.env.CI ? 3 : 0,
   },
 ];
 

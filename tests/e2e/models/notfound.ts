@@ -16,7 +16,9 @@ export class NotFound extends ComponentModel {
   }
 
   public static async openWithInvalidId(page: Page, invalidId: string) {
-    await page.goto(`${config.appUrl}/secret/${invalidId}`, { waitUntil: 'networkidle' });
+    await page.goto(`${config.appUrl}/secret/${invalidId}`, {
+      waitUntil: 'networkidle',
+    });
     await page.waitForTimeout(500);
     return new NotFound(page);
   }

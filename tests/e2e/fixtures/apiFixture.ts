@@ -37,7 +37,7 @@ export const test = base.extend<ApiFixtures>({
       // Get the base URL from the current page context, but ensure it's a valid URL
       // This prevents "about:blank" and similar issues
       let baseUrl = page.url();
-      
+
       // If we're on about:blank or another invalid URL, use a default
       if (baseUrl.startsWith('about:') || !baseUrl.includes('http')) {
         baseUrl = 'http://localhost:5173';
@@ -46,11 +46,11 @@ export const test = base.extend<ApiFixtures>({
         const urlParts = baseUrl.split('/secret/');
         baseUrl = urlParts[0];
       }
-      
+
       // Now construct the API URL with the sanitized base URL
       const apiUrl = `${baseUrl}/api/v1/secrets/${secretId}`;
       console.log(`Checking secret metadata at: ${apiUrl}`);
-      
+
       try {
         const metadata = await request.get(apiUrl);
 

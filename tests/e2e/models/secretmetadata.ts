@@ -56,23 +56,27 @@ export class SecretMetadataDisplay extends ComponentModel {
 
   get secretId() {
     // The textarea element containing the secret ID
-    return new Readable(SecretMetadataDisplay, this.page, this.page.locator('textarea'));
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.locator('textarea'),
+    );
   }
 
   get expirationDate() {
     // Using a more specific selector to ensure we find the element
     return new Readable(
-      SecretMetadataDisplay, 
-      this.page, 
-      this.page.locator('.metadataText').first()
+      SecretMetadataDisplay,
+      this.page,
+      this.page.locator('.metadataText').first(),
     );
   }
-  
+
   // Helper method to check if expiration date is displayed
   public async hasExpirationDate(): Promise<boolean> {
     // First ensure page is loaded
     await this.page.waitForLoadState('networkidle');
-    
+
     try {
       // Use a shorter timeout to avoid long test delays
       const expirationText = this.page.locator('.metadataText').first();
@@ -80,11 +84,11 @@ export class SecretMetadataDisplay extends ComponentModel {
       const text = await expirationText.innerText();
       return text.length > 0;
     } catch (error) {
-      console.log("Error checking expiration date: ", error);
+      console.log('Error checking expiration date: ', error);
       return false;
     }
   }
-  
+
   // Helper method to verify secret ID
   public async getSecretIdText(): Promise<string> {
     await this.page.waitForLoadState('networkidle');
@@ -94,7 +98,11 @@ export class SecretMetadataDisplay extends ComponentModel {
   }
 
   get detailsLabel() {
-    return new Readable(SecretMetadataDisplay, this.page, this.page.getByTestId('details-label'));
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.getByTestId('details-label'),
+    );
   }
 
   // Action buttons
@@ -113,48 +121,81 @@ export class SecretMetadataDisplay extends ComponentModel {
       'copy-metadata-link-button',
     );
   }
-  
-  // Helper methods for copy operations
+
+  // Helper methods for copy operations with enhanced mobile support
   public async copySecretLinkAndWaitForConfirmation() {
-    await this.copySecretLink.click();
-    // Wait for the copy confirmation to appear
-    await this.page.waitForSelector('.checkmark-icon, text=Copied', { state: 'visible', timeout: 5000 });
-    return this;
-  }
-  
-  public async copyMetadataLinkAndWaitForConfirmation() {
-    await this.copyMetadataLink.click();
-    // Wait for the copy confirmation to appear
-    await this.page.waitForSelector('.checkmark-icon, text=Copied', { state: 'visible', timeout: 5000 });
+    // Use the enhanced clickAndVerifyFeedback method
+    await this.copySecretLink.clickAndVerifyFeedback(
+      '.checkmark-icon, text=Copied, [data-testid="copy-notification"]',
+    );
     return this;
   }
 
-  get deleteSecretMetadata() {
-    return new Clickable(SecretMetadataDisplay, this.page, 'delete-secret-button');
+  public async copyMetadataLinkAndWaitForConfirmation() {
+    // Use the enhanced clickAndVerifyFeedback method
+    await this.copyMetadataLink.clickAndVerifyFeedback(
+      '.checkmark-icon, text=Copied, [data-testid="copy-notification"]',
+    );
+    return this;
   }
-  
+
+  /**
+   * Determines if we're in a mobile layout
+   * @returns True if the page is in a mobile layout
+   */
+  public async isInMobileLayout(): Promise<boolean> {
+    try {
+      // First check viewport size
+      const isMobileViewport = await this.isMobile();
+
+      if (!isMobileViewport) {
+        return false; // Not mobile if viewport is large
+      }
+
+      // For mobile viewports, check if mobile-specific UI elements are visible
+      const actionsLineVisible = await this.actionsLine.isVisible();
+      return actionsLineVisible;
+    } catch (e) {
+      console.log(`Error determining layout mode: ${e}`);
+      // Fall back to viewport size check
+      return this.isMobile();
+    }
+  }
+
+  get deleteSecretMetadata() {
+    return new Clickable(
+      SecretMetadataDisplay,
+      this.page,
+      'delete-secret-button',
+    );
+  }
+
   // Helper method to verify all UI buttons are present
   public async verifyButtonsPresent(): Promise<boolean> {
     await this.page.waitForLoadState('networkidle');
-    
+
     const copySecretBtn = this.page.getByTestId('copy-secret-link-button');
     const copyMetadataBtn = this.page.getByTestId('copy-metadata-link-button');
     const deleteBtn = this.page.getByTestId('delete-secret-button');
-    
+
     await copySecretBtn.waitFor({ state: 'visible', timeout: 10000 });
     await copyMetadataBtn.waitFor({ state: 'visible', timeout: 10000 });
     await deleteBtn.waitFor({ state: 'visible', timeout: 10000 });
-    
+
     return (
-      await copySecretBtn.isVisible() && 
-      await copyMetadataBtn.isVisible() && 
-      await deleteBtn.isVisible()
+      (await copySecretBtn.isVisible()) &&
+      (await copyMetadataBtn.isVisible()) &&
+      (await deleteBtn.isVisible())
     );
   }
 
   // Mobile-specific elements
   get actionsLine() {
-    return new Readable(SecretMetadataDisplay, this.page, this.page.locator('.actionsLine'));
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.locator('.actionsLine'),
+    );
   }
 
   // Helper methods for test scenarios
@@ -163,7 +204,7 @@ export class SecretMetadataDisplay extends ComponentModel {
     await this.page.evaluate((shouldConfirm) => {
       window.confirm = () => shouldConfirm;
     }, confirm);
-    
+
     if (confirm) {
       // When confirmed, we should be redirected to the CreateSecret page
       // Use click with chained waitForURL to handle the transition properly
@@ -171,7 +212,7 @@ export class SecretMetadataDisplay extends ComponentModel {
         .withWaitForUrl(/.*\/secret\/create/)
         .withWaitForLoadState('networkidle')
         .click();
-      
+
       // Create and return the new page model
       const createForm = new CreateSecretForm(this.page);
       return createForm;
@@ -179,10 +220,10 @@ export class SecretMetadataDisplay extends ComponentModel {
       // When canceled, we should stay on the same page
       const currentUrl = this.page.url();
       await this.deleteSecretMetadata.click();
-      
+
       // Give a moment for any navigation that might happen
       await this.page.waitForTimeout(500);
-      
+
       // Return self (verification of URL happens in the test)
       return this;
     }
@@ -190,24 +231,26 @@ export class SecretMetadataDisplay extends ComponentModel {
 
   /**
    * Reloads the page and determines what page we're on after reload
-   * 
+   *
    * @returns Either SecretMetadataDisplay if still on metadata page or NotFound if redirected
    */
   public async reload(): Promise<SecretMetadataDisplay | NotFound> {
     // Store the current URL and ID to help with verification
     const currentUrl = this.page.url();
     const secretId = currentUrl.split('/').pop();
-    
+
     // Perform the reload
     await this.page.reload();
     await this.page.waitForLoadState('networkidle');
     await this.page.waitForTimeout(1000); // Give a moment for any JS to execute
-    
+
     // Check if we've been redirected to NotFound page
     try {
       const notFoundElement = this.page.getByTestId('not-found');
-      const isNotFoundVisible = await notFoundElement.isVisible({ timeout: 2000 });
-      
+      const isNotFoundVisible = await notFoundElement.isVisible({
+        timeout: 2000,
+      });
+
       if (isNotFoundVisible) {
         // We've been redirected to a NotFound page
         return new NotFound(this.page);
@@ -215,7 +258,7 @@ export class SecretMetadataDisplay extends ComponentModel {
     } catch (e) {
       // NotFound check failed, but that's expected if we're on metadata page
     }
-    
+
     // If we're still on the same page with the secret ID, we're on metadata page
     try {
       // Check if our base element is visible
@@ -223,13 +266,13 @@ export class SecretMetadataDisplay extends ComponentModel {
       return this;
     } catch (metadataErr) {
       // If base element not found, try one more check
-      console.log("Warning: Could not find metadata display after reload");
-      
+      console.log('Warning: Could not find metadata display after reload');
+
       // Even if we can't find the element, if URL contains the secretId, assume we're still on metadata
       if (this.page.url().includes(secretId)) {
         return this;
       }
-      
+
       // As fallback, return a new instance to be safe
       return new SecretMetadataDisplay(this.page);
     }

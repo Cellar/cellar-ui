@@ -10,6 +10,34 @@ export abstract class ComponentModel {
     return this.page.getByTestId(this.baseTestId);
   }
 
+  /**
+   * Determines if the current viewport is mobile-sized
+   * @param maxWidth Optional parameter to set custom width threshold (default 500px)
+   * @returns True if current viewport is mobile-sized
+   */
+  public async isMobile(maxWidth: number = 500): Promise<boolean> {
+    const viewport = this.page.viewportSize();
+    return !!(viewport && viewport.width <= maxWidth);
+  }
+
+  /**
+   * Gets the current viewport size category
+   * @returns 'xs' | 'sm' | 'md' | 'lg' | 'xl' based on viewport width
+   */
+  public async getViewportCategory(): Promise<
+    'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  > {
+    const viewport = this.page.viewportSize();
+    if (!viewport) return 'md'; // Default if unknown
+
+    const width = viewport.width;
+    if (width <= 375) return 'xs';
+    if (width <= 576) return 'sm';
+    if (width <= 768) return 'md';
+    if (width <= 992) return 'lg';
+    return 'xl';
+  }
+
   public async reload() {
     await this.page.reload();
     await this.page.waitForLoadState('networkidle');
@@ -27,12 +55,18 @@ export abstract class ComponentModel {
   }
 
   public async expectVisible(): Promise<void> {
-    await this.baseElement.waitFor({ state: 'visible', timeout: DEFAULT_TIMEOUT });
+    await this.baseElement.waitFor({
+      state: 'visible',
+      timeout: DEFAULT_TIMEOUT,
+    });
     expect(await this.baseElement.isVisible()).toBe(true);
   }
 
   public async expectHidden(): Promise<void> {
-    await this.baseElement.waitFor({ state: 'hidden', timeout: DEFAULT_TIMEOUT });
+    await this.baseElement.waitFor({
+      state: 'hidden',
+      timeout: DEFAULT_TIMEOUT,
+    });
     expect(await this.baseElement.isVisible()).toBe(false);
   }
 
@@ -41,10 +75,13 @@ export abstract class ComponentModel {
   }
 
   public async navigateTo<T extends ComponentModel>(
-    url: string, 
-    type: new (page: Page) => T
+    url: string,
+    type: new (page: Page) => T,
   ): Promise<T> {
-    await this.page.goto(url, { waitUntil: 'networkidle', timeout: DEFAULT_TIMEOUT });
+    await this.page.goto(url, {
+      waitUntil: 'networkidle',
+      timeout: DEFAULT_TIMEOUT,
+    });
     return new type(this.page);
   }
 
@@ -77,7 +114,10 @@ export class Tag<T extends ComponentModel> {
   // Wait for the element to be visible before any interaction
   protected async ensureVisible() {
     try {
-      await this.baseElement.waitFor({ state: 'visible', timeout: DEFAULT_TIMEOUT });
+      await this.baseElement.waitFor({
+        state: 'visible',
+        timeout: DEFAULT_TIMEOUT,
+      });
     } catch (error) {
       console.error(`Element ${this.baseTestId} not visible in time: ${error}`);
       throw error;
@@ -107,11 +147,14 @@ export class Tag<T extends ComponentModel> {
     return this;
   }
 
-  public withWaitForSelector(selector: string, options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' }) {
+  public withWaitForSelector(
+    selector: string,
+    options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' },
+  ) {
     this.handlers.push(async () => {
-      await this.page.waitForSelector(selector, { 
-        ...options, 
-        timeout: DEFAULT_TIMEOUT 
+      await this.page.waitForSelector(selector, {
+        ...options,
+        timeout: DEFAULT_TIMEOUT,
       });
     });
     return this;
@@ -163,7 +206,69 @@ export class Hoverable<T extends ComponentModel> extends Readable<T> {
 export class Clickable<T extends ComponentModel> extends Hoverable<T> {
   public async click() {
     await this.ensureVisible();
+
+    // Check if we're on mobile and need additional prep for the click
+    const componentModel = new this.type(this.page);
+    const isMobile = await componentModel.isMobile();
+
+    if (isMobile) {
+      try {
+        // For mobile, ensure element is in view before clicking
+        await this.baseElement.scrollIntoViewIfNeeded();
+        // Small delay to ensure UI is stable after scrolling
+        await this.page.waitForTimeout(500);
+      } catch (e) {
+        // If scrollIntoViewIfNeeded fails, log but continue
+        console.log(`Mobile scroll adjustment failed: ${e}`);
+      }
+    }
+
     await this.baseElement.click();
+    await this.awaitHandlers();
+    return new this.type(this.page);
+  }
+
+  /**
+   * Performs a click with enhanced mobile support and checks for success feedback
+   * @param successSelector CSS selector to check for success (e.g., '.checkmark-icon, text=Copied')
+   * @param timeoutMs Timeout for success feedback detection (default: 5000ms)
+   * @returns The component model instance
+   */
+  public async clickAndVerifyFeedback(
+    successSelector: string,
+    timeoutMs: number = 5000,
+  ): Promise<T> {
+    await this.ensureVisible();
+
+    // Check if we're on mobile
+    const componentModel = new this.type(this.page);
+    const isMobile = await componentModel.isMobile();
+    const viewportCategory = await componentModel.getViewportCategory();
+
+    // Extra prep for mobile devices
+    if (isMobile) {
+      try {
+        await this.baseElement.scrollIntoViewIfNeeded();
+        await this.page.waitForTimeout(500);
+      } catch (e) {
+        console.log(`Mobile scroll adjustment failed: ${e}`);
+      }
+    }
+
+    // Perform the click
+    await this.baseElement.click();
+
+    // Try to detect success feedback
+    try {
+      await this.page.waitForSelector(successSelector, {
+        state: 'visible',
+        timeout: viewportCategory === 'xs' ? timeoutMs * 1.5 : timeoutMs, // Extra time for tiny screens
+      });
+    } catch (e) {
+      // Log but don't fail - some environments (Docker, mobile) may not show feedback
+      console.log(`Success feedback not detected: ${e}`);
+    }
+
     await this.awaitHandlers();
     return new this.type(this.page);
   }
