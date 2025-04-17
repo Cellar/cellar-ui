@@ -1,6 +1,7 @@
 import { Clickable, Readable, ComponentModel } from './componentmodel';
 import { Page } from '@playwright/test';
 import { config } from '../config';
+import { CreateSecretForm } from './createsecret';
 
 export class NotFound extends ComponentModel {
   readonly baseTestId = 'not-found';
@@ -36,6 +37,21 @@ export class NotFound extends ComponentModel {
   }
 
   get newSecretButton() {
-    return new Clickable(NotFound, this.page, 'new-secret-button');
+    return new Clickable(CreateSecretForm, this.page, 'new-secret-button');
+  }
+  
+  /**
+   * Clicks the "here" link in the CTA text to navigate to the create page
+   * @returns CreateSecretForm model
+   */
+  public async clickCtaLink() {
+    // Move to the cta element first to ensure visibility
+    await this.cta.baseElement.hover();
+    
+    // Click the actual link within the CTA area using a more specific selector
+    await this.page.locator('[data-testid="cta"] a').click();
+    
+    await this.page.waitForURL('**/secret/create', { timeout: 10000 });
+    return new CreateSecretForm(this.page);
   }
 }
