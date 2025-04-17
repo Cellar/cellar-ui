@@ -1,7 +1,7 @@
 import { test } from './fixtures/apiFixture';
 import { expect } from '@playwright/test';
 import { CreateSecretForm } from './models/createsecret';
-import { format, addDays } from 'date-fns';
+import { format, addDays } from '../helpers/date';
 
 /**
  * E2E tests for the Create Secret page - Expiration Settings

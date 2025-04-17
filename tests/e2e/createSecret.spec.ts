@@ -2,8 +2,7 @@ import { test } from './fixtures/apiFixture';
 import { expect } from '@playwright/test';
 import { CreateSecretForm } from './models/createsecret';
 import { SecretMetadataDisplay } from './models/secretmetadata';
-import { getRelativeEpoch } from '../helpers/date';
-import { format, addDays } from 'date-fns';
+import { getRelativeEpoch, format, addDays } from '../helpers/date';
 
 /**
  * E2E tests for the Create Secret page
