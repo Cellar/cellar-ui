@@ -212,6 +212,13 @@ test-webkit-docker:
 	$(LOG) "Running WebKit tests in Docker"
 	@make test-e2e-docker-browser BROWSER=webkit-desktop
 
+# Run all browser configurations in Docker
+test-e2e-docker-all:
+	$(LOG) "Running all browser configurations in Docker"
+	@docker compose run --rm playwright /bin/bash -c "\
+		echo 'Running all browser tests...' && \
+		npx playwright test"
+
 test-specific-docker:
 	$(LOG) "Running specific test ${TEST} in ${BROWSER}"
 	@docker compose run playwright /bin/bash -c "\

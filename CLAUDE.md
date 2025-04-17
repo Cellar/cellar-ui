@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Single test: `npx vitest {path-to-test-file}`
 - E2E tests: `make test-e2e`
 - E2E specific browser: `make test-e2e E2E_PARAMS="--project=figma"`
+- E2E all browsers in Docker: `make test-e2e-docker-all` (runs tests across all browser configs defined in playwright.config.ts)
 - Watch tests: `make test-watch`
 - All tests: `make test`
 - Start dependencies: `make services`
