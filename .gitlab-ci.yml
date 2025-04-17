@@ -60,19 +60,14 @@ test-unit:
     paths:
       - test-results/unit
 
-test-e2e:
+.e2e:
   extends: .ui
-  stage: test
-  parallel:
-    matrix:
-      - BROWSER: [
-        'chromium-desktop', 'firefox-desktop', 'webkit-desktop',
-        'chromium-mobile', 'chromium-mobile-landscape', 'chromium-mobile-old', 'chromium-mobile-old-landscape',
-        'webkit-mobile', 'webkit-mobile-landscape', 'webkit-mobile-old', 'webkit-mobile-old-landscape',
-        'figma', 'figma-mobile', 'figma-mobile-tiny',
-      ]
-        #SHARD: [ '1/3', '2/3', '3/3', ]
   image: mcr.microsoft.com/playwright:v1.50.1-noble
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+    - if: $CI_COMMIT_BRANCH == "react"
+      when: manual
   variables:
     CI: true
     CHROME_BIN: /usr/bin/chromium
@@ -110,6 +105,64 @@ test-e2e:
   script:
     #- make test-e2e E2E_PARAMS="--project=$BROWSER --shard=$SHARD"
     - make test-e2e E2E_PARAMS="--project=$BROWSER"
+
+test-e2e-desktop:
+  extends: .e2e
+  stage: test
+  rules:
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'chromium-desktop'
+          - 'firefox-desktop'
+          - 'webkit-desktop'
+
+test-e2e-chromium-mobile:
+  extends: .e2e
+  stage: test
+  rules:
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'chromium-mobile'
+          - 'chromium-mobile-landscape'
+
+test-e2e-chromium-mobile-old:
+  extends: .e2e
+  stage: test
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'chromium-mobile-old'
+          - 'chromium-mobile-old-landscape'
+
+test-e2e-webkit-mobile:
+  extends: .e2e
+  stage: test
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'webkit-mobile'
+          - 'webkit-mobile-landscape'
+
+test-e2e-webkit-mobile-old:
+  extends: .e2e
+  stage: test
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'webkit-mobile-old'
+          - 'webkit-mobile-old-landscape'
+
+test-e2e-figma:
+  extends: .e2e
+  stage: test
+  parallel:
+    matrix:
+      - BROWSER:
+          - 'figma'
+          -  'figma-mobile'
+          - 'figma-mobile-tiny'
 
 
 publish:
