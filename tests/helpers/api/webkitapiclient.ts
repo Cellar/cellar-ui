@@ -14,7 +14,15 @@ export class WebkitApiClient implements IApiClient {
   }
 
   setRequest(request: APIRequestContext) {
+    console.log('Setting WebkitApiClient request context');
     this.request = request;
+    
+    // Log that the request context has been set
+    if (this.request) {
+      console.log('WebkitApiClient request context set successfully');
+    } else {
+      console.warn('WebkitApiClient request context NOT set - operations will fail');
+    }
   }
 
   async createSecret(

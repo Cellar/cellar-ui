@@ -13,13 +13,31 @@ export interface ApiFixtures {
 
 export const test = base.extend<ApiFixtures>({
   initApi: async ({ page, request }, use) => {
+    // First ensure page is fully loaded
+    await page.waitForLoadState('networkidle', { timeout: 10000 });
+    
     const browserName = page.context().browser()?.browserType().name();
 
     if (browserName) {
+      console.log(`Initializing API client for browser: ${browserName}`);
       setBrowserType(browserName);
 
+      // For WebKit, we need to set the request context for cross-origin requests
       if (browserName === 'webkit') {
+        console.log('Setting Playwright request for WebKit');
         setPlaywrightRequest(request);
+        
+        // For WebKit, ensure the request context is stable
+        try {
+          // Make a test request to ensure the request context is working
+          const testResponse = await request.get(`${page.url().split('/')[0]}//${'localhost:5173'}/api/v1/health`, { 
+            timeout: 5000,
+            failOnStatusCode: false
+          });
+          console.log(`WebKit request test response status: ${testResponse.status()}`);
+        } catch (e) {
+          console.warn(`WebKit request test failed: ${e}`);
+        }
       }
     }
 
