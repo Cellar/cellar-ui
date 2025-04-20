@@ -7,7 +7,7 @@ IMAGE_TAG ?= local
 APP_VERSION ?= 0.0.0
 
 API_IMAGE ?= registry.gitlab.com/cellar-app/cellar-api
-API_VERSION ?= 0.0.0
+API_VERSION ?= 0.0.0 
 API_PACKAGE_URL ?= https://gitlab.com/api/v4/projects/22424828/packages/generic/cellar-api
 
 PACKAGE_TOKEN ?= ""
@@ -27,6 +27,9 @@ VAULT_ROLE_NAME ?= cellar-testing
 VAULT_REQUEST := @curl --header "X-Vault-Token: ${VAULT_ROOT_TOKEN}"
 
 E2E_PARAMS ?= --project='figma' --project='figma-mobile' --project='figma-mobile-tiny'
+
+BROWSER ?=
+E2E_TEST ?=
 
 
 LOG := @sh -c '\
@@ -148,7 +151,8 @@ api-run-binary:
 	$(LOG) "Starting Cellar"
 	@./cellar-api & sleep 5
 
-services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api services-playwright services-playwright-wait playwright-configure
+
+services: dotenv-clean clean-services services-api-dependencies services-vault-wait vault-configure dotenv-values services-api
 
 dotenv-clean:
 	$(LOG) "Generating empty .env file"
@@ -181,48 +185,28 @@ clean-services:
 	@docker compose rm -svf
 	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
 
-services-playwright:
-	$(LOG) "Starting services for Docker E2E tests"
-	@docker compose up -d playwright
-
-services-playwright-wait:
-	@timeout 10 \
-		sh -c "until [[ $$(docker compose ps --format=json playwright | jq '.Status' ) =~ Up ]]; do echo \"waiting for playwright\"; sleep 1; done;" || \
-		{ echo "Timed out waiting for playwright to startup"; exit 1; }
-
-playwright-configure:
-	$(LOG) "Setting up playwright for running tests"
-	@docker compose run playwright /bin/bash -c "\
-		npm ci && \
-		npx playwright install && \
-		npx playwright install-deps"
-
 test-e2e-docker:
-	@docker compose run --rm playwright /bin/bash -c "\
-		echo 'Running tests...' && \
-		npx playwright test --project=$(BROWSER)"
-
-# Run specific browser tests in Docker container
-test-e2e-docker-browser:
-	$(LOG) "Running $(BROWSER) tests in Docker"
-	@make test-e2e-docker BROWSER=$(BROWSER)
-
+	$(LOG) "Running tests "${E2E_TEST}" in ${BROWSER}"
+	@docker compose run --rm \
+		--user $(shell id -u):$(shell id -g) \
+		-v $(shell pwd):/app \
+		-w /app \
+		playwright bash -c "npm ci && npx playwright install && npx playwright test --project=$(BROWSER) ${E2E_TEST}"
+	
 # Run WebKit tests specifically in Docker
 test-webkit-docker:
 	$(LOG) "Running WebKit tests in Docker"
-	@make test-e2e-docker-browser BROWSER=webkit-desktop
+	@make test-e2e-docker BROWSER=webkit-desktop
 
 # Run all browser configurations in Docker
 test-e2e-docker-all:
 	$(LOG) "Running all browser configurations in Docker"
-	@docker compose run --rm playwright /bin/bash -c "\
-		echo 'Running all browser tests...' && \
-		npx playwright test"
+	@docker compose run --rm \
+		--user $(shell id -u):$(shell id -g) \
+		-v $(shell pwd):/app \
+		-w /app \
+		playwright bash -c "npm ci && npx playwright install && npx playwright test"
 
-test-specific-docker:
-	$(LOG) "Running specific test ${TEST} in ${BROWSER}"
-	@docker compose run playwright /bin/bash -c "\
-		npx playwright test --project=${BROWSER} ${TEST}"
 
 format:
 	@npm run format

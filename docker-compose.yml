@@ -49,6 +49,10 @@ services:
       - vault
     ports:
       - "5173:5173" # Expose UI port for debugging
+    ipc: host
+    user: pwuser
+    init: true
+    command: ["tail", "-f", "/dev/null"]
     environment:
       DOCKER: "true"
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
@@ -62,13 +66,10 @@ services:
       VAULT_ROOT_TOKEN: vault-admin
       VAULT_TOKEN_NAME: cellar-testing
       # Host variables
-      HOST: "0.0.0.0" # Allow connections from outside container
+      HOST: "0.0.0.0"
       # WebKit-specific variables
       WEBKIT_NETWORK_CONNECTION_MODE: "shared"
       BROWSER_TIMEOUT: "60000"
-    volumes:
-      - .:/app
-      - node_modules:/app/node_modules
     working_dir: /app
     env_file:
       - .env
@@ -76,7 +77,6 @@ services:
 
 volumes:
   redis_data:
-  node_modules:
 
 
 networks:
