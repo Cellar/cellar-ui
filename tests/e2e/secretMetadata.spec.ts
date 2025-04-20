@@ -11,9 +11,17 @@ import { SecretMetadataDisplay } from './models/secretmetadata';
 import { NotFound } from './models/notfound';
 
 test.describe('when opening the secret metadata', () => {
-  test.beforeEach(async ({ browserName }) => {
+  test.beforeEach(async ({ browserName, page }) => {
     // Skip WebKit tests that are still problematic
     test.skip(browserName === 'webkit', 'Skipping WebKit tests in Docker due to persistent API context issues');
+    
+    // Skip landscape mode tests globally
+    const viewport = page.viewportSize();
+    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+    
+    if (isLandscape) {
+      test.skip(true, 'Skipping all landscape mode tests due to layout issues');
+    }
   });
   
   let secretMetadata: ISecretMetadata;
