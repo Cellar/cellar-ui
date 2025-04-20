@@ -14,25 +14,75 @@ export class SecretMetadataDisplay extends ComponentModel {
   public static async open(page: Page, id: string) {
     console.log(`Opening secret metadata page for ID: ${id}`);
 
+    if (!id || id === 'undefined') {
+      console.warn('Trying to open page with invalid ID:', id);
+      
+      // Special case for missing or undefined secret ID - go directly to NotFound
+      await page.goto(`${config.appUrl}/not-found`, {
+        timeout: 30000,
+        waitUntil: 'networkidle',
+      });
+      
+      return new NotFound(page);
+    }
+
     try {
-      const response = await page.request.get(
-        `${config.apiUrl}/v1/secrets/${id}`,
-      );
-      if (!response.ok()) {
-        console.error(
-          `Error checking secret metadata for ${id}: Status ${response.status()}`,
-        );
-      } else {
-        console.log(`Secret metadata for ${id} exists in API`);
+      // Check the API first with retries
+      let retries = 2;
+      let response;
+      
+      while (retries >= 0) {
+        try {
+          response = await page.request.get(
+            `${config.apiUrl}/v1/secrets/${id}`,
+            { timeout: 10000 }
+          );
+          
+          if (response.ok()) {
+            console.log(`Secret metadata for ${id} exists in API`);
+            break;
+          }
+          
+          if (response.status() === 404) {
+            console.warn(`Secret ${id} not found in API, will likely get NotFound page`);
+            break;
+          }
+          
+          console.warn(
+            `API check failed (${retries} retries left): status ${response.status()}`
+          );
+        } catch (apiError) {
+          console.warn(`API request error (${retries} retries left):`, apiError);
+        }
+        
+        retries--;
+        if (retries >= 0) {
+          await page.waitForTimeout(1000);
+        }
       }
     } catch (error) {
       console.error(`Exception checking secret metadata: ${error}`);
     }
 
-    await page.goto(`${config.appUrl}/secret/${id}`, {
-      timeout: 30000,
-      waitUntil: 'networkidle',
-    });
+    // Navigate to the metadata page with increased timeout and wait states
+    try {
+      await page.goto(`${config.appUrl}/secret/${id}`, {
+        timeout: 30000,
+        waitUntil: 'domcontentloaded',
+      });
+      
+      // Additional wait to ensure page is fully loaded
+      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(e => {
+        console.warn('Networkidle timeout, continuing anyway:', e);
+      });
+    } catch (navError) {
+      console.error('Navigation error:', navError);
+      
+      // Try one more time with less strict wait conditions
+      await page.goto(`${config.appUrl}/secret/${id}`, {
+        timeout: 30000,
+      });
+    }
 
     // Log the current URL to see if we got redirected
     console.log(`Current URL after navigation: ${page.url()}`);
@@ -40,12 +90,33 @@ export class SecretMetadataDisplay extends ComponentModel {
     await page.waitForTimeout(1000);
 
     // Check if we landed on a NotFound page (secret might not exist)
-    const notFoundElement = page.getByTestId('not-found');
-    if (await notFoundElement.isVisible()) {
-      return new NotFound(page);
+    try {
+      const notFoundElement = page.getByTestId('not-found');
+      if (await notFoundElement.isVisible({ timeout: 5000 })) {
+        return new NotFound(page);
+      }
+    } catch (e) {
+      console.warn('Error checking for NotFound element:', e);
     }
 
-    return new SecretMetadataDisplay(page);
+    // Check if we can find the secret metadata display
+    try {
+      const metadataElement = page.getByTestId('secret-metadata-display');
+      await metadataElement.waitFor({ timeout: 5000 }); // Restored original timeout
+      return new SecretMetadataDisplay(page);
+    } catch (e) {
+      console.warn('Error finding metadata display element:', e);
+      
+      // If we can't find the metadata display, check URL to determine what page we're on
+      const currentUrl = page.url();
+      
+      if (currentUrl.includes('not-found')) {
+        return new NotFound(page);
+      }
+      
+      // Default to returning a metadata display (test will fail if elements not found)
+      return new SecretMetadataDisplay(page);
+    }
   }
 
   // Basic display elements
@@ -124,17 +195,17 @@ export class SecretMetadataDisplay extends ComponentModel {
 
   // Helper methods for copy operations with enhanced mobile support
   public async copySecretLinkAndWaitForConfirmation() {
-    // Use the enhanced clickAndVerifyFeedback method
+    // Use the enhanced clickAndVerifyFeedback method with data-testid
     await this.copySecretLink.clickAndVerifyFeedback(
-      '.checkmark-icon, text=Copied, [data-testid="copy-notification"]',
+      '[data-testid="copy-notification"]',
     );
     return this;
   }
 
   public async copyMetadataLinkAndWaitForConfirmation() {
-    // Use the enhanced clickAndVerifyFeedback method
+    // Use the enhanced clickAndVerifyFeedback method with data-testid
     await this.copyMetadataLink.clickAndVerifyFeedback(
-      '.checkmark-icon, text=Copied, [data-testid="copy-notification"]',
+      '[data-testid="copy-notification"]',
     );
     return this;
   }

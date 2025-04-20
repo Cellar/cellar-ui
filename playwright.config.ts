@@ -195,8 +195,9 @@ export default defineConfig({
     ...projects,
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- --host 0.0.0.0',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000, // Increase timeout for Docker environment
   },
 });

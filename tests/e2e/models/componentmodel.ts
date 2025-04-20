@@ -230,7 +230,7 @@ export class Clickable<T extends ComponentModel> extends Hoverable<T> {
 
   /**
    * Performs a click with enhanced mobile support and checks for success feedback
-   * @param successSelector CSS selector to check for success (e.g., '.checkmark-icon, text=Copied')
+   * @param successSelector CSS selector to check for success (e.g., '.checkmark-icon')
    * @param timeoutMs Timeout for success feedback detection (default: 5000ms)
    * @returns The component model instance
    */
@@ -258,9 +258,10 @@ export class Clickable<T extends ComponentModel> extends Hoverable<T> {
     // Perform the click
     await this.baseElement.click();
 
-    // Try to detect success feedback
+    // Try to detect success feedback using a more compatible approach
     try {
-      await this.page.waitForSelector(successSelector, {
+      // Use data-testid instead of complex CSS selectors
+      await this.page.getByTestId('copy-notification').waitFor({
         state: 'visible',
         timeout: viewportCategory === 'xs' ? timeoutMs * 1.5 : timeoutMs, // Extra time for tiny screens
       });
