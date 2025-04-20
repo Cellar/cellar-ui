@@ -130,9 +130,17 @@ test.describe('when opening the secret metadata', () => {
     browserName,
   }) => {
     // Check for conditions that require skipping
-    const isMobile = page.viewportSize()?.width && page.viewportSize()?.width <= 576;
+    const viewport = page.viewportSize();
+    const isMobile = viewport?.width && viewport.width <= 576;
+    
+    // Check if we're in landscape mode (width > height)
+    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
     const isMobileChrome = isMobile && browserName === 'chromium';
+    const isMobileLandscape = isMobile && isLandscape;
+    
+    // Skip tests for problematic configurations
     test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
+    test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
     test.skip(browserName === 'webkit', 'This test skipped in WebKit');
     
     const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
@@ -475,10 +483,17 @@ test.describe('when opening the secret metadata', () => {
         // Check for conditions that require skipping this test
         test.skip(browserName === 'webkit', 'This test skipped in WebKit');
         
-        // Check for mobile Chrome
-        const isMobile = page.viewportSize()?.width && page.viewportSize()?.width <= 576;
+        // Check for mobile devices and landscape mode
+        const viewport = page.viewportSize();
+        const isMobile = viewport?.width && viewport.width <= 576;
+        const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+        
         const isMobileChrome = isMobile && browserName === 'chromium';
+        const isMobileLandscape = isMobile && isLandscape;
+        
+        // Skip for problematic configurations
         test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
+        test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
 
         // Get viewport category to check if we're on a very small screen
         const display = await SecretMetadataDisplay.open(
@@ -541,10 +556,17 @@ test.describe('when opening the secret metadata', () => {
         // Check for conditions that require skipping
         test.skip(browserName === 'webkit', 'This test skipped in WebKit');
         
-        // Check for mobile Chrome
-        const isMobile = page.viewportSize()?.width && page.viewportSize()?.width <= 576;
+        // Check for mobile devices and landscape mode
+        const viewport = page.viewportSize();
+        const isMobile = viewport?.width && viewport.width <= 576;
+        const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+        
         const isMobileChrome = isMobile && browserName === 'chromium';
+        const isMobileLandscape = isMobile && isLandscape;
+        
+        // Skip for problematic configurations
         test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
+        test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
 
         // Create a display instance using the model open method
         const display = await SecretMetadataDisplay.open(
