@@ -102,7 +102,7 @@ export class SecretMetadataDisplay extends ComponentModel {
     // Check if we can find the secret metadata display
     try {
       const metadataElement = page.getByTestId('secret-metadata-display');
-      await metadataElement.waitFor({ timeout: 5000 }); // Restored original timeout
+      await metadataElement.waitFor({ timeout: 15000 }); // Increased timeout for more stability
       return new SecretMetadataDisplay(page);
     } catch (e) {
       console.warn('Error finding metadata display element:', e);

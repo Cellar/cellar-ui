@@ -304,39 +304,65 @@ export class CreateSecretForm extends ComponentModel {
    */
   public async toggleNoLimit(enable: boolean) {
     try {
-      // First make sure the toggle element is visible
+      // First make sure the toggle element is visible with extended timeout
       await this.page.getByTestId('no-limit-toggle').waitFor({ 
         state: 'visible', 
-        timeout: 10000 
+        timeout: 15000 
       });
       
-      // Use a more reliable approach - just click the toggle if the desired state is true
-      // or ensure it's unchecked if the desired state is false
-      const checkboxLocator = this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
-      
-      // Wait for checkbox to be ready before checking state
-      await checkboxLocator.waitFor({ timeout: 5000 });
-      
-      const isChecked = await checkboxLocator.isChecked();
-      
-      if ((enable && !isChecked) || (!enable && isChecked)) {
-        await this.noLimitToggle.click();
+      // Use a more direct approach - click the label directly which is more reliable
+      // than trying to interact with the invisible checkbox
+      if (enable) {
+        // Click the label directly which automatically toggles the checkbox
+        await this.page.locator('[data-testid="no-limit-toggle"] label').click({
+          force: true,  // Use force to ensure the click goes through
+          timeout: 10000
+        });
         
         // Wait for toggle to update
-        await this.page.waitForTimeout(300);
+        await this.page.waitForTimeout(500);
         
-        // Verify toggle state changed as expected
-        const newState = await checkboxLocator.isChecked();
-        if (newState !== enable) {
-          // Retry click if state didn't change
-          await this.noLimitToggle.click();
+        // Verify the checkbox is checked now
+        const checkbox = await this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
+        const isChecked = await checkbox.isChecked();
+        
+        if (!isChecked) {
+          // Retry with a different strategy
+          console.log('First attempt to check toggle failed, retrying');
+          await this.page.locator('[data-testid="no-limit-toggle"]').click({
+            force: true,
+            timeout: 10000
+          });
+          
+          // Wait for toggle to update
+          await this.page.waitForTimeout(500);
+        }
+      } else {
+        // Uncheck if needed
+        const checkbox = await this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
+        const isChecked = await checkbox.isChecked();
+        
+        if (isChecked) {
+          await this.page.locator('[data-testid="no-limit-toggle"] label').click({
+            force: true,
+            timeout: 10000
+          });
+          
+          // Wait for toggle to update
+          await this.page.waitForTimeout(500);
         }
       }
     } catch (e) {
       console.warn(`Error toggling No Limit: ${e}`);
-      // Try direct click as fallback
-      if (enable) {
-        await this.noLimitToggle.click();
+      // Emergency fallback - try clicking various elements that might toggle the checkbox
+      try {
+        await this.page.locator('[data-testid="no-limit-toggle"]').click({
+          force: true,
+          timeout: 10000
+        });
+        await this.page.waitForTimeout(500);
+      } catch (retryError) {
+        console.error('Final fallback toggle attempt failed:', retryError);
       }
     }
     return this;

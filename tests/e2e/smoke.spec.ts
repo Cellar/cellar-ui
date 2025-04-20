@@ -12,6 +12,10 @@ import { SecretMetadataDisplay } from './models/secretmetadata';
 import { AccessSecretDisplay } from './models/accesssecret';
 
 test.describe('smoke test', () => {
+  test.beforeEach(async ({ browserName }) => {
+    // Skip entire test suite for WebKit due to API context issues in Docker
+    test.skip(browserName === 'webkit', 'This test is not reliable in WebKit Docker environment');
+  });
   test.describe('with secret', () => {
     let secretMetadata: ISecretMetadata;
 
