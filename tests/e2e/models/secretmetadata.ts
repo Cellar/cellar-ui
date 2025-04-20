@@ -195,18 +195,14 @@ export class SecretMetadataDisplay extends ComponentModel {
 
   // Helper methods for copy operations with enhanced mobile support
   public async copySecretLinkAndWaitForConfirmation() {
-    // Use the enhanced clickAndVerifyFeedback method with data-testid
-    await this.copySecretLink.clickAndVerifyFeedback(
-      '[data-testid="copy-notification"]',
-    );
+    // Use the enhanced clickAndVerifyFeedback method
+    await this.copySecretLink.clickAndVerifyFeedback();
     return this;
   }
 
   public async copyMetadataLinkAndWaitForConfirmation() {
-    // Use the enhanced clickAndVerifyFeedback method with data-testid
-    await this.copyMetadataLink.clickAndVerifyFeedback(
-      '[data-testid="copy-notification"]',
-    );
+    // Use the enhanced clickAndVerifyFeedback method
+    await this.copyMetadataLink.clickAndVerifyFeedback();
     return this;
   }
 

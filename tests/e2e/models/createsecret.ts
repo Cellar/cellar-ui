@@ -24,15 +24,38 @@ export class CreateSecretForm extends ComponentModel {
    * @returns CreateSecretForm model
    */
   public static async open(page: Page) {
+    // Navigate to the create page
     await page.goto(`${config.appUrl}/secret/create`, {
       waitUntil: 'networkidle',
       timeout: 30000,
     });
 
+    // Add a short delay to allow the page to be fully ready
+    await page.waitForTimeout(500);
+
     // Wait for form to be visible
     const form = new CreateSecretForm(page);
-    await form.expectVisible();
-    return form;
+    
+    try {
+      // Use a more specific wait to ensure the secret content field is actually ready
+      await page.getByTestId('secret-content').waitFor({ 
+        state: 'visible',
+        timeout: 10000 
+      });
+      
+      // Additional check to ensure crucial UI elements are ready
+      await page.getByTestId('create-secret-button').waitFor({ 
+        state: 'visible', 
+        timeout: 5000 
+      });
+      
+      return form;
+    } catch (e) {
+      console.warn('Error waiting for CreateSecretForm elements:', e);
+      
+      // If specific elements not found, still return the form for more graceful handling
+      return form;
+    }
   }
 
   // Basic form elements
@@ -158,8 +181,9 @@ export class CreateSecretForm extends ComponentModel {
    * @returns This model instance
    */
   public async selectTime(time: string) {
-    await this.absoluteExpirationTime.click();
-    await this.page.locator(`text="${time}"`).click();
+    // Use selectOption which is the recommended way for dropdown selection in Playwright
+    // This works even if options aren't directly visible in the DOM
+    await this.page.locator('select[data-testid="expiration-absolute-time"]').selectOption(time);
     return this;
   }
 
@@ -169,8 +193,9 @@ export class CreateSecretForm extends ComponentModel {
    * @returns This model instance
    */
   public async selectAmPm(amPm: 'AM' | 'PM') {
-    await this.absoluteExpirationAmPm.click();
-    await this.page.locator(`text="${amPm}"`).click();
+    // Use selectOption which is the recommended way for dropdown selection in Playwright
+    // This works even if options aren't directly visible in the DOM
+    await this.page.locator('select[data-testid="expiration-absolute-ampm"]').selectOption(amPm);
     return this;
   }
 

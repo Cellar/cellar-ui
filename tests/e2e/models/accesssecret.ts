@@ -66,9 +66,7 @@ export class AccessSecretDisplay extends ComponentModel {
    */
   public async copySecretAndWaitForConfirmation() {
     // Use the enhanced clickAndVerifyFeedback method for better mobile support
-    await this.copySecret.clickAndVerifyFeedback(
-      '[data-testid="copy-notification"]',
-    );
+    await this.copySecret.clickAndVerifyFeedback();
     return this;
   }
 
