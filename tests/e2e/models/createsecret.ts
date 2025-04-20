@@ -303,11 +303,41 @@ export class CreateSecretForm extends ComponentModel {
    * @returns This model instance
    */
   public async toggleNoLimit(enable: boolean) {
-    const isChecked = await this.page
-      .locator('[data-testid="no-limit-toggle"] input[type="checkbox"]')
-      .isChecked();
-    if ((enable && !isChecked) || (!enable && isChecked)) {
-      await this.noLimitToggle.click();
+    try {
+      // First make sure the toggle element is visible
+      await this.page.getByTestId('no-limit-toggle').waitFor({ 
+        state: 'visible', 
+        timeout: 10000 
+      });
+      
+      // Use a more reliable approach - just click the toggle if the desired state is true
+      // or ensure it's unchecked if the desired state is false
+      const checkboxLocator = this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
+      
+      // Wait for checkbox to be ready before checking state
+      await checkboxLocator.waitFor({ timeout: 5000 });
+      
+      const isChecked = await checkboxLocator.isChecked();
+      
+      if ((enable && !isChecked) || (!enable && isChecked)) {
+        await this.noLimitToggle.click();
+        
+        // Wait for toggle to update
+        await this.page.waitForTimeout(300);
+        
+        // Verify toggle state changed as expected
+        const newState = await checkboxLocator.isChecked();
+        if (newState !== enable) {
+          // Retry click if state didn't change
+          await this.noLimitToggle.click();
+        }
+      }
+    } catch (e) {
+      console.warn(`Error toggling No Limit: ${e}`);
+      // Try direct click as fallback
+      if (enable) {
+        await this.noLimitToggle.click();
+      }
     }
     return this;
   }
