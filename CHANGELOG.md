@@ -1,5 +1,104 @@
 # Changelog
 
-## 1.0.0
+All notable changes to this project will be documented in this file.
 
-- Initial open source release
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [2.0.0] - 2025-12-23
+
+### Added
+
+- Complete React rewrite of the Cellar UI application
+- React Router DOM for navigation and routing
+- Mantine UI component library integration (@mantine/core, @mantine/dates, @mantine/form, @mantine/hooks)
+- Comprehensive unit testing framework with Vitest and React Testing Library
+- End-to-end testing framework with Playwright
+  - Multiple browser configurations (Chromium, Firefox, WebKit)
+  - Mobile and desktop viewport testing
+  - Component model-based test architecture
+  - Docker-based E2E testing environment
+  - WebKit-compatible API client using Strategy Pattern
+  - Custom Playwright fixtures for browser-agnostic testing
+- ESLint and Prettier for code quality and formatting
+- Copy button component with animated checkmark feedback
+- Error wrapper component for consistent form validation display
+- "No Limit" toggle option for access limits
+- Expiration mode toggle between relative and absolute time
+- Labels for create page form inputs
+- Favicon and page title
+- Footer with "About Cellar" link
+- Date formatting with user localization support
+- Path aliases (@/ for src/, @tests/ for tests/)
+- Makefile targets for testing, formatting, and service management
+- GitLab CI/CD pipeline integration with test reporting
+- Docker Compose configuration for local development services (Redis, Vault, API)
+- nginx configuration with JSON logging for Loki/Grafana integration
+- Contributing documentation, issue templates, and Code of Conduct
+- CLAUDE.md documentation for AI-assisted development
+
+### Changed
+
+- Complete UI redesign based on Figma specifications
+- Migrated from Angular to React 19
+- Updated to Node.js 24 and latest dependency versions
+- Updated all major dependencies to latest versions with breaking changes
+- Upgraded Playwright Docker image to v1.57.0
+- Primary button with expandable text animation
+- Copy button timeout reduced to 3 seconds
+- Responsive design for mobile, tablet, and desktop viewports
+- Tiny mobile width adjusted to 393px (matching Figma design)
+- Access limit inputs now disabled when "No Limit" is toggled
+- Form validation now uses error wrapper component instead of disabled buttons
+- Metadata page no longer shows access limit when set to unlimited
+- Component organization into subdirectories for better structure
+- License year updated to 2025
+- Copyright information updated
+- Dev email updated in Code of Conduct
+
+### Fixed
+
+- Bug where relative expiration values would reload on re-render
+- Bug where absolute expiration values would reload on re-render
+- Typo in expiration modes
+- Width of textarea and round button alignment
+- Color of textarea focus border
+- Lock icon in new secret button
+- Link on not found page
+- Footer blocking buttons on 404 page
+- Indent of error messages on create page
+- Centering of buttons on create page
+- Height of textarea on create page with new line height
+- Padding issues across all pages for mobile and desktop
+- Formatting issues on create, metadata, access, and error pages
+- E2E test stability in Docker environment
+- WebKit-specific test failures in CI
+- Mobile Chrome and landscape mode test stability
+- Header style bugs
+- Docker build issues
+- Audit warnings without breaking changes
+
+### Removed
+
+- Angular application and all Angular dependencies
+- Deprecated Docker stable tag in favor of latest
+
+## [1.0.0] - 2022-04-18
+
+### Added
+
+- Initial open source release of Cellar UI
+- Angular-based web application
+- Secret creation with configurable expiration and access limits
+- Secret metadata viewing
+- Secret access and retrieval
+- Secret deletion functionality
+- Docker containerization
+- GitLab CI/CD pipeline
+- Makefile for development workflows
+
+[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v2.0.0...HEAD
+[2.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v1.0.0...v2.0.0
+[1.0.0]: https://gitlab.com/cellar-app/cellar-ui/releases/tag/v1.0.0
