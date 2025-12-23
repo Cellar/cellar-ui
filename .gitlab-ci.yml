@@ -62,7 +62,7 @@ test-unit:
 
 .e2e:
   extends: .ui
-  image: mcr.microsoft.com/playwright:v1.50.1-noble
+  image: mcr.microsoft.com/playwright:v1.57.0-noble
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
