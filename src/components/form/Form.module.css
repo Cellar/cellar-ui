@@ -20,7 +20,9 @@
 .flatInput {
   appearance: none;
   background: none;
-  border: 2px solid var(--color-silver);
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--color-silver);
   font-family: var(--font-monospace);
   color: var(--color-black);
   font-size: 1.6rem;
@@ -37,7 +39,9 @@
   background-clip: padding-box;
   background-color: #fff;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-silver);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-silver);
   color: var(--color-black);
   display: block;
   font-family: var(--font-monospace);
@@ -101,7 +105,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .textArea:focus-visible {
   outline: none !important;
-  border: 1px solid var(--color-blue);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-blue);
   box-shadow: none;
 }
 
@@ -116,12 +122,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: var(--color-silver);
 }
 .formButton:active {
-  border: 2px solid var(--color-silver);
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--color-silver);
 }
 
 .toggled {
   background-color: var(--color-silver);
-  border: 1px solid var(--color-gray);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-gray);
 }
 
 .select {

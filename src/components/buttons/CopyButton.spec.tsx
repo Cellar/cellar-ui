@@ -41,6 +41,7 @@ describe("When rendering CopyButton", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    mockWriteText.mockClear();
     vi.stubGlobal("navigator", {
       clipboard: {
         writeText: mockWriteText,
