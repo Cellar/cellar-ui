@@ -25,7 +25,7 @@ variables:
     - docker logout $CI_REGISTRY
 
 .ui:
-  image: node:20-alpine
+  image: node:24-alpine
   before_script:
     - apk add --no-cache make curl
     - npm install

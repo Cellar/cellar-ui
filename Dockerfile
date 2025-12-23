@@ -1,4 +1,4 @@
-FROM node:20-alpine AS node
+FROM node:24-alpine AS node
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -15,7 +15,7 @@ RUN npm version ${APP_VERSION} --allow-same-version && \
     npm run build
 
 
-FROM nginx:1.26-alpine
+FROM nginx:1.28-alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 
