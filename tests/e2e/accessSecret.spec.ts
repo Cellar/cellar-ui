@@ -19,7 +19,10 @@ const testData = {
 
 // Skip all WebKit tests due to persistent issues
 test.beforeEach(async ({ browserName }) => {
-  test.skip(browserName === 'webkit', 'Skipping WebKit tests in Docker due to persistent API context issues');
+  test.skip(
+    browserName === 'webkit',
+    'Skipping WebKit tests in Docker due to persistent API context issues',
+  );
 });
 
 // Initialization for each test

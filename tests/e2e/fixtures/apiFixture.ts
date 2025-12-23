@@ -17,17 +17,17 @@ export const test = base.extend<ApiFixtures>({
     try {
       // First ensure page is fully loaded
       await page.waitForLoadState('networkidle', { timeout: 15000 });
-      
+
       const browserName = page.context().browser()?.browserType().name();
-  
+
       if (browserName) {
         console.log(`Initializing API client for browser: ${browserName}`);
         setBrowserType(browserName);
-  
+
         // For WebKit, we need to set the request context for cross-origin requests
         if (browserName === 'webkit') {
           console.log('Setting Playwright request for WebKit');
-          
+
           // Create a global variable for the request context to make it more stable
           // @ts-ignore - We're adding a global property
           if (!global.__webkitRequestContext) {
@@ -37,18 +37,18 @@ export const test = base.extend<ApiFixtures>({
           } else {
             console.log('Using existing global WebKit request context');
           }
-          
+
           // Always set the request context
           setPlaywrightRequest(request);
-          
+
           // Verify API connection with more resilient approach
           try {
             // Try multiple URL formats in case one doesn't work
             const urlFormats = [
               `${config.apiUrl}/v1/health`,
-              `http://localhost:5173/api/v1/health`
+              `http://localhost:5173/api/v1/health`,
             ];
-            
+
             // Only include page-based URL if we're not on about:blank
             const currentUrl = page.url();
             if (currentUrl && !currentUrl.startsWith('about:')) {
@@ -61,31 +61,36 @@ export const test = base.extend<ApiFixtures>({
                 console.warn('Failed to extract base URL from page URL:', e);
               }
             }
-            
+
             let connectionSuccess = false;
-            
+
             for (const url of urlFormats) {
               if (connectionSuccess) break;
-              
+
               try {
                 console.log(`Testing WebKit API connection at: ${url}`);
                 const testResponse = await request.get(url, {
                   timeout: 15000,
-                  failOnStatusCode: false
+                  failOnStatusCode: false,
                 });
-                
-                console.log(`WebKit API test response (${url}): ${testResponse.status()}`);
-                
+
+                console.log(
+                  `WebKit API test response (${url}): ${testResponse.status()}`,
+                );
+
                 if (testResponse.ok() || testResponse.status() === 204) {
                   console.log(`Successfully connected to API at ${url}`);
                   connectionSuccess = true;
                   break;
                 }
               } catch (urlError) {
-                console.warn(`WebKit API test request to ${url} failed:`, urlError);
+                console.warn(
+                  `WebKit API test request to ${url} failed:`,
+                  urlError,
+                );
               }
             }
-            
+
             if (!connectionSuccess) {
               console.warn('All WebKit API connection attempts failed');
             }
@@ -94,7 +99,7 @@ export const test = base.extend<ApiFixtures>({
           }
         }
       }
-  
+
       // Define the initApi function that gets called for each test
       await use(async () => {
         try {
@@ -120,7 +125,9 @@ export const test = base.extend<ApiFixtures>({
       console.error('Error in initApi fixture:', error);
       // Still need to call use() even if there was an error
       await use(async () => {
-        console.warn('Using initApi with previous error - API operations may fail');
+        console.warn(
+          'Using initApi with previous error - API operations may fail',
+        );
       });
     }
   },
@@ -139,11 +146,15 @@ export const test = base.extend<ApiFixtures>({
 
       // Get the base URL from the current page context, but ensure it's a valid URL
       let baseUrl = 'http://localhost:5173'; // Default URL
-      
+
       try {
         const currentUrl = page.url();
         // Only try to extract URL if not about:blank
-        if (currentUrl && !currentUrl.startsWith('about:') && currentUrl.includes('http')) {
+        if (
+          currentUrl &&
+          !currentUrl.startsWith('about:') &&
+          currentUrl.includes('http')
+        ) {
           // Extract just the base part of the URL
           const urlParts = currentUrl.split('/secret/');
           if (urlParts[0] && urlParts[0].startsWith('http')) {
@@ -176,7 +187,9 @@ export const test = base.extend<ApiFixtures>({
 
         // Add more defensive checking for response status
         if (!metadata.ok()) {
-          console.warn(`API returned non-OK status: ${metadata.status()} for secretId: ${secretId}`);
+          console.warn(
+            `API returned non-OK status: ${metadata.status()} for secretId: ${secretId}`,
+          );
           // Don't fail the test if the API is having issues
           return;
         }
@@ -195,7 +208,10 @@ export const test = base.extend<ApiFixtures>({
             expect(actualLimit).toBe(expectedLimit);
           }
         } catch (jsonError) {
-          console.warn(`Failed to parse JSON response for secretId: ${secretId}`, jsonError);
+          console.warn(
+            `Failed to parse JSON response for secretId: ${secretId}`,
+            jsonError,
+          );
         }
       } catch (error) {
         console.error(`Error verifying secret access for ${secretId}:`, error);

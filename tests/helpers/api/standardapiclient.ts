@@ -35,7 +35,7 @@ export class StandardApiClient implements IApiClient {
       // Add retry logic for API calls
       let retries = 3;
       let res;
-      
+
       while (retries > 0) {
         try {
           res = await fetch(`${this.baseUrl}/v1/secrets`, {
@@ -45,32 +45,32 @@ export class StandardApiClient implements IApiClient {
             },
             body: JSON.stringify(payload),
           });
-          
+
           if (res.ok) {
             break;
           }
-          
+
           console.warn(
             `API call failed (${retries} retries left): status ${res.status}`,
           );
         } catch (fetchError) {
           console.warn(`Fetch error (${retries} retries left):`, fetchError);
         }
-        
+
         retries--;
         if (retries > 0) {
           // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-      
+
       if (!res || !res.ok) {
         console.error(
           'Failed to create secret after retries:',
           res?.status,
           res?.statusText,
         );
-        
+
         return {
           error: `API error: ${res?.status} ${res?.statusText}`,
           status: res?.status || 500,
@@ -80,7 +80,7 @@ export class StandardApiClient implements IApiClient {
       try {
         const data = await res.json();
         console.log(`Created secret with ID: ${data.id}`);
-        
+
         // Extra validation to ensure we have a valid response
         if (!data.id) {
           console.warn('API returned success but missing secret ID');
@@ -89,7 +89,7 @@ export class StandardApiClient implements IApiClient {
             status: 500,
           } as IApiError;
         }
-        
+
         return data;
       } catch (jsonError) {
         console.error('Error parsing API response:', jsonError);
@@ -114,53 +114,53 @@ export class StandardApiClient implements IApiClient {
       console.warn('Cannot get metadata - secretId is undefined or empty');
       return {
         error: 'Secret ID is undefined or empty',
-        status: 400
+        status: 400,
       } as IApiError;
     }
-    
+
     try {
       // Add retry logic for API calls
       let retries = 3;
       let res;
-      
+
       while (retries > 0) {
         try {
           res = await fetch(`${this.baseUrl}/v1/secrets/${secretId}`, {
             method: 'GET',
           });
-          
+
           if (res.ok) {
             break;
           }
-          
+
           // Special case: For 404, we don't need to retry
           if (res.status === 404) {
             return {
               error: 'Secret not found',
-              status: 404
+              status: 404,
             } as IApiError;
           }
-          
+
           console.warn(
             `Failed to get metadata (${retries} retries left): status ${res.status}`,
           );
         } catch (fetchError) {
           console.warn(`Fetch error (${retries} retries left):`, fetchError);
         }
-        
+
         retries--;
         if (retries > 0) {
           // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-      
+
       if (!res || !res.ok) {
         console.error(
           `Failed to get metadata for secret ${secretId} after retries:`,
           res?.status,
         );
-        
+
         return {
           error: `API error: ${res?.status}`,
           status: res?.status || 500,
@@ -191,15 +191,15 @@ export class StandardApiClient implements IApiClient {
       console.warn('Cannot access secret - secretId is undefined or empty');
       return {
         error: 'Secret ID is undefined or empty',
-        status: 400
+        status: 400,
       } as IApiError;
     }
-    
+
     try {
       // Add retry logic for API calls
       let retries = 3;
       let res;
-      
+
       while (retries > 0) {
         try {
           res = await fetch(`${this.baseUrl}/v1/secrets/${secretId}/access`, {
@@ -208,39 +208,39 @@ export class StandardApiClient implements IApiClient {
               'Content-Type': 'application/json',
             },
           });
-          
+
           if (res.ok) {
             break;
           }
-          
+
           // Special case: For 404, we don't need to retry
           if (res.status === 404) {
             return {
               error: 'Secret not found or access limit reached',
-              status: 404
+              status: 404,
             } as IApiError;
           }
-          
+
           console.warn(
             `Failed to access secret (${retries} retries left): status ${res.status}`,
           );
         } catch (fetchError) {
           console.warn(`Fetch error (${retries} retries left):`, fetchError);
         }
-        
+
         retries--;
         if (retries > 0) {
           // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-      
+
       if (!res || !res.ok) {
         console.error(
           `Failed to access secret ${secretId} after retries:`,
           res?.status,
         );
-        
+
         return {
           error: `API error: ${res?.status}`,
           status: res?.status || 500,
@@ -271,56 +271,56 @@ export class StandardApiClient implements IApiClient {
       console.warn('Cannot delete secret - secretId is undefined or empty');
       return {
         error: 'Secret ID is undefined or empty',
-        status: 400
+        status: 400,
       } as IApiError;
     }
-    
+
     try {
       // Add retry logic for API calls
       let retries = 3;
       let res;
-      
+
       while (retries > 0) {
         try {
           res = await fetch(`${this.baseUrl}/v1/secrets/${secretId}`, {
             method: 'DELETE',
           });
-          
+
           if (res.ok || res.status === 204 || res.status === 404) {
             break;
           }
-          
+
           console.warn(
             `Failed to delete secret (${retries} retries left): status ${res.status}`,
           );
         } catch (fetchError) {
           console.warn(`Fetch error (${retries} retries left):`, fetchError);
         }
-        
+
         retries--;
         if (retries > 0) {
           // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-      
+
       if (!res) {
         return {
           error: 'Failed to delete secret',
-          status: 500
+          status: 500,
         } as IApiError;
       }
-      
+
       // 204 = Success, no content
       if (res.status === 204) {
         return null;
       }
-      
+
       // 404 = Already deleted or not found
       if (res.status === 404) {
         return null;
       }
-      
+
       // Try to parse error response
       try {
         const text = await res.text();

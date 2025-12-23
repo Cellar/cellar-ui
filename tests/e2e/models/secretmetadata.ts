@@ -16,13 +16,13 @@ export class SecretMetadataDisplay extends ComponentModel {
 
     if (!id || id === 'undefined') {
       console.warn('Trying to open page with invalid ID:', id);
-      
+
       // Special case for missing or undefined secret ID - go directly to NotFound
       await page.goto(`${config.appUrl}/not-found`, {
         timeout: 30000,
         waitUntil: 'domcontentloaded',
       });
-      
+
       return new NotFound(page);
     }
 
@@ -30,43 +30,50 @@ export class SecretMetadataDisplay extends ComponentModel {
       // Check the API first with retries
       let retries = 2;
       let response;
-      
+
       while (retries >= 0) {
         try {
           response = await page.request.get(
             `${config.apiUrl}/v1/secrets/${id}`,
-            { timeout: 10000 }
+            { timeout: 10000 },
           );
-          
+
           if (response.ok()) {
             console.log(`Secret metadata for ${id} exists in API`);
             break;
           }
-          
+
           if (response.status() === 404) {
-            console.warn(`Secret ${id} not found in API, will likely get NotFound page`);
-            
+            console.warn(
+              `Secret ${id} not found in API, will likely get NotFound page`,
+            );
+
             // Special handling for webkit - if API says 404, go directly to NotFound
             const browserName = page.context().browser()?.browserType().name();
             if (browserName === 'webkit') {
-              console.log('WebKit detected with 404 API response - going directly to NotFound');
+              console.log(
+                'WebKit detected with 404 API response - going directly to NotFound',
+              );
               await page.goto(`${config.appUrl}/not-found`, {
                 timeout: 30000,
                 waitUntil: 'domcontentloaded',
               });
               return new NotFound(page);
             }
-            
+
             break;
           }
-          
+
           console.warn(
-            `API check failed (${retries} retries left): status ${response.status()}`
+            `API check failed (${retries} retries left): status ${response.status()}`,
           );
         } catch (apiError) {
-          console.warn(`API request error (${retries} retries left):`, apiError);
+          console.warn(
+            `API request error (${retries} retries left):`,
+            apiError,
+          );
         }
-        
+
         retries--;
         if (retries >= 0) {
           await page.waitForTimeout(1000);
@@ -79,7 +86,7 @@ export class SecretMetadataDisplay extends ComponentModel {
     // Log browser type for debugging
     const browserName = page.context().browser()?.browserType().name();
     console.log(`Browser type: ${browserName}`);
-    
+
     // WebKit requires special handling
     const isWebKit = browserName === 'webkit';
 
@@ -89,12 +96,14 @@ export class SecretMetadataDisplay extends ComponentModel {
         timeout: 40000, // Even longer timeout for WebKit
         waitUntil: isWebKit ? 'load' : 'domcontentloaded', // Different wait strategy for WebKit
       });
-      
+
       // Additional wait to ensure page is fully loaded
-      await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(e => {
-        console.warn('Networkidle timeout, continuing anyway:', e);
-      });
-      
+      await page
+        .waitForLoadState('networkidle', { timeout: 15000 })
+        .catch((e) => {
+          console.warn('Networkidle timeout, continuing anyway:', e);
+        });
+
       // Special additional wait for WebKit
       if (isWebKit) {
         console.log('Extra wait for WebKit stability');
@@ -102,12 +111,12 @@ export class SecretMetadataDisplay extends ComponentModel {
       }
     } catch (navError) {
       console.error('Navigation error:', navError);
-      
+
       // Try one more time with less strict wait conditions
       await page.goto(`${config.appUrl}/secret/${id}`, {
         timeout: 40000, // Even longer timeout
       });
-      
+
       if (isWebKit) {
         // Extra wait for WebKit
         await page.waitForTimeout(2000);
@@ -133,79 +142,89 @@ export class SecretMetadataDisplay extends ComponentModel {
     // For WebKit, try an alternative approach with multiple fallbacks
     if (isWebKit) {
       console.log('Using enhanced WebKit detection for metadata display');
-      
+
       // Try multiple selectors with longer timeouts
       try {
         // First try test ID (standard approach)
         const metadataByTestId = page.getByTestId('secret-metadata-display');
-        const metadataVisible = await metadataByTestId.isVisible({ timeout: 5000 })
-          .catch(e => {
+        const metadataVisible = await metadataByTestId
+          .isVisible({ timeout: 5000 })
+          .catch((e) => {
             console.log('Test ID approach failed:', e);
             return false;
           });
-        
+
         if (metadataVisible) {
           console.log('Found metadata display by test ID');
           return new SecretMetadataDisplay(page);
         }
-        
+
         // Then try by CSS ID as fallback
         console.log('Trying CSS ID fallback for WebKit');
         const metadataById = page.locator('#secret-metadata-display');
-        const idVisible = await metadataById.isVisible({ timeout: 5000 })
-          .catch(e => {
+        const idVisible = await metadataById
+          .isVisible({ timeout: 5000 })
+          .catch((e) => {
             console.log('CSS ID approach failed:', e);
             return false;
           });
-        
+
         if (idVisible) {
           console.log('Found metadata display by CSS ID');
           return new SecretMetadataDisplay(page);
         }
-        
+
         // Try any element with metadataText class as another fallback
         console.log('Trying class selector fallback for WebKit');
         const metadataText = page.locator('.metadataText');
-        const textVisible = await metadataText.isVisible({ timeout: 5000 })
-          .catch(e => {
+        const textVisible = await metadataText
+          .isVisible({ timeout: 5000 })
+          .catch((e) => {
             console.log('CSS class approach failed:', e);
             return false;
           });
-        
+
         if (textVisible) {
           console.log('Found metadata display by metadataText class');
           return new SecretMetadataDisplay(page);
         }
-        
+
         // Final check - if URL has the secret ID, we're likely on the metadata page regardless
-        if (page.url().includes(`/secret/${id}`) && !page.url().includes('create')) {
+        if (
+          page.url().includes(`/secret/${id}`) &&
+          !page.url().includes('create')
+        ) {
           console.log('On metadata page by URL pattern matching');
           return new SecretMetadataDisplay(page);
         }
-        
+
         // If all checks fail, check NotFound again
         const notFoundAgain = page.getByTestId('not-found');
-        if (await notFoundAgain.isVisible({ timeout: 2000 }).catch(() => false)) {
+        if (
+          await notFoundAgain.isVisible({ timeout: 2000 }).catch(() => false)
+        ) {
           console.log('Found NotFound on second check');
           return new NotFound(page);
         }
-        
+
         // Last resort - return what we think the page should be based on URL
         if (page.url().includes('not-found')) {
           return new NotFound(page);
         }
-        
+
         // When all fails, return metadata display as default
-        console.log('All detection approaches failed, defaulting to metadata display');
+        console.log(
+          'All detection approaches failed, defaulting to metadata display',
+        );
         return new SecretMetadataDisplay(page);
       } catch (webkitError) {
         console.error('Error in WebKit enhanced detection:', webkitError);
-        
+
         // Default to checking URL
         if (page.url().includes('not-found')) {
           return new NotFound(page);
         }
-        
+
         return new SecretMetadataDisplay(page);
       }
     }
@@ -217,14 +236,14 @@ export class SecretMetadataDisplay extends ComponentModel {
       return new SecretMetadataDisplay(page);
     } catch (e) {
       console.warn('Error finding metadata display element:', e);
-      
+
       // If we can't find the metadata display, check URL to determine what page we're on
       const currentUrl = page.url();
-      
+
       if (currentUrl.includes('not-found')) {
         return new NotFound(page);
       }
-      
+
       // Default to returning a metadata display (test will fail if elements not found)
       return new SecretMetadataDisplay(page);
     }
@@ -332,11 +351,14 @@ export class SecretMetadataDisplay extends ComponentModel {
 
       // Check if we're in landscape mode (width > height)
       const viewport = this.page.viewportSize();
-      const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+      const isLandscape =
+        viewport?.width && viewport?.height && viewport.width > viewport.height;
 
       // Log for debugging
       if (isLandscape) {
-        console.log('Detected landscape mobile layout - this may have different UI layout');
+        console.log(
+          'Detected landscape mobile layout - this may have different UI layout',
+        );
       }
 
       // For mobile viewports, check if mobile-specific UI elements are visible
@@ -364,21 +386,26 @@ export class SecretMetadataDisplay extends ComponentModel {
     // Check if we're on mobile and/or landscape mode
     const viewport = this.page.viewportSize();
     const isMobile = await this.isMobile();
-    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+    const isLandscape =
+      viewport?.width && viewport?.height && viewport.width > viewport.height;
     const browserName = this.page.context().browser()?.browserType().name();
-    
+
     const isMobileChrome = isMobile && browserName === 'chromium';
     const isMobileLandscape = isMobile && isLandscape;
-    
+
     // Longer timeouts for special cases
-    const timeout = (isMobileChrome || isMobileLandscape) ? 20000 : 10000;
-    
-    console.log(`Verifying buttons with browser: ${browserName}, mobile: ${isMobile}, landscape: ${isLandscape}, timeout: ${timeout}ms`);
+    const timeout = isMobileChrome || isMobileLandscape ? 20000 : 10000;
+
+    console.log(
+      `Verifying buttons with browser: ${browserName}, mobile: ${isMobile}, landscape: ${isLandscape}, timeout: ${timeout}ms`,
+    );
 
     // Special handling for mobile landscape mode
     if (isMobileLandscape) {
-      console.log('Using enhanced landscape mode handling for button verification');
-      
+      console.log(
+        'Using enhanced landscape mode handling for button verification',
+      );
+
       // For landscape mode, buttons might be arranged differently or require scrolling
       try {
         // Try scrolling to the bottom of the page to ensure buttons are visible
@@ -386,44 +413,46 @@ export class SecretMetadataDisplay extends ComponentModel {
           window.scrollTo(0, document.body.scrollHeight);
         });
         await this.page.waitForTimeout(1000);
-        
+
         // In landscape mode, the minimal requirement is to find at least 1 button
         const copySecretBtn = this.page.getByTestId('copy-secret-link-button');
-        const copyMetadataBtn = this.page.getByTestId('copy-metadata-link-button');
+        const copyMetadataBtn = this.page.getByTestId(
+          'copy-metadata-link-button',
+        );
         const deleteBtn = this.page.getByTestId('delete-secret-button');
-        
+
         // Try each button with longer timeouts
         let anyButtonVisible = false;
-        
+
         // Check for at least one button to be visible
         try {
           await copySecretBtn.waitFor({ state: 'visible', timeout: 5000 });
           console.log('Copy secret button visible in landscape mode');
           anyButtonVisible = true;
-        } catch (e) { 
-          console.log('Copy secret button not visible in landscape'); 
+        } catch (e) {
+          console.log('Copy secret button not visible in landscape');
         }
-        
+
         if (!anyButtonVisible) {
           try {
             await copyMetadataBtn.waitFor({ state: 'visible', timeout: 5000 });
             console.log('Copy metadata button visible in landscape mode');
             anyButtonVisible = true;
-          } catch (e) { 
-            console.log('Copy metadata button not visible in landscape'); 
+          } catch (e) {
+            console.log('Copy metadata button not visible in landscape');
           }
         }
-        
+
         if (!anyButtonVisible) {
           try {
             await deleteBtn.waitFor({ state: 'visible', timeout: 5000 });
             console.log('Delete button visible in landscape mode');
             anyButtonVisible = true;
-          } catch (e) { 
-            console.log('Delete button not visible in landscape'); 
+          } catch (e) {
+            console.log('Delete button not visible in landscape');
           }
         }
-        
+
         // In landscape, finding even 1 button is enough to consider the test passed
         return anyButtonVisible;
       } catch (e) {
@@ -434,13 +463,15 @@ export class SecretMetadataDisplay extends ComponentModel {
 
     try {
       const copySecretBtn = this.page.getByTestId('copy-secret-link-button');
-      const copyMetadataBtn = this.page.getByTestId('copy-metadata-link-button');
+      const copyMetadataBtn = this.page.getByTestId(
+        'copy-metadata-link-button',
+      );
       const deleteBtn = this.page.getByTestId('delete-secret-button');
 
       // For mobile Chrome, add extra stability measures
       if (isMobileChrome) {
         await this.page.waitForTimeout(1000);
-        
+
         // Try to scroll to ensure buttons are in viewport
         try {
           await copySecretBtn.scrollIntoViewIfNeeded();
@@ -454,21 +485,21 @@ export class SecretMetadataDisplay extends ComponentModel {
       let copySecretVisible = false;
       let copyMetadataVisible = false;
       let deleteVisible = false;
-      
+
       try {
         await copySecretBtn.waitFor({ state: 'visible', timeout });
         copySecretVisible = true;
       } catch (e) {
         console.log('Copy secret button not visible:', e);
       }
-      
+
       try {
         await copyMetadataBtn.waitFor({ state: 'visible', timeout });
         copyMetadataVisible = true;
       } catch (e) {
         console.log('Copy metadata button not visible:', e);
       }
-      
+
       try {
         await deleteBtn.waitFor({ state: 'visible', timeout });
         deleteVisible = true;
@@ -478,9 +509,15 @@ export class SecretMetadataDisplay extends ComponentModel {
 
       // For mobile Chrome, allow partial success (at least 2 buttons visible)
       if (isMobileChrome) {
-        const visibleCount = [copySecretVisible, copyMetadataVisible, deleteVisible].filter(v => v).length;
+        const visibleCount = [
+          copySecretVisible,
+          copyMetadataVisible,
+          deleteVisible,
+        ].filter((v) => v).length;
         if (visibleCount >= 2) {
-          console.log(`Mobile Chrome: ${visibleCount}/3 buttons visible, considering this a success`);
+          console.log(
+            `Mobile Chrome: ${visibleCount}/3 buttons visible, considering this a success`,
+          );
           return true;
         }
       }
@@ -508,13 +545,16 @@ export class SecretMetadataDisplay extends ComponentModel {
     const browserName = this.page.context().browser()?.browserType().name();
     const viewport = this.page.viewportSize();
     const isMobile = await this.isMobile();
-    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
-    
+    const isLandscape =
+      viewport?.width && viewport?.height && viewport.width > viewport.height;
+
     const isMobileChrome = isMobile && browserName === 'chromium';
     const isMobileLandscape = isMobile && isLandscape;
-    
-    console.log(`Delete with confirmation: browser=${browserName}, mobile=${isMobile}, landscape=${isLandscape}, confirm=${confirm}`);
-    
+
+    console.log(
+      `Delete with confirmation: browser=${browserName}, mobile=${isMobile}, landscape=${isLandscape}, confirm=${confirm}`,
+    );
+
     // Set up window.confirm mock to return the desired value
     await this.page.evaluate((shouldConfirm) => {
       window.confirm = () => shouldConfirm;
@@ -523,18 +563,24 @@ export class SecretMetadataDisplay extends ComponentModel {
     // Special handling for mobile landscape mode
     if (isMobileLandscape) {
       console.log('Using enhanced mobile landscape handling for delete button');
-      
+
       try {
         // For mobile landscape, ensure the button is visible and in view with extended scrolling
         const deleteBtn = this.page.getByTestId('delete-secret-button');
-        
+
         // First try to scroll the button into view
-        await deleteBtn.scrollIntoViewIfNeeded({timeout: 5000})
-          .catch(e => console.log('Initial scroll failed, will retry with different approach:', e));
-        
+        await deleteBtn
+          .scrollIntoViewIfNeeded({ timeout: 5000 })
+          .catch((e) =>
+            console.log(
+              'Initial scroll failed, will retry with different approach:',
+              e,
+            ),
+          );
+
         // Add extra wait for stability
         await this.page.waitForTimeout(1000);
-        
+
         // For landscape, we may need to scroll differently due to different layout
         try {
           // Try scrolling to the bottom of the page to ensure button is in view
@@ -545,45 +591,68 @@ export class SecretMetadataDisplay extends ComponentModel {
         } catch (scrollError) {
           console.log('Landscape scroll adjustment failed:', scrollError);
         }
-        
+
         // For confirmed delete in mobile landscape
         if (confirm) {
           // Click directly with a higher timeout
-          await deleteBtn.click({timeout: 20000, force: true})
-            .catch(e => console.log('Click failed in landscape mode, will check URL anyway:', e));
-            
+          await deleteBtn
+            .click({ timeout: 20000, force: true })
+            .catch((e) =>
+              console.log(
+                'Click failed in landscape mode, will check URL anyway:',
+                e,
+              ),
+            );
+
           // Wait for navigation with increased timeout
-          await this.page.waitForURL(/.*\/secret\/create/, {timeout: 20000})
-            .catch(e => console.log('Navigation timeout after delete in landscape mode:', e));
-            
-          // Wait for page to stabilize  
-          await this.page.waitForLoadState('networkidle', {timeout: 20000})
-            .catch(e => console.log('Load state timeout after delete in landscape mode:', e));
-          
+          await this.page
+            .waitForURL(/.*\/secret\/create/, { timeout: 20000 })
+            .catch((e) =>
+              console.log(
+                'Navigation timeout after delete in landscape mode:',
+                e,
+              ),
+            );
+
+          // Wait for page to stabilize
+          await this.page
+            .waitForLoadState('networkidle', { timeout: 20000 })
+            .catch((e) =>
+              console.log(
+                'Load state timeout after delete in landscape mode:',
+                e,
+              ),
+            );
+
           // Check if we successfully navigated despite potential errors
           if (this.page.url().includes('/secret/create')) {
-            console.log('Successfully navigated to create page in landscape mode');
+            console.log(
+              'Successfully navigated to create page in landscape mode',
+            );
             return new CreateSecretForm(this.page);
           }
-          
+
           // If we couldn't detect successful navigation, return as best effort
           console.warn('Could not confirm successful delete in landscape mode');
           return new CreateSecretForm(this.page);
         } else {
           // For cancel, we stay on the same page
-          await deleteBtn.click({timeout: 20000, force: true})
-            .catch(e => console.log('Cancel click failed in landscape mode:', e));
+          await deleteBtn
+            .click({ timeout: 20000, force: true })
+            .catch((e) =>
+              console.log('Cancel click failed in landscape mode:', e),
+            );
           await this.page.waitForTimeout(1000);
           return this;
         }
       } catch (e) {
         console.error('Error in mobile landscape delete handling:', e);
-        
+
         // Fall back to checking URL for confirm case
         if (confirm && this.page.url().includes('/secret/create')) {
           return new CreateSecretForm(this.page);
         }
-        
+
         // Default to returning current page for cancel case
         return this;
       }
@@ -592,33 +661,35 @@ export class SecretMetadataDisplay extends ComponentModel {
     // Special handling for mobile Chrome
     if (isMobileChrome) {
       console.log('Using enhanced mobile Chrome handling for delete button');
-      
+
       try {
         // For mobile Chrome, ensure the button is visible and in view
         const deleteBtn = this.page.getByTestId('delete-secret-button');
         await deleteBtn.scrollIntoViewIfNeeded();
         await this.page.waitForTimeout(1000);
-        
+
         // For confirmed delete in mobile Chrome
         if (confirm) {
           // Click directly and then wait for navigation
-          await deleteBtn.click({timeout: 15000});
-          await this.page.waitForURL(/.*\/secret\/create/, {timeout: 15000})
-            .catch(e => console.log('Navigation timeout after delete:', e));
-          await this.page.waitForLoadState('networkidle', {timeout: 15000})
-            .catch(e => console.log('Load state timeout after delete:', e));
-          
+          await deleteBtn.click({ timeout: 15000 });
+          await this.page
+            .waitForURL(/.*\/secret\/create/, { timeout: 15000 })
+            .catch((e) => console.log('Navigation timeout after delete:', e));
+          await this.page
+            .waitForLoadState('networkidle', { timeout: 15000 })
+            .catch((e) => console.log('Load state timeout after delete:', e));
+
           // Create and return the new page model
           return new CreateSecretForm(this.page);
         } else {
           // For cancel, stay on same page
-          await deleteBtn.click({timeout: 15000});
+          await deleteBtn.click({ timeout: 15000 });
           await this.page.waitForTimeout(1000);
           return this;
         }
       } catch (e) {
         console.error('Error in mobile Chrome delete handling:', e);
-        
+
         // If mobile Chrome handling fails, fall back to checking URL
         if (confirm) {
           // If we're supposed to be redirected, check URL
@@ -626,7 +697,7 @@ export class SecretMetadataDisplay extends ComponentModel {
             return new CreateSecretForm(this.page);
           }
         }
-        
+
         // Default to returning current page
         return this;
       }
@@ -643,7 +714,7 @@ export class SecretMetadataDisplay extends ComponentModel {
           .click();
       } catch (e) {
         console.error('Error in standard delete with confirm:', e);
-        
+
         // Fallback - check if we got redirected despite the error
         if (this.page.url().includes('/secret/create')) {
           console.log('Delete succeeded despite error - we are on create page');
@@ -662,10 +733,12 @@ export class SecretMetadataDisplay extends ComponentModel {
 
         // Give a moment for any navigation that might happen
         await this.page.waitForTimeout(1000);
-        
+
         // Verify we're still on the same page
         if (this.page.url() !== currentUrl) {
-          console.warn(`Unexpected navigation after cancel: ${this.page.url()}`);
+          console.warn(
+            `Unexpected navigation after cancel: ${this.page.url()}`,
+          );
         }
       } catch (e) {
         console.error('Error in standard delete with cancel:', e);

@@ -37,6 +37,6 @@ export function format(date: Date, formatStr: string): string {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-  
+
   throw new Error(`Unsupported format string: ${formatStr}`);
 }

@@ -34,7 +34,9 @@ type FormErrors = {
   [key in keyof typeof FormInputs]: string;
 };
 
-export const CreateSecretForm = () => {
+export const CreateSecretForm: React.FC<
+  React.HTMLAttributes<HTMLDivElement>
+> = (props) => {
   const [secretContent, setSecretContent] = useState("");
   const [expirationMode, setExpirationMode] = useState(
     ExpirationModes.Relative,
@@ -89,7 +91,7 @@ export const CreateSecretForm = () => {
   }
 
   return (
-    <div>
+    <div {...props}>
       <Form noValidate onSubmit={(event) => event.preventDefault()}>
         <ErrorWrapper
           className={classes.errorIndent}

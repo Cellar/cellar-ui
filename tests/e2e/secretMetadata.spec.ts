@@ -13,17 +13,21 @@ import { NotFound } from './models/notfound';
 test.describe('when opening the secret metadata', () => {
   test.beforeEach(async ({ browserName, page }) => {
     // Skip WebKit tests that are still problematic
-    test.skip(browserName === 'webkit', 'Skipping WebKit tests in Docker due to persistent API context issues');
-    
+    test.skip(
+      browserName === 'webkit',
+      'Skipping WebKit tests in Docker due to persistent API context issues',
+    );
+
     // Skip landscape mode tests globally
     const viewport = page.viewportSize();
-    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
-    
+    const isLandscape =
+      viewport?.width && viewport?.height && viewport.width > viewport.height;
+
     if (isLandscape) {
       test.skip(true, 'Skipping all landscape mode tests due to layout issues');
     }
   });
-  
+
   let secretMetadata: ISecretMetadata;
   const standardAccessLimit = 3;
 
@@ -34,14 +38,17 @@ test.describe('when opening the secret metadata', () => {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('initApi timeout')), 10000);
       });
-      
-      await Promise.race([initApiPromise, timeoutPromise]).catch(e => {
-        console.warn('API initialization timed out or failed, continuing test anyway:', e);
+
+      await Promise.race([initApiPromise, timeoutPromise]).catch((e) => {
+        console.warn(
+          'API initialization timed out or failed, continuing test anyway:',
+          e,
+        );
       });
     } catch (e) {
       console.warn('Failed to initialize API, continuing test anyway:', e);
     }
-    
+
     const expiration = getRelativeEpoch(24);
     const browserName = page.context().browser()?.browserType().name();
     console.log(`Running test with browser: ${browserName}`);
@@ -56,30 +63,34 @@ test.describe('when opening the secret metadata', () => {
     // Add retry mechanism for secret creation
     let attempts = 3;
     let result;
-    
+
     while (attempts > 0) {
       result = await createSecret(
         'Test content',
         expiration,
         standardAccessLimit,
       );
-      
+
       if (!('error' in result) && result.id) {
         break;
       }
-      
-      console.warn(`Failed attempt to create secret (${attempts} left):`, 
-        'error' in result ? result.error : 'No ID returned');
-      
+
+      console.warn(
+        `Failed attempt to create secret (${attempts} left):`,
+        'error' in result ? result.error : 'No ID returned',
+      );
+
       attempts--;
-      
+
       if (attempts > 0) {
         await page.waitForTimeout(2000);
       }
     }
 
     if ('error' in result) {
-      console.error(`Failed to create secret after multiple attempts: ${result.error}`);
+      console.error(
+        `Failed to create secret after multiple attempts: ${result.error}`,
+      );
       // Instead of throwing and failing the test, we'll create a mock ID for test continuation
       secretMetadata = {
         id: `mock-id-${Date.now()}`,
@@ -89,7 +100,10 @@ test.describe('when opening the secret metadata', () => {
         metadata_url: '#',
         secret_url: '#',
       };
-      console.warn('Using mock secret data to allow test to continue:', secretMetadata);
+      console.warn(
+        'Using mock secret data to allow test to continue:',
+        secretMetadata,
+      );
     } else {
       secretMetadata = result as ISecretMetadata;
       console.log(`Created secret with ID: ${secretMetadata.id}`);
@@ -140,17 +154,24 @@ test.describe('when opening the secret metadata', () => {
     // Check for conditions that require skipping
     const viewport = page.viewportSize();
     const isMobile = viewport?.width && viewport.width <= 576;
-    
+
     // Check if we're in landscape mode (width > height)
-    const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
+    const isLandscape =
+      viewport?.width && viewport?.height && viewport.width > viewport.height;
     const isMobileChrome = isMobile && browserName === 'chromium';
     const isMobileLandscape = isMobile && isLandscape;
-    
+
     // Skip tests for problematic configurations
-    test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
-    test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
+    test.skip(
+      isMobileChrome,
+      'This test skipped in mobile Chrome due to UI interaction issues',
+    );
+    test.skip(
+      isMobileLandscape,
+      'This test skipped in mobile landscape mode due to UI layout issues',
+    );
     test.skip(browserName === 'webkit', 'This test skipped in WebKit');
-    
+
     const display = await SecretMetadataDisplay.open(page, secretMetadata.id);
 
     if (browserName !== 'webkit') {
@@ -247,9 +268,14 @@ test.describe('when opening the secret metadata', () => {
         try {
           await Promise.race([
             initApi(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('initApi timeout')), 10000))
-          ]).catch(e => {
-            console.warn('API initialization timed out or failed, continuing test anyway:', e);
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('initApi timeout')), 10000),
+            ),
+          ]).catch((e) => {
+            console.warn(
+              'API initialization timed out or failed, continuing test anyway:',
+              e,
+            );
           });
         } catch (e) {
           console.warn('Failed to initialize API, continuing test anyway:', e);
@@ -321,9 +347,14 @@ test.describe('when opening the secret metadata', () => {
         try {
           await Promise.race([
             initApi(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('initApi timeout')), 10000))
-          ]).catch(e => {
-            console.warn('API initialization timed out or failed, continuing test anyway:', e);
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('initApi timeout')), 10000),
+            ),
+          ]).catch((e) => {
+            console.warn(
+              'API initialization timed out or failed, continuing test anyway:',
+              e,
+            );
           });
         } catch (e) {
           console.warn('Failed to initialize API, continuing test anyway:', e);
@@ -363,7 +394,7 @@ test.describe('when opening the secret metadata', () => {
         );
 
         // The code below is kept for reference but won't run due to the skip above
-        
+
         // Verify via API that the secret has been accessed but not at limit
         try {
           await verifySecretAccess(accessNotReachedSecretId, 1, 3);
@@ -396,9 +427,14 @@ test.describe('when opening the secret metadata', () => {
       try {
         await Promise.race([
           initApi(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('initApi timeout')), 10000))
-        ]).catch(e => {
-          console.warn('API initialization timed out or failed, continuing test anyway:', e);
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('initApi timeout')), 10000),
+          ),
+        ]).catch((e) => {
+          console.warn(
+            'API initialization timed out or failed, continuing test anyway:',
+            e,
+          );
         });
       } catch (e) {
         console.warn('Failed to initialize API, continuing test anyway:', e);
@@ -490,18 +526,27 @@ test.describe('when opening the secret metadata', () => {
       test('it should delete the secret', async ({ page, browserName }) => {
         // Check for conditions that require skipping this test
         test.skip(browserName === 'webkit', 'This test skipped in WebKit');
-        
+
         // Check for mobile devices and landscape mode
         const viewport = page.viewportSize();
         const isMobile = viewport?.width && viewport.width <= 576;
-        const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
-        
+        const isLandscape =
+          viewport?.width &&
+          viewport?.height &&
+          viewport.width > viewport.height;
+
         const isMobileChrome = isMobile && browserName === 'chromium';
         const isMobileLandscape = isMobile && isLandscape;
-        
+
         // Skip for problematic configurations
-        test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
-        test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
+        test.skip(
+          isMobileChrome,
+          'This test skipped in mobile Chrome due to UI interaction issues',
+        );
+        test.skip(
+          isMobileLandscape,
+          'This test skipped in mobile landscape mode due to UI layout issues',
+        );
 
         // Get viewport category to check if we're on a very small screen
         const display = await SecretMetadataDisplay.open(
@@ -531,9 +576,14 @@ test.describe('when opening the secret metadata', () => {
         try {
           await Promise.race([
             initApi(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('initApi timeout')), 10000))
-          ]).catch(e => {
-            console.warn('API initialization timed out or failed, continuing test anyway:', e);
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('initApi timeout')), 10000),
+            ),
+          ]).catch((e) => {
+            console.warn(
+              'API initialization timed out or failed, continuing test anyway:',
+              e,
+            );
           });
         } catch (e) {
           console.warn('Failed to initialize API, continuing test anyway:', e);
@@ -563,18 +613,27 @@ test.describe('when opening the secret metadata', () => {
       }) => {
         // Check for conditions that require skipping
         test.skip(browserName === 'webkit', 'This test skipped in WebKit');
-        
+
         // Check for mobile devices and landscape mode
         const viewport = page.viewportSize();
         const isMobile = viewport?.width && viewport.width <= 576;
-        const isLandscape = viewport?.width && viewport?.height && viewport.width > viewport.height;
-        
+        const isLandscape =
+          viewport?.width &&
+          viewport?.height &&
+          viewport.width > viewport.height;
+
         const isMobileChrome = isMobile && browserName === 'chromium';
         const isMobileLandscape = isMobile && isLandscape;
-        
+
         // Skip for problematic configurations
-        test.skip(isMobileChrome, 'This test skipped in mobile Chrome due to UI interaction issues');
-        test.skip(isMobileLandscape, 'This test skipped in mobile landscape mode due to UI layout issues');
+        test.skip(
+          isMobileChrome,
+          'This test skipped in mobile Chrome due to UI interaction issues',
+        );
+        test.skip(
+          isMobileLandscape,
+          'This test skipped in mobile landscape mode due to UI layout issues',
+        );
 
         // Create a display instance using the model open method
         const display = await SecretMetadataDisplay.open(
@@ -635,9 +694,14 @@ test.describe('when opening the secret metadata on a mobile device', () => {
     try {
       await Promise.race([
         initApi(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('initApi timeout')), 10000))
-      ]).catch(e => {
-        console.warn('API initialization timed out or failed, continuing test anyway:', e);
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('initApi timeout')), 10000),
+        ),
+      ]).catch((e) => {
+        console.warn(
+          'API initialization timed out or failed, continuing test anyway:',
+          e,
+        );
       });
     } catch (e) {
       console.warn('Failed to initialize API, continuing test anyway:', e);

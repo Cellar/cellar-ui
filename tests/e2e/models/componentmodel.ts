@@ -234,9 +234,7 @@ export class Clickable<T extends ComponentModel> extends Hoverable<T> {
    * @param timeoutMs Timeout for success feedback detection (default: 5000ms)
    * @returns The component model instance
    */
-  public async clickAndVerifyFeedback(
-    timeoutMs: number = 5000,
-  ): Promise<T> {
+  public async clickAndVerifyFeedback(timeoutMs: number = 5000): Promise<T> {
     await this.ensureVisible();
 
     // Check if we're on mobile
@@ -256,10 +254,10 @@ export class Clickable<T extends ComponentModel> extends Hoverable<T> {
 
     // Always include a pre-click delay for better stability
     await this.page.waitForTimeout(300);
-    
+
     // Perform the click
     await this.baseElement.click();
-    
+
     // Always include a post-click delay to allow operations to complete
     await this.page.waitForTimeout(300);
 

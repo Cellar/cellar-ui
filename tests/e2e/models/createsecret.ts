@@ -35,24 +35,24 @@ export class CreateSecretForm extends ComponentModel {
 
     // Wait for form to be visible
     const form = new CreateSecretForm(page);
-    
+
     try {
       // Use a more specific wait to ensure the secret content field is actually ready
-      await page.getByTestId('secret-content').waitFor({ 
+      await page.getByTestId('secret-content').waitFor({
         state: 'visible',
-        timeout: 10000 
+        timeout: 10000,
       });
-      
+
       // Additional check to ensure crucial UI elements are ready
-      await page.getByTestId('create-secret-button').waitFor({ 
-        state: 'visible', 
-        timeout: 5000 
+      await page.getByTestId('create-secret-button').waitFor({
+        state: 'visible',
+        timeout: 5000,
       });
-      
+
       return form;
     } catch (e) {
       console.warn('Error waiting for CreateSecretForm elements:', e);
-      
+
       // If specific elements not found, still return the form for more graceful handling
       return form;
     }
@@ -183,7 +183,9 @@ export class CreateSecretForm extends ComponentModel {
   public async selectTime(time: string) {
     // Use selectOption which is the recommended way for dropdown selection in Playwright
     // This works even if options aren't directly visible in the DOM
-    await this.page.locator('select[data-testid="expiration-absolute-time"]').selectOption(time);
+    await this.page
+      .locator('select[data-testid="expiration-absolute-time"]')
+      .selectOption(time);
     return this;
   }
 
@@ -195,7 +197,9 @@ export class CreateSecretForm extends ComponentModel {
   public async selectAmPm(amPm: 'AM' | 'PM') {
     // Use selectOption which is the recommended way for dropdown selection in Playwright
     // This works even if options aren't directly visible in the DOM
-    await this.page.locator('select[data-testid="expiration-absolute-ampm"]').selectOption(amPm);
+    await this.page
+      .locator('select[data-testid="expiration-absolute-ampm"]')
+      .selectOption(amPm);
     return this;
   }
 
@@ -305,49 +309,55 @@ export class CreateSecretForm extends ComponentModel {
   public async toggleNoLimit(enable: boolean) {
     try {
       // First make sure the toggle element is visible with extended timeout
-      await this.page.getByTestId('no-limit-toggle').waitFor({ 
-        state: 'visible', 
-        timeout: 15000 
+      await this.page.getByTestId('no-limit-toggle').waitFor({
+        state: 'visible',
+        timeout: 15000,
       });
-      
+
       // Use a more direct approach - click the label directly which is more reliable
       // than trying to interact with the invisible checkbox
       if (enable) {
         // Click the label directly which automatically toggles the checkbox
         await this.page.locator('[data-testid="no-limit-toggle"] label').click({
-          force: true,  // Use force to ensure the click goes through
-          timeout: 10000
+          force: true, // Use force to ensure the click goes through
+          timeout: 10000,
         });
-        
+
         // Wait for toggle to update
         await this.page.waitForTimeout(500);
-        
+
         // Verify the checkbox is checked now
-        const checkbox = await this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
+        const checkbox = await this.page.locator(
+          '[data-testid="no-limit-toggle"] input[type="checkbox"]',
+        );
         const isChecked = await checkbox.isChecked();
-        
+
         if (!isChecked) {
           // Retry with a different strategy
           console.log('First attempt to check toggle failed, retrying');
           await this.page.locator('[data-testid="no-limit-toggle"]').click({
             force: true,
-            timeout: 10000
+            timeout: 10000,
           });
-          
+
           // Wait for toggle to update
           await this.page.waitForTimeout(500);
         }
       } else {
         // Uncheck if needed
-        const checkbox = await this.page.locator('[data-testid="no-limit-toggle"] input[type="checkbox"]');
+        const checkbox = await this.page.locator(
+          '[data-testid="no-limit-toggle"] input[type="checkbox"]',
+        );
         const isChecked = await checkbox.isChecked();
-        
+
         if (isChecked) {
-          await this.page.locator('[data-testid="no-limit-toggle"] label').click({
-            force: true,
-            timeout: 10000
-          });
-          
+          await this.page
+            .locator('[data-testid="no-limit-toggle"] label')
+            .click({
+              force: true,
+              timeout: 10000,
+            });
+
           // Wait for toggle to update
           await this.page.waitForTimeout(500);
         }
@@ -358,7 +368,7 @@ export class CreateSecretForm extends ComponentModel {
       try {
         await this.page.locator('[data-testid="no-limit-toggle"]').click({
           force: true,
-          timeout: 10000
+          timeout: 10000,
         });
         await this.page.waitForTimeout(500);
       } catch (retryError) {

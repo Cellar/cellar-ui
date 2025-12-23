@@ -1,17 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
 
 function getReporter(browserName: string): [string, object] {
-  return [
-    'junit',
-    {
-      outputFile: process.env.CI
-        ? `junit-${browserName}.xml`
-        : `test-results/e2e/junit-${browserName}.xml`,
-      testSuiteTitle: `${browserName} Tests`,
-      suiteNameFormat: `[${browserName}] {suite}`,
-      testCaseNameFormat: `[${browserName}] {title}`,
-    },
-  ];
+  if (process.env.CI) {
+    return [
+      'junit',
+      {
+        outputFile: process.env.CI
+          ? `junit-${browserName}.xml`
+          : `test-results/e2e/junit-${browserName}.xml`,
+        testSuiteTitle: `${browserName} Tests`,
+        suiteNameFormat: `[${browserName}] {suite}`,
+        testCaseNameFormat: `[${browserName}] {title}`,
+      },
+    ];
+  } else {
+    return ['html', { open: 'never', outputFolder: 'test-results/e2e/' }];
+  }
 }
 
 const projects = [

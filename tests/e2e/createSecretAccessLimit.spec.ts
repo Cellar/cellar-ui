@@ -184,7 +184,9 @@ test.describe('when configuring access limit on the create secret page', () => {
       // Verify the displayed access count shows our custom limit
       const accessCountText = await metadata.accessCount.getText();
       // Make case-insensitive comparison to handle UI variations
-      expect(accessCountText.toLowerCase()).toContain(`0 of ${customLimit}`.toLowerCase());
+      expect(accessCountText.toLowerCase()).toContain(
+        `0 of ${customLimit}`.toLowerCase(),
+      );
     });
 
     test('it should create a secret with unlimited access', async ({
@@ -217,7 +219,7 @@ test.describe('when configuring access limit on the create secret page', () => {
       // Verify the access count doesn't show a limit
       const accessCountText = await metadata.accessCount.getText();
       expect(accessCountText.toLowerCase()).not.toContain(' of ');
-      
+
       // Instead of an exact match, check that the text contains "0" and "times"
       expect(accessCountText.toLowerCase()).toContain('0');
       expect(accessCountText.toLowerCase()).toContain('times');
