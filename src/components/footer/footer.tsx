@@ -109,13 +109,18 @@ export const Footer = () => {
       className={classes.footerContainer}
       style={{ minHeight }}
     >
-      <Link
-        className={classes.footer}
-        to={"https://cellar-app.io/"}
-        target="_blank"
-      >
-        About Cellar
-      </Link>
+      <div className={classes.footerContent}>
+        <span className={classes.version} data-testid="footer-version">
+          UI: v{__APP_VERSION__}
+        </span>
+        <Link
+          className={classes.link}
+          to={"https://cellar-app.io/"}
+          target="_blank"
+        >
+          About Cellar
+        </Link>
+      </div>
     </div>
   );
 };

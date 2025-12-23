@@ -55,8 +55,8 @@ targets:
 	}' $(MAKEFILE_LIST)
 
 build:
-	$(LOG) "Running build"
-	@npm run build
+	$(LOG) "Running build with version ${APP_VERSION}"
+	@APP_VERSION=${APP_VERSION} npm run build
 
 test: test-unit test-e2e
 

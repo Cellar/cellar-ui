@@ -10,6 +10,7 @@ RUN npm install
 COPY . .
 
 ARG APP_VERSION
+ENV APP_VERSION=${APP_VERSION}
 
 RUN npm version ${APP_VERSION} --allow-same-version && \
     npm run build

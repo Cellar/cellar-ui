@@ -34,6 +34,17 @@ describe("Footer component", () => {
       expect(screen.getByText("About Cellar")).toBeInTheDocument();
     });
 
+    it("should display version number", () => {
+      render(
+        <BrowserRouter>
+          <Footer />
+        </BrowserRouter>,
+      );
+      const version = screen.getByTestId("footer-version");
+      expect(version).toBeInTheDocument();
+      expect(version.textContent).toMatch(/^v\d+\.\d+\.\d+$/);
+    });
+
     it("should open link in new tab", () => {
       render(
         <BrowserRouter>
@@ -57,7 +68,8 @@ describe("Footer component", () => {
         );
 
         const link = screen.getByText("About Cellar");
-        const footerContainer = link.parentElement as HTMLElement;
+        const footerContent = link.parentElement as HTMLElement;
+        const footerContainer = footerContent.parentElement as HTMLElement;
 
         await waitFor(() => {
           expect(footerContainer.style.minHeight).toBeTruthy();

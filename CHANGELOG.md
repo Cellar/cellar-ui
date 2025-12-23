@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Labels for create page form inputs
 - Favicon and page title
 - Footer with "About Cellar" link
+- UI version display in footer using build-time static injection via Vite's define configuration
 - Date formatting with user localization support
 - Path aliases (@/ for src/, @tests/ for tests/)
 - Makefile targets for testing, formatting, and service management
