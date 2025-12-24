@@ -7,7 +7,7 @@
     "email": "dev@ariavesta.com"
   },
   "publishConfig": {
-    "registry": "https://gitlab.com/api/v4/projects/22424828/packages/npm/"
+    "registry": "https://gitlab.com/api/v4/projects/22434568/packages/npm/"
   },
   "type": "module",
   "scripts": {
