@@ -101,8 +101,18 @@ docker-run:
 	$(LOG) "Running docker image '${IMAGE_NAME}:${IMAGE_TAG}"
 	@docker run -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
 
-docker-publish: docker-build
+docker-push:
 	$(LOG) "Pushing docker image '${IMAGE_NAME}:${IMAGE_TAG}"
+	@docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+docker-publish: docker-build docker-push
+
+docker-retag:
+	$(LOG) "Pulling source image '${IMAGE_NAME}:${SOURCE_TAG}'"
+	@docker pull ${IMAGE_NAME}:${SOURCE_TAG}
+	$(LOG) "Retagging as '${IMAGE_NAME}:${IMAGE_TAG}'"
+	@docker tag ${IMAGE_NAME}:${SOURCE_TAG} ${IMAGE_NAME}:${IMAGE_TAG}
+	$(LOG) "Pushing retagged image '${IMAGE_NAME}:${IMAGE_TAG}'"
 	@docker push ${IMAGE_NAME}:${IMAGE_TAG}
 
 vault-configure: vault-enable-transit vault-enable-auth

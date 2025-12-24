@@ -42,12 +42,16 @@ build:
   stage: build
   script:
     - make build
+  artifacts:
+    paths:
+      - dist/
 
 build-docker:
   extends: .docker
   stage: build
   script:
-    - make docker-build APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
+    - make docker-build APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=pipeline-${CI_PIPELINE_IID}
+    - make docker-push IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=pipeline-${CI_PIPELINE_IID}
 
 test-unit:
   extends: .ui
@@ -166,6 +170,9 @@ test-e2e-figma:
 publish:
   extends: .ui
   stage: publish
+  needs:
+    - job: build
+      artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
@@ -180,12 +187,14 @@ publish:
 publish-docker:
   extends: .docker
   stage: publish
+  needs:
+    - job: build-docker
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
   script:
-    - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
-    - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=latest
+    - make docker-retag IMAGE_NAME=${IMAGE_NAME} SOURCE_TAG=pipeline-${CI_PIPELINE_IID} IMAGE_TAG=${APP_VERSION}
+    - make docker-retag IMAGE_NAME=${IMAGE_NAME} SOURCE_TAG=pipeline-${CI_PIPELINE_IID} IMAGE_TAG=latest
 
 release:
   stage: release
