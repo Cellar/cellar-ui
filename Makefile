@@ -78,7 +78,7 @@ publish:
 	$(LOG) "Publishing site with angular"
 	@npm publish
 	$(LOG) "Compressing site as ${PACKAGE_ID}"
-	@cd dist && tar -czvf ${PACKAGE_ID} cellar-ui/*
+	@tar -czvf dist/${PACKAGE_ID} -C dist .
 	$(LOG) "Uploading package to ${PACKAGE_URL}"
 	@curl \
 		--header "JOB-TOKEN: ${PACKAGE_TOKEN}" \
