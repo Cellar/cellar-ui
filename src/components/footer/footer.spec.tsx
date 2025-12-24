@@ -42,7 +42,7 @@ describe("Footer component", () => {
       );
       const version = screen.getByTestId("footer-version");
       expect(version).toBeInTheDocument();
-      expect(version.textContent).toMatch(/^v\d+\.\d+\.\d+$/);
+      expect(version.textContent).toMatch(/^UI: v\d+\.\d+\.\d+$/);
     });
 
     it("should open link in new tab", () => {
