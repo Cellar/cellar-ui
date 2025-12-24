@@ -66,8 +66,6 @@ test-unit:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
-    - if: $CI_COMMIT_BRANCH == "react"
-      when: manual
   variables:
     CI: true
     CHROME_BIN: /usr/bin/chromium
@@ -171,8 +169,6 @@ publish:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
-    - if: $CI_COMMIT_BRANCH == "react"
-      when: manual
   script:
     - echo "//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}">.npmrc
     - make publish APP_VERSION=${APP_VERSION} PACKAGE_NAME=${APP_NAME} PACKAGE_REGISTRY_URL=${PACKAGE_REGISTRY_URL} PACKAGE_TOKEN=${CI_JOB_TOKEN}
@@ -186,8 +182,6 @@ publish-docker:
   stage: publish
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
-    - if: $CI_COMMIT_BRANCH == "react"
       when: manual
   script:
     - make docker-publish APP_VERSION=${APP_VERSION} IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${APP_VERSION}
