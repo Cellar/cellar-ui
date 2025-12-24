@@ -14,13 +14,15 @@ The source for API can be found [here][api]
 
 The Cellar UI is a web frontend for interacting with Cellar.
 
-It is written in [Angular][angular] using [Angular Material][angular-material].
+It is written in [React][react] 19 using [Mantine UI][mantine], [TypeScript][typescript], and [Vite][vite].
 
 If you would like to contribute, get started by reading the [contributing document][contributing].
 
 
-[angular]: https://angular.io/
-[angular-material]: https://material.angular.io/
+[react]: https://react.dev/
+[mantine]: https://mantine.dev/
+[typescript]: https://www.typescriptlang.org/
+[vite]: https://vite.dev/
 [cellar-docs]: https://cellar-app.gitlab.io
 [contributing]: CONTRIBUTING.md
 [project-gitlab]: https://gitlab.com/cellar-app/cellar-ui

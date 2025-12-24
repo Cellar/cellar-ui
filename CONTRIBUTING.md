@@ -1,4 +1,4 @@
-# Contributing to the Cellar API
+# Contributing to the Cellar UI
 
 First of all, thank you for your desire to contribute!
 It is sincerely appreciated!
@@ -6,10 +6,6 @@ It is sincerely appreciated!
 > Note: The primary location for contributing to the project is on GitLab.
 > It is mirrored to other locations for visibility.
 > If you would like to contribute, start by navigating to [this document on GitLab][contributing-gitlab].
-
-The Cellar team is current lacking in graphical frontend expertise.
-If you would like to make significant contributions to this project and are interested in helping maintain it,
-please reach out using the contact link on the [Cellar Website][docs-home].
 
 
 ## Reporting Issues
@@ -53,21 +49,21 @@ Before working on the Cellar UI, make sure you are familiar with the [purpose of
 
 ### Local Developer Dependencies
 
-The Cellar UI is an angular frontend written in [Typescript][typescript]..
+The Cellar UI is a React frontend written in [TypeScript][typescript] using [Vite][vite] as the build tool.
 Naturally, you will need the node interpreter.
 Use the version listed in the [.nvmrc file][nvmrc].
 
-In fact the easiest way to make sure you are on the right version is to install NVM,
-which is a node version manager.  
-For Linux and macOS see here: https://github.com/nvm-sh/nvm  
+The easiest way to make sure you are on the right version is to install NVM,
+which is a node version manager.
+For Linux and macOS see here: https://github.com/nvm-sh/nvm
 For Windows see here: https://github.com/coreybutler/nvm-windows
 
 This project also makes extensive use of [**GNU Make**][gnu-make].
-Make can generally be installed from your Linux distros package manager or on Mac using brew.
+Make can generally be installed from your Linux distro's package manager or on Mac using brew.
 For Windows there are multiple ports of Make from which to choose or installing make on Windows subsystem for Linux will likely also work.
 
 [Curl][curl] is used within Makefiles for making http requests.
-It can generally be installed from your Linux distros package manager or on Mac using brew.
+It can generally be installed from your Linux distro's package manager or on Mac using brew.
 On Windows curl is usually aliased automatically to another windows native http client.
 
 Finally, working on this project relies heavily on [Docker][docker] and [docker-compose][docker-compose].
@@ -106,10 +102,11 @@ make clean-services
 
 ### Project Structure
 
-This project was initially generated from the angular CLI and is structured accordingly.
-Please make sure to follow all linting and formatting rules specified in relevant files, such as [tslint.json][tslint-json]
+This project uses React with Vite and follows a component-based architecture.
+Please make sure to follow all linting and formatting rules specified in the ESLint and Prettier configurations.
 
-Any scripts related to directly working with the UI are found in the [package.json][package-json], but a few important ones are called out in the sections below.
+Any scripts related to directly working with the UI are found in the [package.json][package-json],
+but a few important ones are called out in the sections below.
 
 #### Running
 
@@ -125,33 +122,50 @@ Then install all the necessary UI source dependencies.
 npm install
 ```
 
-Finally, you can run the UI:
+Finally, you can run the UI development server:
 
 ```shell
-npm run start
+npm run dev
 ```
 
-You should now be able to load the API in your browser at http://127.0.0.1:4200.
+You should now be able to load the UI in your browser at http://localhost:5173.
+
+The development server supports hot module replacement (HMR) for a smooth development experience.
 
 If you need to reference the endpoints available in the Cellar API,
-you can load the swagger page at http://127.0.0.1:4200/api/swagger/index.html.
+you can load the swagger page at http://localhost:5173/api/swagger/index.html.
 
 
 #### Testing
 
-Similar to most Angular applications, tests are split into two types: unit and end to end (e2e).
-However, you may notice that the [package.json][package-json] each of these types has two scripts.
-The `test` and `e2e` commands are the usual testing configuration setup by the Angular CLI.
-The `test:ci` and `e2e:ci` scripts are equivalent to the other two but run using headless chrome.
-This makes it easier to run them in CI pipelines, such as gitlab or from CLI.
-These are the ones that are called by other of the `make test-...` commands.
+Tests are split into two types: unit and end-to-end (E2E).
+
+**Unit tests** use [Vitest][vitest] with [React Testing Library][react-testing-library] and can be run with:
+```shell
+make test-unit
+npm run test
+```
+
+**E2E tests** use [Playwright][playwright] and test across multiple browsers (Chromium, Firefox, WebKit) and viewports.
+E2E tests can be run with:
+```shell
+make test-e2e
+npm run test:e2e
+```
+
+The E2E tests support running in Docker for consistent environments:
+```shell
+make test-e2e-docker-all
+```
+
+All tests are designed to run in CI pipelines and are automatically executed on GitLab.
 
 
 ### Versioning
 
 This project uses [semantic versioning][semver], but the version is __NOT__ managed in the [package.json][package-json].
-Insead to update the version, change the `APP_VERSION` variable in [`.gitlab-ci.yml`][gitlab-ci].
-Then make sure add a list of changes to the [CHANGELOG.md][changelog].
+Instead to update the version, change the `APP_VERSION` variable in [`.gitlab-ci.yml`][gitlab-ci].
+Then make sure to add a list of changes to the [CHANGELOG.md][changelog].
 Tagging and release will be handled automatically through the [CI/CD pipelines][pipelines] in GitLab.
 
 
@@ -173,7 +187,6 @@ To update the version of the API on which this project relies:
 
 [gitlab-ci]: .gitlab-ci.yml
 [changelog]: CHANGELOG.md
-[tslint-json]: tslint.json
 [package-json]: package.json
 [nvmrc]: .nvmrc
 [docker-compose-yml]: docker-compose.yml
@@ -197,3 +210,7 @@ To update the version of the API on which this project relies:
 [semver]: https://semver.org/
 [node]: https://nodejs.org/en/
 [typescript]: https://www.typescriptlang.org/
+[vite]: https://vite.dev/
+[vitest]: https://vitest.dev/
+[react-testing-library]: https://testing-library.com/docs/react-testing-library/intro/
+[playwright]: https://playwright.dev/
