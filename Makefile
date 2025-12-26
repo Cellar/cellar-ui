@@ -167,14 +167,16 @@ services: dotenv-clean clean-services services-api-dependencies services-vault-w
 dotenv-clean:
 	$(LOG) "Generating empty .env file"
 	@[ -f ".env" ] && rm -f .env || exit 0
-	@echo "VAULT_ROLE_ID=" > .env
-	@echo "VAULT_SECRET_ID=" >> .env
+	@echo "CRYPTOGRAPHY_VAULT_ENABLED=true" > .env
+	@echo "CRYPTOGRAPHY_VAULT_AUTH_APPROLE_ROLE_ID=" >> .env
+	@echo "CRYPTOGRAPHY_VAULT_AUTH_APPROLE_SECRET_ID=" >> .env
 
 dotenv-values:
 	@[ -f ".env" ] && rm -f .env || exit 0
 	$(LOG) "Adding vault role to .env"
-	@echo "VAULT_ROLE_ID=$$(make -s vault-role-id)" >> .env
-	@echo "VAULT_SECRET_ID=$$(make -s vault-secret-id)" >> .env
+	@echo "CRYPTOGRAPHY_VAULT_ENABLED=true" > .env
+	@echo "CRYPTOGRAPHY_VAULT_AUTH_APPROLE_ROLE_ID=$$(make -s vault-role-id)" >> .env
+	@echo "CRYPTOGRAPHY_VAULT_AUTH_APPROLE_SECRET_ID=$$(make -s vault-secret-id)" >> .env
 
 services-api-dependencies:
 	$(LOG) "Starting API dependencies"
