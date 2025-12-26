@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import Button from "src/components/buttons/Button";
 import {
@@ -18,8 +18,11 @@ import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { useMediaQuery } from "@mantine/hooks";
 import { ContentTypeToggle } from "@/components/contentTypeToggle/ContentTypeToggle";
-import { SecretInputText } from "@/components/secretInputText/SecretInputText";
-import { SecretInputFile } from "@/components/secretInputFile/SecretInputFile";
+import { SecretInputText } from "@/components/createSecret/secretInputText/SecretInputText";
+import {
+  SecretInputFile,
+  SecretInputFileHandle,
+} from "@/components/createSecret/secretInputFile/SecretInputFile";
 
 const ExpirationModes = {
   Absolute: "Expire On (Absolute)",
@@ -43,8 +46,6 @@ export const CreateSecretForm: React.FC<
 > = (props) => {
   const [contentType, setContentType] = useState<"text" | "file">("text");
   const [secretContent, setSecretContent] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string>("");
   const [expirationMode, setExpirationMode] = useState(
     ExpirationModes.Relative,
   );
@@ -52,6 +53,7 @@ export const CreateSecretForm: React.FC<
   const [accessLimitDisabled, setAccessLimitDisabled] = useState(false);
   const [errors, setErrors] = useState<FormErrors>();
 
+  const fileInputRef = useRef<SecretInputFileHandle>(null);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery("(max-width: 1000px)");
@@ -66,16 +68,6 @@ export const CreateSecretForm: React.FC<
     else setAccessLimit(1);
   }
 
-  function handleFileSelect(file: File, error: string | null) {
-    setFileError(error || "");
-    setSelectedFile(file);
-  }
-
-  function handleFileRemove() {
-    setSelectedFile(null);
-    setFileError("");
-  }
-
   async function handleFormSubmit() {
     if (!validate()) return;
 
@@ -87,9 +79,10 @@ export const CreateSecretForm: React.FC<
         accessLimitDisabled ? -1 : accessLimit,
       );
     } else {
-      if (!selectedFile) return;
+      const file = fileInputRef.current?.getFile();
+      if (!file) return;
       metadata = await createSecretWithFile(
-        selectedFile,
+        file,
         expirationDate,
         accessLimitDisabled ? -1 : accessLimit,
       );
@@ -114,7 +107,7 @@ export const CreateSecretForm: React.FC<
     };
     setErrors(newErrors);
 
-    if (contentType === "file" && (!selectedFile || fileError)) {
+    if (contentType === "file" && !fileInputRef.current?.isValid()) {
       return false;
     }
 
@@ -137,13 +130,7 @@ export const CreateSecretForm: React.FC<
             mobile={isMobile}
           />
         ) : (
-          <SecretInputFile
-            selectedFile={selectedFile}
-            onFileSelect={handleFileSelect}
-            onRemove={handleFileRemove}
-            maxFileSize={MAX_FILE_SIZE}
-            error={fileError}
-          />
+          <SecretInputFile ref={fileInputRef} maxFileSize={MAX_FILE_SIZE} />
         )}
         <div className={cx(classes.formControls, classes.formSection)}>
           <div>

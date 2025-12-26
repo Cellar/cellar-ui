@@ -1,4 +1,4 @@
-import { CreateSecretForm } from "../components/createSecret/CreateSecretForm";
+import { CreateSecretForm } from "../components/createSecret/createSecretForm/CreateSecretForm";
 import { Layout } from "../layouts/Layout";
 import React from "react";
 

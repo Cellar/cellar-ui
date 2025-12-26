@@ -1,4 +1,4 @@
-import classes from "@/components/createSecret/CreateSecretForm.module.css";
+import classes from "@/components/createSecret/createSecretForm/CreateSecretForm.module.css";
 import { FlatSelect, FlatInput } from "src/components/form/Form";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";

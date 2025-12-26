@@ -1,4 +1,4 @@
-import classes from "@/components/createSecret/CreateSecretForm.module.css";
+import classes from "@/components/createSecret/createSecretForm/CreateSecretForm.module.css";
 import { FC, useEffect, useState } from "react";
 import cx from "classnames";
 import { padNum } from "@/helpers/helpers";

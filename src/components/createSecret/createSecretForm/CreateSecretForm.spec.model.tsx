@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { form as absoluteExpirationForm } from "./absoluteExpiration/AbsoluteExpiration.spec.model";
-import { form as relativeExpirationForm } from "./relativeExpiration/RelativeExpiration.spec.model";
+import { form as absoluteExpirationForm } from "../absoluteExpiration/AbsoluteExpiration.spec.model";
+import { form as relativeExpirationForm } from "../relativeExpiration/RelativeExpiration.spec.model";
 
 export const form = {
   get createButton() {
