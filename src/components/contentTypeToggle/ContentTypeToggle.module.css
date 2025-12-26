@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.container button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--color-white);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.container button:hover:not(:disabled) {
+  border-bottom-color: rgba(0, 255, 0, 0.5);
+}
+
+.container button.active {
+  border-bottom-color: var(--color-green);
+}
+
+.container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

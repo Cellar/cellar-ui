@@ -298,6 +298,39 @@ export class SecretMetadataDisplay extends ComponentModel {
     return await textarea.inputValue();
   }
 
+  // File secret elements
+  get secretTypeBadge() {
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.getByTestId('secret-type-badge'),
+    );
+  }
+
+  get fileInfoSection() {
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.getByTestId('file-info-section'),
+    );
+  }
+
+  get fileName() {
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.getByTestId('file-name'),
+    );
+  }
+
+  get fileSize() {
+    return new Readable(
+      SecretMetadataDisplay,
+      this.page,
+      this.page.getByTestId('file-size'),
+    );
+  }
+
   get detailsLabel() {
     return new Readable(
       SecretMetadataDisplay,

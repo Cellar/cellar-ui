@@ -58,9 +58,43 @@ export class CreateSecretForm extends ComponentModel {
     }
   }
 
+  // Content type toggle elements
+  get contentTypeTextToggle() {
+    return new Clickable(CreateSecretForm, this.page, 'content-type-text');
+  }
+
+  get contentTypeFileToggle() {
+    return new Clickable(CreateSecretForm, this.page, 'content-type-file');
+  }
+
   // Basic form elements
   get secretContent() {
     return new Fillable(CreateSecretForm, this.page, 'secret-content');
+  }
+
+  // File upload elements
+  get fileUploadZone() {
+    return new Readable(CreateSecretForm, this.page, 'file-upload-zone');
+  }
+
+  get fileUploadInput() {
+    return this.page.locator('input[type="file"]');
+  }
+
+  get selectedFileName() {
+    return new Readable(CreateSecretForm, this.page, 'selected-file-name');
+  }
+
+  get selectedFileSize() {
+    return new Readable(CreateSecretForm, this.page, 'selected-file-size');
+  }
+
+  get removeFileButton() {
+    return new Clickable(CreateSecretForm, this.page, 'remove-file-button');
+  }
+
+  get fileUploadError() {
+    return new Readable(CreateSecretForm, this.page, 'file-upload-error');
   }
 
   get createSecretButton() {
@@ -456,6 +490,29 @@ export class CreateSecretForm extends ComponentModel {
    */
   public async createSecret(content: string): Promise<SecretMetadataDisplay> {
     await this.secretContent.fill(content);
+    return await this.createSecretButton
+      .withWaitForUrl(/\/secret\/(?!create$).+/)
+      .withWaitForLoadState('networkidle')
+      .click();
+  }
+
+  public async switchToFileMode() {
+    await this.contentTypeFileToggle.click();
+    await this.fileUploadZone.baseElement.waitFor({ state: 'visible' });
+    return this;
+  }
+
+  public async uploadFile(filePath: string) {
+    await this.fileUploadInput.setInputFiles(filePath);
+    await this.selectedFileName.baseElement.waitFor({ state: 'visible' });
+    return this;
+  }
+
+  public async createFileSecret(
+    filePath: string,
+  ): Promise<SecretMetadataDisplay> {
+    await this.switchToFileMode();
+    await this.uploadFile(filePath);
     return await this.createSecretButton
       .withWaitForUrl(/\/secret\/(?!create$).+/)
       .withWaitForLoadState('networkidle')

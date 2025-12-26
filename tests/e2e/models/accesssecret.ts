@@ -60,6 +60,26 @@ export class AccessSecretDisplay extends ComponentModel {
     return new Readable(AccessSecretDisplay, this.page, 'access-secret-form');
   }
 
+  get fileInfoCard() {
+    return new Readable(AccessSecretDisplay, this.page, 'file-info-card');
+  }
+
+  get downloadFileButton() {
+    return new Clickable(
+      AccessSecretDisplay,
+      this.page,
+      'download-file-button',
+    );
+  }
+
+  get cardFileName() {
+    return new Readable(AccessSecretDisplay, this.page, 'card-file-name');
+  }
+
+  get cardFileSize() {
+    return new Readable(AccessSecretDisplay, this.page, 'card-file-size');
+  }
+
   /**
    * Copy the secret content and wait for confirmation
    * @returns This model instance
