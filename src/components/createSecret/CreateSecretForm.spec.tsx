@@ -12,7 +12,7 @@ import {
 } from "./CreateSecretForm.spec.model";
 import { setRelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration.spec.model";
 import { setAbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration.spec.model";
-import { createSecret } from "@/api/client";
+import { createSecretWithText } from "@/api/client";
 
 const mockMetadata: ISecretMetadata = {
   id: "V5nIvLMxZUYP4",
@@ -33,7 +33,7 @@ vi.mock("react-router-dom", async () => {
 describe("When rendering CreateSecretForm", () => {
   beforeAll(() => {
     vi.mock("@/api/client");
-    createSecret.mockResolvedValue(mockMetadata);
+    createSecretWithText.mockResolvedValue(mockMetadata);
   });
 
   beforeEach(() => {
@@ -209,7 +209,7 @@ describe("When rendering CreateSecretForm", () => {
                 0,
               );
               await waitFor(() => {
-                expect(createSecret).toHaveBeenCalledExactlyOnceWith(
+                expect(createSecretWithText).toHaveBeenCalledExactlyOnceWith(
                   testParams.content,
                   expectedExpiration,
                   testParams.accessLimit,
@@ -305,7 +305,7 @@ describe("When rendering CreateSecretForm", () => {
                 0,
               );
               await waitFor(() => {
-                expect(createSecret).toHaveBeenCalledExactlyOnceWith(
+                expect(createSecretWithText).toHaveBeenCalledExactlyOnceWith(
                   testParams.content,
                   expectedExpiration,
                   testParams.accessLimit,

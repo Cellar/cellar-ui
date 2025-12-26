@@ -13,7 +13,7 @@ import {
 import classes from "./CreateSecretForm.module.css";
 import { RelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration";
 import { AbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration";
-import { createSecret } from "@/api/client";
+import { createSecretWithText } from "@/api/client";
 import { ISecretMetadata } from "@/models/secretMetadata";
 import { useNavigate } from "react-router-dom";
 import cx from "classnames";
@@ -62,7 +62,7 @@ export const CreateSecretForm: React.FC<
   async function handleFormSubmit() {
     if (!validate()) return;
 
-    const metadata = await createSecret(
+    const metadata = await createSecretWithText(
       secretContent,
       expirationDate,
       accessLimitDisabled ? -1 : accessLimit,

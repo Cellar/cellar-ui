@@ -1,7 +1,8 @@
 import { describe, beforeEach, expect, it, vi } from 'vitest';
 import {
   accessSecret,
-  createSecret,
+  createSecretWithText,
+  createSecretWithFile,
   deleteSecret,
   getSecretMetadata,
 } from './client';
@@ -31,9 +32,9 @@ describe('SecretsService', () => {
     global.fetch = vi.fn();
   });
 
-  describe('when creating a secret', () => {
+  describe('when creating a secret with text', () => {
     async function performTest(): Promise<ISecretMetadata | IApiError> {
-      return await createSecret(
+      return await createSecretWithText(
         secret.content,
         secretMetadata.expiration,
         secretMetadata.access_limit,
@@ -90,6 +91,84 @@ describe('SecretsService', () => {
         expect(fetch.mock.calls[0][1].method).toBe('POST'));
       it('should include content in FormData', () =>
         expect(formData.get('content')).toBe(secret.content));
+      it('should include expiration_epoch in FormData', () =>
+        expect(formData.get('expiration_epoch')).toBe(
+          String(Math.floor(secretMetadata.expiration.getTime() / 1000)),
+        ));
+      it('should include access_limit in FormData', () =>
+        expect(formData.get('access_limit')).toBe(
+          String(secretMetadata.access_limit),
+        ));
+      it('should respond with error code', () =>
+        expect(actual.code).toEqual(badRequest.code));
+      it('should respond with error message', () =>
+        expect(actual.message).toEqual(badRequest.message));
+    });
+  });
+
+  describe('when creating a secret with file', () => {
+    const testFile = new File(['test content'], 'test.txt', {
+      type: 'text/plain',
+    });
+
+    async function performTest(): Promise<ISecretMetadata | IApiError> {
+      return await createSecretWithFile(
+        testFile,
+        secretMetadata.expiration,
+        secretMetadata.access_limit,
+      );
+    }
+
+    describe('and request is successful', () => {
+      let actual: ISecretMetadata;
+      let formData: FormData;
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue(createFetchResponse(secretMetadata));
+        actual = (await performTest()) as ISecretMetadata;
+        formData = fetch.mock.calls[0][1].body as FormData;
+      });
+
+      it('should make POST request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe('/api/v2/secrets'));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
+      it('should include file in FormData', () =>
+        expect(formData.get('file')).toBe(testFile));
+      it('should include expiration_epoch in FormData', () =>
+        expect(formData.get('expiration_epoch')).toBe(
+          String(Math.floor(secretMetadata.expiration.getTime() / 1000)),
+        ));
+      it('should include access_limit in FormData', () =>
+        expect(formData.get('access_limit')).toBe(
+          String(secretMetadata.access_limit),
+        ));
+      it('should respond with expected id', () =>
+        expect(actual.id).toEqual(secretMetadata.id));
+      it('should respond with expected access limit', () =>
+        expect(actual.access_limit).toEqual(secretMetadata.access_limit));
+      it('should respond with expected access count', () =>
+        expect(actual.access_count).toEqual(secretMetadata.access_count));
+      it('should respond with expected expiration', () =>
+        expect(actual.expiration).toEqual(secretMetadata.expiration));
+    });
+
+    describe('and request is unsuccessful', () => {
+      let actual: IApiError;
+      let formData: FormData;
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue(createFetchResponse(badRequest));
+        actual = (await performTest()) as IApiError;
+        formData = fetch.mock.calls[0][1].body as FormData;
+      });
+
+      it('should make POST request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe('/api/v2/secrets'));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
+      it('should include file in FormData', () =>
+        expect(formData.get('file')).toBe(testFile));
       it('should include expiration_epoch in FormData', () =>
         expect(formData.get('expiration_epoch')).toBe(
           String(Math.floor(secretMetadata.expiration.getTime() / 1000)),

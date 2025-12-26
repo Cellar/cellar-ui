@@ -2,7 +2,7 @@ import { ISecretMetadata } from '../models/secretMetadata';
 import { IApiError } from '../models/error';
 import { ISecret } from '../models/secret';
 
-export const createSecret = async (
+export const createSecretWithText = async (
   content: string,
   expirationUtc: Date,
   accessLimit: number,
@@ -11,6 +11,25 @@ export const createSecret = async (
 
   const formData = new FormData();
   formData.append('content', content);
+  formData.append('expiration_epoch', String(expirationEpoch));
+  formData.append('access_limit', String(accessLimit));
+
+  const res = await fetch(`/api/v2/secrets`, {
+    method: 'POST',
+    body: formData,
+  });
+  return res.json();
+};
+
+export const createSecretWithFile = async (
+  file: File,
+  expirationUtc: Date,
+  accessLimit: number,
+): Promise<ISecretMetadata | IApiError> => {
+  const expirationEpoch = Math.floor(expirationUtc.getTime() / 1000);
+
+  const formData = new FormData();
+  formData.append('file', file);
   formData.append('expiration_epoch', String(expirationEpoch));
   formData.append('access_limit', String(accessLimit));
 
