@@ -42,23 +42,28 @@ describe('SecretsService', () => {
 
     describe('and request is successful', () => {
       let actual: ISecretMetadata;
+      let formData: FormData;
 
       beforeEach(async () => {
         fetch.mockResolvedValue(createFetchResponse(secretMetadata));
         actual = (await performTest()) as ISecretMetadata;
+        formData = fetch.mock.calls[0][1].body as FormData;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith('/api/v1/secrets', {
-          method: 'POST',
-          body: JSON.stringify({
-            content: secret.content,
-            expiration_epoch: Math.floor(
-              secretMetadata.expiration.getTime() / 1000,
-            ),
-            access_limit: secretMetadata.access_limit,
-          }),
-        }));
+      it('should make POST request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe('/api/v2/secrets'));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
+      it('should include content in FormData', () =>
+        expect(formData.get('content')).toBe(secret.content));
+      it('should include expiration_epoch in FormData', () =>
+        expect(formData.get('expiration_epoch')).toBe(
+          String(Math.floor(secretMetadata.expiration.getTime() / 1000)),
+        ));
+      it('should include access_limit in FormData', () =>
+        expect(formData.get('access_limit')).toBe(
+          String(secretMetadata.access_limit),
+        ));
       it('should respond with expected id', () =>
         expect(actual.id).toEqual(secretMetadata.id));
       it('should respond with expected access limit', () =>
@@ -71,23 +76,28 @@ describe('SecretsService', () => {
 
     describe('and request is unsuccessful', () => {
       let actual: IApiError;
+      let formData: FormData;
 
       beforeEach(async () => {
         fetch.mockResolvedValue(createFetchResponse(badRequest));
         actual = (await performTest()) as IApiError;
+        formData = fetch.mock.calls[0][1].body as FormData;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith('/api/v1/secrets', {
-          method: 'POST',
-          body: JSON.stringify({
-            content: secret.content,
-            expiration_epoch: Math.floor(
-              secretMetadata.expiration.getTime() / 1000,
-            ),
-            access_limit: secretMetadata.access_limit,
-          }),
-        }));
+      it('should make POST request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe('/api/v2/secrets'));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
+      it('should include content in FormData', () =>
+        expect(formData.get('content')).toBe(secret.content));
+      it('should include expiration_epoch in FormData', () =>
+        expect(formData.get('expiration_epoch')).toBe(
+          String(Math.floor(secretMetadata.expiration.getTime() / 1000)),
+        ));
+      it('should include access_limit in FormData', () =>
+        expect(formData.get('access_limit')).toBe(
+          String(secretMetadata.access_limit),
+        ));
       it('should respond with error code', () =>
         expect(actual.code).toEqual(badRequest.code));
       it('should respond with error message', () =>
@@ -108,13 +118,12 @@ describe('SecretsService', () => {
         actual = (await performTest()) as ISecretMetadata;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith(
-          `/api/v1/secrets/${secretMetadata.id}`,
-          {
-            method: 'GET',
-          },
+      it('should make GET request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(
+          `/api/v2/secrets/${secretMetadata.id}`,
         ));
+      it('should use GET method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('GET'));
       it('should respond with expected id', () =>
         expect(actual.id).toEqual(secretMetadata.id));
       it('should respond with expected access limit', () =>
@@ -133,13 +142,12 @@ describe('SecretsService', () => {
         actual = (await performTest()) as IApiError;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith(
-          `/api/v1/secrets/${secretMetadata.id}`,
-          {
-            method: 'GET',
-          },
+      it('should make GET request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(
+          `/api/v2/secrets/${secretMetadata.id}`,
         ));
+      it('should use GET method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('GET'));
       it('should respond with error code', () =>
         expect(actual.code).toEqual(badRequest.code));
       it('should respond with error message', () =>
@@ -160,13 +168,12 @@ describe('SecretsService', () => {
         actual = (await performTest()) as ISecret;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith(
-          `/api/v1/secrets/${secret.id}/access`,
-          {
-            method: 'POST',
-          },
+      it('should make POST request to v2 access endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(
+          `/api/v2/secrets/${secret.id}/access`,
         ));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
       it('should respond with expected id', () =>
         expect(actual.id).toEqual(secret.id));
       it('should respond with expected content', () =>
@@ -181,13 +188,12 @@ describe('SecretsService', () => {
         actual = (await performTest()) as IApiError;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledExactlyOnceWith(
-          `/api/v1/secrets/${secret.id}/access`,
-          {
-            method: 'POST',
-          },
+      it('should make POST request to v2 access endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(
+          `/api/v2/secrets/${secret.id}/access`,
         ));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
       it('should respond with error code', () =>
         expect(actual.code).toEqual(badRequest.code));
       it('should respond with error message', () =>
@@ -208,10 +214,10 @@ describe('SecretsService', () => {
         actual = (await performTest()) as nuoo;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledWith(`/api/v1/secrets/${secret.id}`, {
-          method: 'DELETE',
-        }));
+      it('should make DELETE request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(`/api/v2/secrets/${secret.id}`));
+      it('should use DELETE method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('DELETE'));
       it('should respond with null', () => expect(actual).toBeNull());
     });
 
@@ -223,10 +229,10 @@ describe('SecretsService', () => {
         actual = (await performTest()) as IApiError;
       });
 
-      it('should make the correct request', () =>
-        expect(fetch).toHaveBeenCalledWith(`/api/v1/secrets/${secret.id}`, {
-          method: 'DELETE',
-        }));
+      it('should make DELETE request to v2 endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(`/api/v2/secrets/${secret.id}`));
+      it('should use DELETE method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('DELETE'));
       it('should respond with error code', () =>
         expect(actual.code).toEqual(badRequest.code));
       it('should respond with error message', () =>

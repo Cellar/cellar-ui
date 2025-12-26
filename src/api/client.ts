@@ -9,13 +9,14 @@ export const createSecret = async (
 ): Promise<ISecretMetadata | IApiError> => {
   const expirationEpoch = Math.floor(expirationUtc.getTime() / 1000);
 
-  const res = await fetch(`/api/v1/secrets`, {
+  const formData = new FormData();
+  formData.append('content', content);
+  formData.append('expiration_epoch', String(expirationEpoch));
+  formData.append('access_limit', String(accessLimit));
+
+  const res = await fetch(`/api/v2/secrets`, {
     method: 'POST',
-    body: JSON.stringify({
-      content: content,
-      expiration_epoch: expirationEpoch,
-      access_limit: accessLimit,
-    }),
+    body: formData,
   });
   return res.json();
 };
@@ -23,14 +24,14 @@ export const createSecret = async (
 export const getSecretMetadata = async (
   secretId: string,
 ): Promise<ISecretMetadata | IApiError> => {
-  const res = await fetch(`/api/v1/secrets/${secretId}`, { method: 'GET' });
+  const res = await fetch(`/api/v2/secrets/${secretId}`, { method: 'GET' });
   return res.json();
 };
 
 export const accessSecret = async (
   secretId: string,
 ): Promise<ISecret | IApiError> => {
-  const res = await fetch(`/api/v1/secrets/${secretId}/access`, {
+  const res = await fetch(`/api/v2/secrets/${secretId}/access`, {
     method: 'POST',
   });
   return res.json();
@@ -39,7 +40,7 @@ export const accessSecret = async (
 export const deleteSecret = async (
   secretId: string,
 ): Promise<null | IApiError> => {
-  const res = await fetch(`/api/v1/secrets/${secretId}`, { method: 'DELETE' });
+  const res = await fetch(`/api/v2/secrets/${secretId}`, { method: 'DELETE' });
   if (res.status === 204) return null;
 
   return res.json();
