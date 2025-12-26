@@ -10,10 +10,10 @@
   padding: 0.5rem 1rem;
   font-size: 1.6rem;
   font-weight: 500;
-  color: var(--color-white);
+  color: var(--color-gray);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .container button:hover:not(:disabled) {
@@ -21,6 +21,7 @@
 }
 
 .container button.active {
+  color: var(--color-black);
   border-bottom-color: var(--color-green);
 }
 

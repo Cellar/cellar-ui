@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { FileUploadZone } from "@/components/fileUploadZone/FileUploadZone";
 import { validateFile } from "@/helpers/validateFile";
+import { ErrorWrapper } from "@/components/form/Form";
 
 interface SecretInputFileProps {
   maxFileSize: number;
@@ -37,12 +38,16 @@ export const SecretInputFile = forwardRef<
   }
 
   return (
-    <FileUploadZone
-      selectedFile={selectedFile || undefined}
-      onFileSelect={handleFileSelect}
-      onRemove={handleRemove}
-      error={error}
-    />
+    <ErrorWrapper
+      message={error}
+      data-testid="secret-file-error"
+    >
+      <FileUploadZone
+        selectedFile={selectedFile || undefined}
+        onFileSelect={handleFileSelect}
+        onRemove={handleRemove}
+      />
+    </ErrorWrapper>
   );
 });
 

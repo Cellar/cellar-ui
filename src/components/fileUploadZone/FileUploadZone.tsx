@@ -6,7 +6,6 @@ interface FileUploadZoneProps {
   onFileSelect: (file: File) => void;
   selectedFile?: File;
   onRemove?: () => void;
-  error?: string;
   disabled?: boolean;
 }
 
@@ -14,7 +13,6 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   onFileSelect,
   selectedFile,
   onRemove,
-  error,
   disabled = false,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -131,12 +129,6 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           </div>
         )}
       </div>
-
-      {error && (
-        <div data-testid="file-upload-error" className={classes.error}>
-          {error}
-        </div>
-      )}
     </div>
   );
 };

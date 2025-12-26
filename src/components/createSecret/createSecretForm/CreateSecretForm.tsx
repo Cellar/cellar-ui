@@ -122,16 +122,18 @@ export const CreateSecretForm: React.FC<
         <div data-testid="content-type-toggle" className={classes.formSection}>
           <ContentTypeToggle value={contentType} onChange={setContentType} />
         </div>
-        {contentType === "text" ? (
-          <SecretInputText
-            value={secretContent}
-            onChange={setSecretContent}
-            error={errors?.SecretContent}
-            mobile={isMobile}
-          />
-        ) : (
-          <SecretInputFile ref={fileInputRef} maxFileSize={MAX_FILE_SIZE} />
-        )}
+        <div className={classes.contentInputWrapper}>
+          {contentType === "text" ? (
+            <SecretInputText
+              value={secretContent}
+              onChange={setSecretContent}
+              error={errors?.SecretContent}
+              mobile={isMobile}
+            />
+          ) : (
+            <SecretInputFile ref={fileInputRef} maxFileSize={MAX_FILE_SIZE} />
+          )}
+        </div>
         <div className={cx(classes.formControls, classes.formSection)}>
           <div>
             <span className={classes.header}>Expiration</span>

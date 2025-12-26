@@ -1,6 +1,5 @@
 import React from "react";
 import { TextArea, ErrorWrapper } from "@/components/form/Form";
-import classes from "./SecretInputText.module.css";
 
 interface SecretInputTextProps {
   value: string;
@@ -17,7 +16,6 @@ export const SecretInputText: React.FC<SecretInputTextProps> = ({
 }) => {
   return (
     <ErrorWrapper
-      className={classes.errorIndent}
       message={error ?? ""}
       data-testid="secret-content-error"
     >
