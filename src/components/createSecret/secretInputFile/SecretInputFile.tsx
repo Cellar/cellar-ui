@@ -11,6 +11,7 @@ export interface SecretInputFileHandle {
   getFile: () => File | null;
   getError: () => string;
   isValid: () => boolean;
+  validate: () => boolean;
 }
 
 export const SecretInputFile = forwardRef<
@@ -24,6 +25,13 @@ export const SecretInputFile = forwardRef<
     getFile: () => selectedFile,
     getError: () => error,
     isValid: () => !error && selectedFile !== null,
+    validate: () => {
+      if (!selectedFile) {
+        setError("Upload secret file");
+        return false;
+      }
+      return !error;
+    },
   }));
 
   function handleFileSelect(file: File) {

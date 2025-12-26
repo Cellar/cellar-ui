@@ -107,7 +107,7 @@ export const CreateSecretForm: React.FC<
     };
     setErrors(newErrors);
 
-    if (contentType === "file" && !fileInputRef.current?.isValid()) {
+    if (contentType === "file" && !fileInputRef.current?.validate()) {
       return false;
     }
 
