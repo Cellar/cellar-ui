@@ -1,7 +1,7 @@
-import React from 'react';
-import classes from './ContentTypeToggle.module.css';
+import React from "react";
+import classes from "./ContentTypeToggle.module.css";
 
-type ContentType = 'text' | 'file';
+type ContentType = "text" | "file";
 
 interface ContentTypeToggleProps {
   value: ContentType;
@@ -19,8 +19,8 @@ export const ContentTypeToggle: React.FC<ContentTypeToggleProps> = ({
       <button
         type="button"
         data-testid="content-type-text"
-        className={value === 'text' ? classes.active : ''}
-        onClick={() => onChange('text')}
+        className={value === "text" ? classes.active : ""}
+        onClick={() => onChange("text")}
         disabled={disabled}
       >
         TEXT
@@ -28,8 +28,8 @@ export const ContentTypeToggle: React.FC<ContentTypeToggleProps> = ({
       <button
         type="button"
         data-testid="content-type-file"
-        className={value === 'file' ? classes.active : ''}
-        onClick={() => onChange('file')}
+        className={value === "file" ? classes.active : ""}
+        onClick={() => onChange("file")}
         disabled={disabled}
       >
         FILE

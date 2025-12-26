@@ -12,8 +12,10 @@ describe('validateFile', () => {
         content: ArrayBuffer | string[],
         filename: string,
       ): string | null {
-        const fileContent = content instanceof ArrayBuffer ? [content] : content;
-        const contentType = content instanceof ArrayBuffer ? undefined : 'text/plain';
+        const fileContent =
+          content instanceof ArrayBuffer ? [content] : content;
+        const contentType =
+          content instanceof ArrayBuffer ? undefined : 'text/plain';
         const file = new File(fileContent, filename, { type: contentType });
 
         return validateFile(file, maxSize);

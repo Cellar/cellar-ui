@@ -1,0 +1,96 @@
+.container {
+  width: 100%;
+}
+
+.zone {
+  border: 2px dashed var(--color-white);
+  border-radius: 0.8rem;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zone:hover:not(.disabled) {
+  border-color: var(--color-green);
+  background-color: rgba(0, 255, 0, 0.05);
+}
+
+.zone.dragging {
+  border-color: var(--color-green);
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+.zone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--color-gray);
+}
+
+.input {
+  display: none;
+}
+
+.uploadText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-white);
+  font-size: 1.6rem;
+}
+
+.uploadText p {
+  margin: 0;
+}
+
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.fileName {
+  color: var(--color-white);
+  font-size: 1.8rem;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.fileSize {
+  color: var(--color-gray);
+  font-size: 1.4rem;
+}
+
+.removeButton {
+  background: none;
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
+  padding: 0.8rem 1.6rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0.4rem;
+  transition: all 0.2s;
+}
+
+.removeButton:hover {
+  background-color: var(--color-red);
+  color: var(--color-black);
+}
+
+.error {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid var(--color-red);
+  border-radius: 0.4rem;
+  color: var(--color-red);
+  font-size: 1.4rem;
+}
