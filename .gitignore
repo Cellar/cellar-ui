@@ -2,6 +2,9 @@
 /playwright-report/
 /playwright/.cache/
 
+# Design assets and Figma exports
+figma-exports/
+
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json

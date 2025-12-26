@@ -13,11 +13,14 @@ import {
 import classes from "./CreateSecretForm.module.css";
 import { RelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration";
 import { AbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration";
-import { createSecretWithText } from "@/api/client";
+import { createSecretWithText, createSecretWithFile } from "@/api/client";
 import { ISecretMetadata } from "@/models/secretMetadata";
 import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { useMediaQuery } from "@mantine/hooks";
+import { ContentTypeToggle } from "@/components/contentTypeToggle/ContentTypeToggle";
+import { FileUploadZone } from "@/components/fileUploadZone/FileUploadZone";
+import { validateFile } from "@/helpers/validateFile";
 
 const ExpirationModes = {
   Absolute: "Expire On (Absolute)",
@@ -34,10 +37,15 @@ type FormErrors = {
   [key in keyof typeof FormInputs]: string;
 };
 
+const MAX_FILE_SIZE = 8 * 1024 * 1024;
+
 export const CreateSecretForm: React.FC<
   React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
+  const [contentType, setContentType] = useState<"text" | "file">("text");
   const [secretContent, setSecretContent] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string>("");
   const [expirationMode, setExpirationMode] = useState(
     ExpirationModes.Relative,
   );
@@ -59,21 +67,44 @@ export const CreateSecretForm: React.FC<
     else setAccessLimit(1);
   }
 
+  function handleFileSelect(file: File) {
+    const error = validateFile(file, MAX_FILE_SIZE);
+    setFileError(error || "");
+    setSelectedFile(file);
+  }
+
+  function handleFileRemove() {
+    setSelectedFile(null);
+    setFileError("");
+  }
+
   async function handleFormSubmit() {
     if (!validate()) return;
 
-    const metadata = await createSecretWithText(
-      secretContent,
-      expirationDate,
-      accessLimitDisabled ? -1 : accessLimit,
-    );
+    let metadata;
+    if (contentType === "text") {
+      metadata = await createSecretWithText(
+        secretContent,
+        expirationDate,
+        accessLimitDisabled ? -1 : accessLimit,
+      );
+    } else {
+      if (!selectedFile) return;
+      metadata = await createSecretWithFile(
+        selectedFile,
+        expirationDate,
+        accessLimitDisabled ? -1 : accessLimit,
+      );
+    }
     navigate(`/secret/${(metadata as ISecretMetadata).id}`);
   }
 
   function validate(): boolean {
     const newErrors = {
       SecretContent:
-        secretContent.trim().length <= 0 ? FormInputs.SecretContent : "",
+        contentType === "text" && secretContent.trim().length <= 0
+          ? FormInputs.SecretContent
+          : "",
       Expiration:
         expirationDate < new Date(new Date().getTime() + 30 * 60 * 1000)
           ? FormInputs.Expiration
@@ -85,6 +116,10 @@ export const CreateSecretForm: React.FC<
     };
     setErrors(newErrors);
 
+    if (contentType === "file" && (!selectedFile || fileError)) {
+      return false;
+    }
+
     return !Object.values(newErrors).some(
       (err: string) => err.trim().length > 0,
     );
@@ -93,19 +128,31 @@ export const CreateSecretForm: React.FC<
   return (
     <div {...props}>
       <Form noValidate onSubmit={(event) => event.preventDefault()}>
-        <ErrorWrapper
-          className={classes.errorIndent}
-          message={errors?.SecretContent ?? ""}
-          data-testid="secret-content-error"
-        >
-          <TextArea
-            data-testid="secret-content"
-            rows={isMobile ? 13 : 14}
-            placeholder="Enter Secret Content"
-            onChange={(e) => setSecretContent(e.target.value)}
-            required
+        <div data-testid="content-type-toggle" className={classes.formSection}>
+          <ContentTypeToggle value={contentType} onChange={setContentType} />
+        </div>
+        {contentType === "text" ? (
+          <ErrorWrapper
+            className={classes.errorIndent}
+            message={errors?.SecretContent ?? ""}
+            data-testid="secret-content-error"
+          >
+            <TextArea
+              data-testid="secret-content"
+              rows={isMobile ? 13 : 14}
+              placeholder="Enter Secret Content"
+              onChange={(e) => setSecretContent(e.target.value)}
+              required
+            />
+          </ErrorWrapper>
+        ) : (
+          <FileUploadZone
+            onFileSelect={handleFileSelect}
+            selectedFile={selectedFile}
+            onRemove={handleFileRemove}
+            error={fileError}
           />
-        </ErrorWrapper>
+        )}
         <div className={cx(classes.formControls, classes.formSection)}>
           <div>
             <span className={classes.header}>Expiration</span>

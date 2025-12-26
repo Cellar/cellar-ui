@@ -12,7 +12,7 @@ import {
 } from "./CreateSecretForm.spec.model";
 import { setRelativeExpiration } from "@/components/createSecret/relativeExpiration/RelativeExpiration.spec.model";
 import { setAbsoluteExpiration } from "@/components/createSecret/absoluteExpiration/AbsoluteExpiration.spec.model";
-import { createSecretWithText } from "@/api/client";
+import { createSecretWithText, createSecretWithFile } from "@/api/client";
 
 const mockMetadata: ISecretMetadata = {
   id: "V5nIvLMxZUYP4",
@@ -34,6 +34,7 @@ describe("When rendering CreateSecretForm", () => {
   beforeAll(() => {
     vi.mock("@/api/client");
     createSecretWithText.mockResolvedValue(mockMetadata);
+    createSecretWithFile.mockResolvedValue(mockMetadata);
   });
 
   beforeEach(() => {
@@ -315,6 +316,162 @@ describe("When rendering CreateSecretForm", () => {
           });
         });
       }
+    });
+  });
+
+  describe("and switching content type", () => {
+    it("should display content type toggle", () => {
+      expect(form.contentTypeToggle).toBeInTheDocument();
+    });
+
+    it("should default to text mode", () => {
+      expect(form.textContentTypeButton.className).toMatch(/active/);
+    });
+
+    it("should display textarea in text mode", () => {
+      expect(form.secretContentInput).toBeInTheDocument();
+    });
+
+    it("should not display file upload zone in text mode", () => {
+      expect(form.fileUploadZone).not.toBeInTheDocument();
+    });
+
+    describe("and switching to file mode", () => {
+      beforeEach(async () => {
+        await userEvent.click(form.fileContentTypeButton);
+      });
+
+      it("should activate file mode button", () => {
+        expect(form.fileContentTypeButton.className).toMatch(/active/);
+      });
+
+      it("should deactivate text mode button", () => {
+        expect(form.textContentTypeButton.className).not.toMatch(/active/);
+      });
+
+      it("should hide textarea", () => {
+        expect(form.secretContentInputQuery).not.toBeInTheDocument();
+      });
+
+      it("should display file upload zone", () => {
+        expect(form.fileUploadZone).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("and uploading a file", () => {
+    const testFile = new File(["test content"], "test.txt", {
+      type: "text/plain",
+    });
+
+    beforeEach(async () => {
+      await userEvent.click(form.fileContentTypeButton);
+    });
+
+    it("should display selected file name", async () => {
+      await form.selectFile(testFile);
+      expect(form.selectedFileName).toHaveTextContent("test.txt");
+    });
+
+    it("should display selected file size", async () => {
+      await form.selectFile(testFile);
+      expect(form.selectedFileSize).toHaveTextContent("12 Bytes");
+    });
+
+    it("should allow removing selected file", async () => {
+      await form.selectFile(testFile);
+      await userEvent.click(form.removeFileButton);
+      expect(form.selectedFileInfo).not.toBeInTheDocument();
+    });
+
+    describe("and creating secret with file", () => {
+      beforeEach(async () => {
+        vi.clearAllMocks();
+        await form.selectFile(testFile);
+        await setRelativeExpiration("10", "30");
+        await setAccessLimit(3);
+        await userEvent.click(form.createButton);
+      });
+
+      it("should navigate to the secret details page", async () => {
+        await waitFor(() => {
+          expect(navigateMock).toHaveBeenCalledExactlyOnceWith(
+            `/secret/${mockMetadata.id}`,
+          );
+        });
+      });
+
+      it("should call createSecretWithFile with correct file", async () => {
+        await waitFor(() => {
+          expect(createSecretWithFile).toHaveBeenCalledWith(
+            testFile,
+            expect.any(Date),
+            3,
+          );
+        });
+      });
+
+      it("should call createSecretWithFile with correct expiration", async () => {
+        const expectedExpiration = new Date();
+        expectedExpiration.setHours(
+          expectedExpiration.getHours() + 10,
+          expectedExpiration.getMinutes() + 30,
+          0,
+          0,
+        );
+
+        await waitFor(() => {
+          const callArgs = createSecretWithFile.mock.calls[0];
+          const actualExpiration = callArgs[1] as Date;
+          expect(actualExpiration.getTime()).toBeCloseTo(
+            expectedExpiration.getTime(),
+            -3,
+          );
+        });
+      });
+
+      it("should call createSecretWithFile with correct access limit", async () => {
+        await waitFor(() => {
+          expect(createSecretWithFile).toHaveBeenCalledWith(
+            expect.any(File),
+            expect.any(Date),
+            3,
+          );
+        });
+      });
+    });
+
+    describe("and file exceeds size limit", () => {
+      const largeFile = new File(
+        [new ArrayBuffer(9 * 1024 * 1024)],
+        "large.bin",
+      );
+
+      it("should display error for oversized file", async () => {
+        await form.selectFile(largeFile);
+        expect(form.fileUploadError).toBeInTheDocument();
+      });
+
+      it("should not allow creating secret with oversized file", async () => {
+        await form.selectFile(largeFile);
+        await userEvent.click(form.createButton);
+        expect(createSecretWithFile).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("and file is empty", () => {
+      const emptyFile = new File([], "empty.txt");
+
+      it("should display error for empty file", async () => {
+        await form.selectFile(emptyFile);
+        expect(form.fileUploadError).toBeInTheDocument();
+      });
+
+      it("should not allow creating secret with empty file", async () => {
+        await form.selectFile(emptyFile);
+        await userEvent.click(form.createButton);
+        expect(createSecretWithFile).not.toHaveBeenCalled();
+      });
     });
   });
 

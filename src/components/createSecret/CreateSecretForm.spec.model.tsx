@@ -17,6 +17,9 @@ export const form = {
   get secretContentInput() {
     return screen.getByTestId("secret-content");
   },
+  get secretContentInputQuery() {
+    return screen.queryByTestId("secret-content");
+  },
   get accessLimitInput(): HTMLInputElement {
     return screen.getByTestId("access-limit-input");
   },
@@ -54,6 +57,42 @@ export const form = {
   },
   get relativeExpirationModel() {
     return relativeExpirationForm;
+  },
+
+  get contentTypeToggle() {
+    return screen.getByTestId("content-type-toggle");
+  },
+  get textContentTypeButton() {
+    return screen.getByTestId("content-type-text");
+  },
+  get fileContentTypeButton() {
+    return screen.getByTestId("content-type-file");
+  },
+
+  get fileUploadZone() {
+    return screen.queryByTestId("file-upload-zone");
+  },
+  get selectedFileInfo() {
+    return screen.queryByTestId("selected-file-info");
+  },
+  get selectedFileName() {
+    return screen
+      .getByTestId("selected-file-info")
+      .querySelector("div:first-child");
+  },
+  get selectedFileSize() {
+    return screen.getByTestId("selected-file-size");
+  },
+  get removeFileButton() {
+    return screen.getByTestId("remove-file-button");
+  },
+  get fileUploadError() {
+    return screen.getByTestId("file-upload-error");
+  },
+
+  async selectFile(file: File) {
+    const input = screen.getByTestId("file-input") as HTMLInputElement;
+    await userEvent.upload(input, file);
   },
 };
 
