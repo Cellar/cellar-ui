@@ -4,7 +4,6 @@ import Button from "src/components/buttons/Button";
 import {
   Form,
   FormButton,
-  TextArea,
   NumericInput,
   ToggleButton,
   ErrorWrapper,
@@ -19,8 +18,8 @@ import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { useMediaQuery } from "@mantine/hooks";
 import { ContentTypeToggle } from "@/components/contentTypeToggle/ContentTypeToggle";
-import { FileUploadZone } from "@/components/fileUploadZone/FileUploadZone";
-import { validateFile } from "@/helpers/validateFile";
+import { SecretInputText } from "@/components/secretInputText/SecretInputText";
+import { SecretInputFile } from "@/components/secretInputFile/SecretInputFile";
 
 const ExpirationModes = {
   Absolute: "Expire On (Absolute)",
@@ -67,8 +66,7 @@ export const CreateSecretForm: React.FC<
     else setAccessLimit(1);
   }
 
-  function handleFileSelect(file: File) {
-    const error = validateFile(file, MAX_FILE_SIZE);
+  function handleFileSelect(file: File, error: string | null) {
     setFileError(error || "");
     setSelectedFile(file);
   }
@@ -132,24 +130,18 @@ export const CreateSecretForm: React.FC<
           <ContentTypeToggle value={contentType} onChange={setContentType} />
         </div>
         {contentType === "text" ? (
-          <ErrorWrapper
-            className={classes.errorIndent}
-            message={errors?.SecretContent ?? ""}
-            data-testid="secret-content-error"
-          >
-            <TextArea
-              data-testid="secret-content"
-              rows={isMobile ? 13 : 14}
-              placeholder="Enter Secret Content"
-              onChange={(e) => setSecretContent(e.target.value)}
-              required
-            />
-          </ErrorWrapper>
+          <SecretInputText
+            value={secretContent}
+            onChange={setSecretContent}
+            error={errors?.SecretContent}
+            mobile={isMobile}
+          />
         ) : (
-          <FileUploadZone
-            onFileSelect={handleFileSelect}
+          <SecretInputFile
             selectedFile={selectedFile}
+            onFileSelect={handleFileSelect}
             onRemove={handleFileRemove}
+            maxFileSize={MAX_FILE_SIZE}
             error={fileError}
           />
         )}
