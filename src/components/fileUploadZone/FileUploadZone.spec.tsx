@@ -41,25 +41,6 @@ describe("FileUploadZone", () => {
     });
   });
 
-  describe("when rendered with an error", () => {
-    const onFileSelect = vi.fn();
-    const errorMessage = "File is too large";
-
-    beforeEach(() => {
-      render(
-        <FileUploadZone onFileSelect={onFileSelect} error={errorMessage} />,
-      );
-    });
-
-    it("should display the error message", () => {
-      expect(screen.getByTestId("file-upload-error")).toBeInTheDocument();
-    });
-
-    it("should show the error text", () => {
-      expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    });
-  });
-
   describe("when selecting a file via click", () => {
     const onFileSelect = vi.fn();
     const testFile = new File(["test content"], "test.txt", {

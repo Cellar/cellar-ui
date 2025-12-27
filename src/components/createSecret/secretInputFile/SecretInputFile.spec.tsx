@@ -80,7 +80,7 @@ describe("When rendering SecretInputFile", () => {
         });
 
         it("should display error message", () => {
-          expect(screen.getByTestId("file-upload-error")).toHaveTextContent(
+          expect(screen.getByTestId("secret-file-error")).toHaveTextContent(
             expectedError,
           );
         });
@@ -91,7 +91,7 @@ describe("When rendering SecretInputFile", () => {
 
         it("should not display error message", () => {
           expect(
-            screen.queryByTestId("file-upload-error"),
+            screen.queryByTestId("secret-file-error"),
           ).not.toBeInTheDocument();
         });
       }

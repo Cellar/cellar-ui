@@ -87,7 +87,7 @@ export const form = {
     return screen.getByTestId("remove-file-button");
   },
   get fileUploadError() {
-    return screen.getByTestId("file-upload-error");
+    return screen.getByTestId("secret-file-error");
   },
 
   async selectFile(file: File) {

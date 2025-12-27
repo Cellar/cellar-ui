@@ -24,8 +24,19 @@ describe('SecretsService', () => {
   };
   const badRequest: IApiError = { code: 400, message: 'Bad Request' };
 
-  function createFetchResponse(data: any) {
-    return { json: () => new Promise((resolve) => resolve(data)) };
+  function createFetchResponse(
+    data: any,
+    contentType: string = 'application/json',
+  ) {
+    return {
+      json: () => new Promise((resolve) => resolve(data)),
+      headers: {
+        get: (name: string) => {
+          if (name === 'content-type') return contentType;
+          return null;
+        },
+      },
+    };
   }
 
   beforeEach(() => {
