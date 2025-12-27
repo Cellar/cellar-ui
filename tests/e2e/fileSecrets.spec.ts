@@ -5,6 +5,7 @@ import { SecretMetadataDisplay } from './models/secretmetadata';
 import { AccessSecretDisplay } from './models/accesssecret';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { writeFileSync } from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testFilePath = path.join(
@@ -56,7 +57,7 @@ test.describe('when opening create secret page', () => {
           await form.removeFileButton.click();
 
           await expect(form.fileUploadZone.baseElement).toContainText(
-            'Drag file here or click to browse',
+            'Drag and drop a file here or click to browse',
           );
         });
       });
@@ -78,7 +79,7 @@ test.describe('when opening create secret page', () => {
           __dirname,
           '../fixtures/files/large-file.bin',
         );
-        require('fs').writeFileSync(largePath, largeBuffer);
+        writeFileSync(largePath, largeBuffer);
 
         await form.fileUploadInput.setInputFiles(largePath);
       });
