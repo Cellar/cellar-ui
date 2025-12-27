@@ -289,6 +289,76 @@ describe('SecretsService', () => {
       it('should respond with error message', () =>
         expect(actual.message).toEqual(badRequest.message));
     });
+
+    describe('and response is a file (octet-stream)', () => {
+      let actual: ISecret;
+      const fileContent = new Uint8Array([1, 2, 3, 4, 5]);
+      const testBlob = new Blob([fileContent], {
+        type: 'application/octet-stream',
+      });
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue({
+          headers: {
+            get: (name: string) => {
+              if (name === 'content-type') return 'application/octet-stream';
+              if (name === 'content-disposition')
+                return 'attachment; filename="test-file.pdf"';
+              return null;
+            },
+          },
+          blob: () => Promise.resolve(testBlob),
+        });
+        actual = (await performTest()) as ISecret;
+      });
+
+      it('should make POST request to v2 access endpoint', () =>
+        expect(fetch.mock.calls[0][0]).toBe(
+          `/api/v2/secrets/${secretMetadata.id}/access`,
+        ));
+      it('should use POST method', () =>
+        expect(fetch.mock.calls[0][1].method).toBe('POST'));
+      it('should respond with contentType as file', () =>
+        expect(actual.contentType).toBe('file'));
+      it('should respond with extracted filename', () =>
+        expect(actual.filename).toBe('test-file.pdf'));
+      it('should respond with fileBlob', () =>
+        expect(actual.fileBlob).toEqual(testBlob));
+      it('should respond with empty content', () =>
+        expect(actual.content).toBe(''));
+      it('should respond with secret id', () =>
+        expect(actual.id).toBe(secretMetadata.id));
+    });
+
+    describe('and response is a file without filename in header', () => {
+      let actual: ISecret;
+      const fileContent = new Uint8Array([1, 2, 3]);
+      const testBlob = new Blob([fileContent], {
+        type: 'application/octet-stream',
+      });
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue({
+          headers: {
+            get: (name: string) => {
+              if (name === 'content-type') return 'application/octet-stream';
+              return null;
+            },
+          },
+          blob: () => Promise.resolve(testBlob),
+        });
+        actual = (await performTest()) as ISecret;
+      });
+
+      it('should use fallback filename with secret id prefix', () =>
+        expect(actual.filename).toBe(
+          `cellar-${secretMetadata.id.slice(0, 8)}`,
+        ));
+      it('should respond with contentType as file', () =>
+        expect(actual.contentType).toBe('file'));
+      it('should respond with fileBlob', () =>
+        expect(actual.fileBlob).toEqual(testBlob));
+    });
   });
 
   describe('when deleting a secret', () => {
