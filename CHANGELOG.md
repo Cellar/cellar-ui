@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2025-12-26
+
+### Added
+
+- File upload support for creating file secrets
+- ContentTypeToggle component for switching between text and file input modes
+- FileUploadZone component with drag-and-drop file selection
+- SecretInputFile component with file validation (size limits, empty file detection)
+- SecretInputText component extracted from CreateSecretForm for better organization
+- File secret display with file information card (filename, size in MB)
+- Download functionality for file secrets via "Save File" button
+- File upload validation error messages with ErrorWrapper integration
+- File size display formatted to 2 decimal points in MB
+- Comprehensive unit test coverage for file upload and download functionality (21 new tests)
+- Integration with cellar-api v3.3.0 filename storage and retrieval
+
+### Changed
+
+- Migrated API client from v1 to v2 endpoints using FormData for multipart requests
+- Updated to require cellar-api v3.3.0 or higher (was v1.0.0)
+- API client now handles both JSON (text secrets) and binary (file secrets) responses
+- CreateSecretForm refactored to use extracted SecretInputText and SecretInputFile components
+- File state management moved into SecretInputFile component
+- AccessSecretDisplay now conditionally renders based on content type (text vs file)
+- Unified styling for text and file inputs on create secret form
+- Content-Disposition header parsing for filename extraction with fallback pattern
+- API_VERSION in CI pipeline updated from 1.0.0 to 3.3.0
+
+### Security
+
+- Filename sanitization handled by cellar-api to prevent path traversal attacks
+- File size limits enforced (default 8 MB maximum)
+- Empty file uploads rejected with validation error
+
 ## [2.0.0] - 2025-12-23
 
 ### Added
@@ -100,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitLab CI/CD pipeline
 - Makefile for development workflows
 
-[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v2.0.0...HEAD
+[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.0...HEAD
+[3.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v2.0.0...v3.0.0
 [2.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v1.0.0...v2.0.0
 [1.0.0]: https://gitlab.com/cellar-app/cellar-ui/releases/tag/v1.0.0
