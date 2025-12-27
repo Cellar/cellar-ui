@@ -27,7 +27,7 @@ export const AccessSecretDisplay = () => {
     return (
       <div>
         <Form data-testid="access-secret-form">
-          <div className={classes.fileInfo}>
+          <div data-testid="file-info-card" className={classes.fileInfo}>
             <div className={classes.fileDetails}>
               <p className={classes.fileLabel}>Filename:</p>
               <p className={classes.fileName} data-testid="file-name">

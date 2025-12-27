@@ -68,7 +68,7 @@ export class AccessSecretDisplay extends ComponentModel {
     return new Clickable(
       AccessSecretDisplay,
       this.page,
-      'download-file-button',
+      'save-file-button',
     );
   }
 
