@@ -53,7 +53,31 @@ export const accessSecret = async (
   const res = await fetch(`/api/v2/secrets/${secretId}/access`, {
     method: 'POST',
   });
-  return res.json();
+
+  const contentType = res.headers.get('content-type');
+
+  if (contentType && contentType.includes('application/octet-stream')) {
+    const blob = await res.blob();
+    const contentDisposition = res.headers.get('content-disposition');
+    const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/);
+    const filename = filenameMatch
+      ? filenameMatch[1]
+      : `cellar-${secretId.slice(0, 8)}`;
+
+    return {
+      id: secretId,
+      content: '',
+      contentType: 'file',
+      filename: filename,
+      fileBlob: blob,
+    };
+  }
+
+  const jsonResponse = await res.json();
+  return {
+    ...jsonResponse,
+    contentType: 'text',
+  };
 };
 
 export const deleteSecret = async (

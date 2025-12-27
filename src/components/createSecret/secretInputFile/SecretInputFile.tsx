@@ -46,10 +46,7 @@ export const SecretInputFile = forwardRef<
   }
 
   return (
-    <ErrorWrapper
-      message={error}
-      data-testid="secret-file-error"
-    >
+    <ErrorWrapper message={error} data-testid="secret-file-error">
       <FileUploadZone
         selectedFile={selectedFile || undefined}
         onFileSelect={handleFileSelect}

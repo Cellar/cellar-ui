@@ -13,7 +13,9 @@
   color: var(--color-gray);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .container button:hover:not(:disabled) {

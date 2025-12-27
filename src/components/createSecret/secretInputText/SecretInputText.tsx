@@ -15,10 +15,7 @@ export const SecretInputText: React.FC<SecretInputTextProps> = ({
   mobile = false,
 }) => {
   return (
-    <ErrorWrapper
-      message={error ?? ""}
-      data-testid="secret-content-error"
-    >
+    <ErrorWrapper message={error ?? ""} data-testid="secret-content-error">
       <TextArea
         data-testid="secret-content"
         rows={mobile ? 13 : 14}
