@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2025-12-27
+
+### Fixed
+
+- File size display now shows appropriate units (Bytes, KB, MB, GB) based on file size instead of always showing MB
+- Small files (< 0.1 MB) now display in more readable units (e.g., "500 Bytes" or "15.2 KB" instead of "0.00 MB")
+- File size formatting now consistent between create and access pages using formatFileSize helper
+
 ## [3.0.0] - 2025-12-26
 
 ### Added

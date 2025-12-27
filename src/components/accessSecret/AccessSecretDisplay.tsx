@@ -5,6 +5,7 @@ import { ISecret } from "@/models/secret";
 import classes from "./AccessSecretDisplay.module.css";
 import { useMediaQuery } from "@mantine/hooks";
 import { CopyButton } from "src/components/buttons/CopyButton";
+import { formatFileSize } from "@/helpers/formatFileSize";
 
 export const AccessSecretDisplay = () => {
   const secret = useLoaderData() as ISecret;
@@ -38,7 +39,7 @@ export const AccessSecretDisplay = () => {
               <p className={classes.fileLabel}>Size:</p>
               <p className={classes.fileSize} data-testid="file-size">
                 {secret.fileBlob
-                  ? `${(secret.fileBlob.size / (1024 * 1024)).toFixed(2)} MB`
+                  ? formatFileSize(secret.fileBlob.size)
                   : "Unknown"}
               </p>
             </div>

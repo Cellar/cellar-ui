@@ -9,6 +9,7 @@ import {
 } from "@tests/helpers";
 import { form } from "./AccessSecretDisplay.spec.model";
 import { screen, waitFor } from "@testing-library/react";
+import { formatFileSize } from "@/helpers/formatFileSize";
 
 describe("When rendering AccessSecretDisplay with text secret", () => {
   const secret: ISecret = {
@@ -82,10 +83,9 @@ describe("When rendering AccessSecretDisplay with file secret", () => {
     );
   });
 
-  it("should display file size in MB", async () => {
-    const expectedSize = (testBlob.size / (1024 * 1024)).toFixed(2);
+  it("should display file size with appropriate units", async () => {
     expect(screen.getByTestId("file-size")).toHaveTextContent(
-      `${expectedSize} MB`,
+      formatFileSize(testBlob.size),
     );
   });
 
