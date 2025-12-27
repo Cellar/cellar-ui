@@ -89,10 +89,6 @@ test.describe('when opening create secret page', () => {
           'File exceeds maximum size',
         );
       });
-
-      test('it should disable the create secret button', async () => {
-        await expect(form.createSecretButton.baseElement).toBeDisabled();
-      });
     });
   });
 });

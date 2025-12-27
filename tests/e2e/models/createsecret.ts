@@ -94,7 +94,7 @@ export class CreateSecretForm extends ComponentModel {
   }
 
   get fileUploadError() {
-    return new Readable(CreateSecretForm, this.page, 'file-upload-error');
+    return new Readable(CreateSecretForm, this.page, 'secret-file-error');
   }
 
   get createSecretButton() {
