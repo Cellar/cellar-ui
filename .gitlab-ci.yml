@@ -76,7 +76,9 @@ test-unit:
     APP_BIND_ADDRESS: ":8081"
     REDIS_HOST: redis
     REDIS_PORT: 6379
-    VAULT_ADDRESS: http://vault:8200
+    CRYPTOGRAPHY_VAULT_ADDRESS: http://vault:8200
+    CRYPTOGRAPHY_VAULT_AUTH_MOUNT_PATH: approle
+    CRYPTOGRAPHY_VAULT_ENCRYPTION_TOKEN_NAME: cellar-testing
     VAULT_DEV_ROOT_TOKEN_ID: vault-admin
     VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
     VAULT_LOCAL_ADDR: http://vault:8200
@@ -98,8 +100,9 @@ test-unit:
     - apt-get update && apt-get install -y curl make jq libicu-dev libwebp-dev libffi-dev
     - npm ci
     - make vault-configure
-    - export VAULT_ROLE_ID=$(make vault-role-id)
-    - export VAULT_SECRET_ID=$(make vault-secret-id)
+    - export CRYPTOGRAPHY_VAULT_ENABLED=true
+    - export CRYPTOGRAPHY_VAULT_AUTH_APPROLE_ROLE_ID=$(make vault-role-id)
+    - export CRYPTOGRAPHY_VAULT_AUTH_APPROLE_SECRET_ID=$(make vault-secret-id)
     - make api-run-binary API_VERSION=${API_VERSION} PACKAGE_TOKEN=${CI_JOB_TOKEN}
     # Verify browser installation
     - npx playwright install-deps webkit
