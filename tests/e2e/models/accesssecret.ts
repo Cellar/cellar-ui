@@ -65,11 +65,7 @@ export class AccessSecretDisplay extends ComponentModel {
   }
 
   get downloadFileButton() {
-    return new Clickable(
-      AccessSecretDisplay,
-      this.page,
-      'save-file-button',
-    );
+    return new Clickable(AccessSecretDisplay, this.page, 'save-file-button');
   }
 
   get cardFileName() {

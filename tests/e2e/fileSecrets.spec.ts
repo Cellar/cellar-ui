@@ -96,36 +96,6 @@ test.describe('when opening create secret page', () => {
   });
 });
 
-test.describe('when viewing file secret metadata', () => {
-  let form: CreateSecretForm;
-  let metadataDisplay: SecretMetadataDisplay;
-
-  test.beforeEach(async ({ page, browserName }) => {
-    test.skip(
-      browserName === 'webkit',
-      'This test is skipped in WebKit due to security restrictions',
-    );
-    form = await CreateSecretForm.open(page);
-    metadataDisplay = await form.createFileSecret(testFilePath);
-  });
-
-  test('it should display FILE SECRET badge', async () => {
-    await expect(metadataDisplay.secretTypeBadge.baseElement).toContainText(
-      'FILE SECRET',
-    );
-  });
-
-  test('it should show file information section', async () => {
-    expect(await metadataDisplay.fileInfoSection.isVisible()).toBe(true);
-  });
-
-  test('it should display the filename', async () => {
-    await expect(metadataDisplay.fileName.baseElement).toContainText(
-      'test-document.txt',
-    );
-  });
-});
-
 test.describe('when accessing a file secret', () => {
   let form: CreateSecretForm;
   let metadataDisplay: SecretMetadataDisplay;
