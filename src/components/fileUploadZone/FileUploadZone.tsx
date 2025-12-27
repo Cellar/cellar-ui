@@ -111,7 +111,9 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
 
         {selectedFile && (
           <div data-testid="selected-file-info" className={classes.fileInfo}>
-            <div className={classes.fileName}>{selectedFile.name}</div>
+            <div data-testid="selected-file-name" className={classes.fileName}>
+              {selectedFile.name}
+            </div>
             <div data-testid="selected-file-size" className={classes.fileSize}>
               {formatFileSize(selectedFile.size)}
             </div>
