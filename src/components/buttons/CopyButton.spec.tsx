@@ -114,13 +114,16 @@ describe("When rendering CopyButton", () => {
 
     describe("and showCheckmark is true", () => {
       it("should display the checkmark when confirmation text is shown", async () => {
-        const text = getRandomString();
-        const { testId } = renderCopyButton({ text, showCheckmark: true });
+        const confirmationText = getRandomString();
+        const { testId } = renderCopyButton({
+          confirmationText,
+          showCheckmark: true,
+        });
 
         clickCopyButton(testId);
 
         await waitFor(() => {
-          expect(copyButtonByText(text)).toBeInTheDocument();
+          expect(copyButtonByText(confirmationText)).toBeInTheDocument();
         });
 
         expect(checkmark()).toBeInTheDocument();
