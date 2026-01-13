@@ -23,6 +23,14 @@ import {
   SecretInputFile,
   SecretInputFileHandle,
 } from "@/components/createSecret/secretInputFile/SecretInputFile";
+import {
+  isRateLimitError,
+  hasRateLimitInfo,
+  IRateLimitInfo,
+  IApiError,
+} from "@/models/error";
+import { RateLimitError } from "@/components/error/RateLimitError";
+import { RateLimitWarning } from "@/components/warning/RateLimitWarning";
 
 const ExpirationModes = {
   Absolute: "Expire On (Absolute)",
@@ -52,6 +60,10 @@ export const CreateSecretForm: React.FC<
   const [accessLimit, setAccessLimit] = useState(1);
   const [accessLimitDisabled, setAccessLimitDisabled] = useState(false);
   const [errors, setErrors] = useState<FormErrors>();
+  const [rateLimitInfo, setRateLimitInfo] = useState<
+    IRateLimitInfo | undefined
+  >();
+  const [rateLimitError, setRateLimitError] = useState<IApiError | undefined>();
 
   const fileInputRef = useRef<SecretInputFileHandle>(null);
   const navigate = useNavigate();
@@ -71,6 +83,8 @@ export const CreateSecretForm: React.FC<
   async function handleFormSubmit() {
     if (!validate()) return;
 
+    setRateLimitError(undefined);
+
     let metadata;
     if (contentType === "text") {
       metadata = await createSecretWithText(
@@ -87,6 +101,21 @@ export const CreateSecretForm: React.FC<
         accessLimitDisabled ? -1 : accessLimit,
       );
     }
+
+    if (isRateLimitError(metadata)) {
+      setRateLimitError(metadata);
+      return;
+    }
+
+    if ("code" in metadata && "message" in metadata) {
+      console.error("API Error:", metadata);
+      return;
+    }
+
+    if (hasRateLimitInfo(metadata)) {
+      setRateLimitInfo(metadata.rateLimit);
+    }
+
     navigate(`/secret/${(metadata as ISecretMetadata).id}`);
   }
 
@@ -118,129 +147,144 @@ export const CreateSecretForm: React.FC<
 
   return (
     <div {...props}>
-      <Form noValidate onSubmit={(event) => event.preventDefault()}>
-        <div data-testid="content-type-toggle" className={classes.formSection}>
-          <ContentTypeToggle value={contentType} onChange={setContentType} />
-        </div>
-        <div className={classes.contentInputWrapper}>
-          {contentType === "text" ? (
-            <SecretInputText
-              value={secretContent}
-              onChange={setSecretContent}
-              error={errors?.SecretContent}
-              mobile={isMobile}
-            />
-          ) : (
-            <SecretInputFile ref={fileInputRef} maxFileSize={MAX_FILE_SIZE} />
-          )}
-        </div>
-        <div className={cx(classes.formControls, classes.formSection)}>
-          <div>
-            <span className={classes.header}>Expiration</span>
-            <ErrorWrapper
-              message={errors?.Expiration ?? ""}
-              data-testid="expiration-error"
-            >
-              <div
-                data-testid={
-                  expirationMode === ExpirationModes.Relative
-                    ? "relative-expiration"
-                    : "absolute-expiration"
-                }
-              >
-                {expirationMode === ExpirationModes.Relative && (
-                  <>
-                    <button
-                      data-testid="expiration-absolute-option"
-                      className={classes.expirationModeOption}
-                      onClick={() =>
-                        setExpirationMode(ExpirationModes.Absolute)
-                      }
-                    >
-                      {ExpirationModes.Absolute}
-                    </button>
-                    <br />
-                    <RelativeExpiration
-                      expiration={expirationDate}
-                      setExpiration={setExpirationDate}
-                    />
-                  </>
-                )}
-                {expirationMode === ExpirationModes.Absolute && (
-                  <>
-                    <AbsoluteExpiration
-                      expiration={expirationDate}
-                      setExpiration={setExpirationDate}
-                    />
-                    <br />
-                    <button
-                      data-testid="expiration-relative-option"
-                      className={classes.expirationModeOption}
-                      onClick={() =>
-                        setExpirationMode(ExpirationModes.Relative)
-                      }
-                    >
-                      {ExpirationModes.Relative}
-                    </button>
-                  </>
-                )}
-              </div>
-            </ErrorWrapper>
-          </div>
-          <div className={classes.accessLimitSection}>
-            <span className={classes.header}>Access Limit</span>
-            <ErrorWrapper
-              message={errors?.AccessLimit ?? ""}
-              data-testid="access-limit-error"
-            >
-              <div className={classes.accessLimitElements}>
-                <NumericInput
-                  disabled={accessLimitDisabled}
-                  data-testid="access-limit-input"
-                  value={accessLimitDisabled ? "" : accessLimit}
-                  className={classes.accessLimitInput}
-                  onChange={(e) => handleSetAccessLimit(+e.target.value)}
-                />
-                <FormButton
-                  disabled={accessLimitDisabled}
-                  data-testid="access-limit-decrement-button"
-                  className={classes.accessLimitInputModifier}
-                  onClick={() => handleSetAccessLimit(accessLimit - 1)}
-                >
-                  -
-                </FormButton>
-                <FormButton
-                  disabled={accessLimitDisabled}
-                  data-testid="access-limit-increment-button"
-                  className={classes.accessLimitInputModifier}
-                  onClick={() => handleSetAccessLimit(accessLimit + 1)}
-                >
-                  +
-                </FormButton>
-                <p className={classes.orText}>or</p>
-                <ToggleButton
-                  data-testid="no-limit-toggle"
-                  className={classes.noLimitInput}
-                  setParentState={setAccessLimitDisabled}
-                >
-                  No Limit
-                </ToggleButton>
-                <div className={classes.shim} />
-              </div>
-            </ErrorWrapper>
-          </div>
-        </div>
-        <div className={classes.formSection}>
-          <Button
-            data-testid="create-secret-button"
-            appearance={Button.appearances.primary}
-            textstates={["Create Secret"]}
-            onClick={handleFormSubmit}
+      {rateLimitInfo && <RateLimitWarning rateLimit={rateLimitInfo} />}
+
+      {rateLimitError ? (
+        <RateLimitError
+          error={rateLimitError}
+          onRetry={() => {
+            setRateLimitError(undefined);
+            handleFormSubmit();
+          }}
+        />
+      ) : (
+        <Form noValidate onSubmit={(event) => event.preventDefault()}>
+          <div
+            data-testid="content-type-toggle"
+            className={classes.formSection}
           >
-            Create Secret
-          </Button>
-        </div>
-      </Form>
+            <ContentTypeToggle value={contentType} onChange={setContentType} />
+          </div>
+          <div className={classes.contentInputWrapper}>
+            {contentType === "text" ? (
+              <SecretInputText
+                value={secretContent}
+                onChange={setSecretContent}
+                error={errors?.SecretContent}
+                mobile={isMobile}
+              />
+            ) : (
+              <SecretInputFile ref={fileInputRef} maxFileSize={MAX_FILE_SIZE} />
+            )}
+          </div>
+          <div className={cx(classes.formControls, classes.formSection)}>
+            <div>
+              <span className={classes.header}>Expiration</span>
+              <ErrorWrapper
+                message={errors?.Expiration ?? ""}
+                data-testid="expiration-error"
+              >
+                <div
+                  data-testid={
+                    expirationMode === ExpirationModes.Relative
+                      ? "relative-expiration"
+                      : "absolute-expiration"
+                  }
+                >
+                  {expirationMode === ExpirationModes.Relative && (
+                    <>
+                      <button
+                        data-testid="expiration-absolute-option"
+                        className={classes.expirationModeOption}
+                        onClick={() =>
+                          setExpirationMode(ExpirationModes.Absolute)
+                        }
+                      >
+                        {ExpirationModes.Absolute}
+                      </button>
+                      <br />
+                      <RelativeExpiration
+                        expiration={expirationDate}
+                        setExpiration={setExpirationDate}
+                      />
+                    </>
+                  )}
+                  {expirationMode === ExpirationModes.Absolute && (
+                    <>
+                      <AbsoluteExpiration
+                        expiration={expirationDate}
+                        setExpiration={setExpirationDate}
+                      />
+                      <br />
+                      <button
+                        data-testid="expiration-relative-option"
+                        className={classes.expirationModeOption}
+                        onClick={() =>
+                          setExpirationMode(ExpirationModes.Relative)
+                        }
+                      >
+                        {ExpirationModes.Relative}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </ErrorWrapper>
+            </div>
+            <div className={classes.accessLimitSection}>
+              <span className={classes.header}>Access Limit</span>
+              <ErrorWrapper
+                message={errors?.AccessLimit ?? ""}
+                data-testid="access-limit-error"
+              >
+                <div className={classes.accessLimitElements}>
+                  <NumericInput
+                    disabled={accessLimitDisabled}
+                    data-testid="access-limit-input"
+                    value={accessLimitDisabled ? "" : accessLimit}
+                    className={classes.accessLimitInput}
+                    onChange={(e) => handleSetAccessLimit(+e.target.value)}
+                  />
+                  <FormButton
+                    disabled={accessLimitDisabled}
+                    data-testid="access-limit-decrement-button"
+                    className={classes.accessLimitInputModifier}
+                    onClick={() => handleSetAccessLimit(accessLimit - 1)}
+                  >
+                    -
+                  </FormButton>
+                  <FormButton
+                    disabled={accessLimitDisabled}
+                    data-testid="access-limit-increment-button"
+                    className={classes.accessLimitInputModifier}
+                    onClick={() => handleSetAccessLimit(accessLimit + 1)}
+                  >
+                    +
+                  </FormButton>
+                  <p className={classes.orText}>or</p>
+                  <ToggleButton
+                    data-testid="no-limit-toggle"
+                    className={classes.noLimitInput}
+                    setParentState={setAccessLimitDisabled}
+                  >
+                    No Limit
+                  </ToggleButton>
+                  <div className={classes.shim} />
+                </div>
+              </ErrorWrapper>
+            </div>
+          </div>
+          <div className={classes.formSection}>
+            <Button
+              data-testid="create-secret-button"
+              appearance={Button.appearances.primary}
+              textstates={["Create Secret"]}
+              onClick={handleFormSubmit}
+            >
+              Create Secret
+            </Button>
+          </div>
+        </Form>
+      )}
     </div>
   );
 };

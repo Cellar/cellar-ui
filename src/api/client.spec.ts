@@ -27,13 +27,18 @@ describe('SecretsService', () => {
   function createFetchResponse(
     data: any,
     contentType: string = 'application/json',
+    status: number = 200,
+    headers: Record<string, string> = {},
   ) {
     return {
+      ok: status >= 200 && status < 300,
+      status,
       json: () => new Promise((resolve) => resolve(data)),
+      blob: () => new Promise((resolve) => resolve(data)),
       headers: {
         get: (name: string) => {
           if (name === 'content-type') return contentType;
-          return null;
+          return headers[name] || null;
         },
       },
     };
@@ -299,6 +304,8 @@ describe('SecretsService', () => {
 
       beforeEach(async () => {
         fetch.mockResolvedValue({
+          ok: true,
+          status: 200,
           headers: {
             get: (name: string) => {
               if (name === 'content-type') return 'application/octet-stream';
@@ -339,6 +346,8 @@ describe('SecretsService', () => {
 
       beforeEach(async () => {
         fetch.mockResolvedValue({
+          ok: true,
+          status: 200,
           headers: {
             get: (name: string) => {
               if (name === 'content-type') return 'application/octet-stream';
@@ -370,8 +379,10 @@ describe('SecretsService', () => {
       let actual: ISecret;
 
       beforeEach(async () => {
-        fetch.mockResolvedValue(createFetchResponse(null));
-        actual = (await performTest()) as nuoo;
+        fetch.mockResolvedValue(
+          createFetchResponse(null, 'application/json', 204),
+        );
+        actual = (await performTest()) as null;
       });
 
       it('should make DELETE request to v2 endpoint', () =>
@@ -397,6 +408,192 @@ describe('SecretsService', () => {
         expect(actual.code).toEqual(badRequest.code));
       it('should respond with error message', () =>
         expect(actual.message).toEqual(badRequest.message));
+    });
+  });
+
+  describe('when rate limit error (429) occurs', () => {
+    const rateLimitError = {
+      error: 'Rate limit exceeded. Try again in 60 seconds.',
+    };
+
+    const rateLimitHeaders = {
+      'Retry-After': '60',
+      'X-RateLimit-Limit': '300',
+      'X-RateLimit-Remaining': '0',
+      'X-RateLimit-Reset': '1736705220',
+    };
+
+    describe('and createSecretWithText receives 429', () => {
+      let actual: IApiError;
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue(
+          createFetchResponse(
+            rateLimitError,
+            'application/json',
+            429,
+            rateLimitHeaders,
+          ),
+        );
+
+        vi.useFakeTimers();
+        const promise = createSecretWithText(
+          secret.content,
+          secretMetadata.expiration,
+          secretMetadata.access_limit,
+        );
+        // Wait for all retry attempts: 60s * 3 retries + buffer
+        await vi.advanceTimersByTimeAsync(200000);
+        actual = (await promise) as IApiError;
+        vi.useRealTimers();
+      });
+
+      it('should return error with code 429', () =>
+        expect(actual.code).toBe(429));
+      it('should include error message', () =>
+        expect(actual.message).toBe(rateLimitError.error));
+      it('should include retryAfter', () => expect(actual.retryAfter).toBe(60));
+      it('should include rateLimit info', () => {
+        expect(actual.rateLimit).toBeDefined();
+        expect(actual.rateLimit?.limit).toBe(300);
+        expect(actual.rateLimit?.remaining).toBe(0);
+      });
+    });
+
+    describe('and retry logic succeeds after 429', () => {
+      let actual: ISecretMetadata;
+
+      beforeEach(async () => {
+        vi.useFakeTimers();
+        fetch
+          .mockResolvedValueOnce(
+            createFetchResponse(
+              rateLimitError,
+              'application/json',
+              429,
+              rateLimitHeaders,
+            ),
+          )
+          .mockResolvedValueOnce(
+            createFetchResponse(
+              rateLimitError,
+              'application/json',
+              429,
+              rateLimitHeaders,
+            ),
+          )
+          .mockResolvedValueOnce(createFetchResponse(secretMetadata));
+
+        const promise = createSecretWithText(
+          secret.content,
+          secretMetadata.expiration,
+          secretMetadata.access_limit,
+        );
+
+        // Wait for 2 retries: 60s * 2 + buffer
+        await vi.advanceTimersByTimeAsync(130000);
+        actual = (await promise) as ISecretMetadata;
+        vi.useRealTimers();
+      });
+
+      it('should call fetch 3 times', () =>
+        expect(fetch).toHaveBeenCalledTimes(3));
+      it('should return successful result', () =>
+        expect(actual.id).toBe(secretMetadata.id));
+    });
+
+    describe('and retry exhausted after max attempts', () => {
+      let actual: IApiError;
+
+      beforeEach(async () => {
+        vi.useFakeTimers();
+        fetch.mockResolvedValue(
+          createFetchResponse(
+            rateLimitError,
+            'application/json',
+            429,
+            rateLimitHeaders,
+          ),
+        );
+
+        const promise = createSecretWithText(
+          secret.content,
+          secretMetadata.expiration,
+          secretMetadata.access_limit,
+        );
+
+        // Wait for all retry attempts: 60s * 3 retries + buffer
+        await vi.advanceTimersByTimeAsync(200000);
+        actual = (await promise) as IApiError;
+        vi.useRealTimers();
+      });
+
+      it('should call fetch 4 times (initial + 3 retries)', () =>
+        expect(fetch).toHaveBeenCalledTimes(4));
+      it('should return 429 error', () => expect(actual.code).toBe(429));
+    });
+  });
+
+  describe('when successful response includes rate limit headers', () => {
+    const rateLimitHeaders = {
+      'X-RateLimit-Limit': '300',
+      'X-RateLimit-Remaining': '250',
+      'X-RateLimit-Reset': '1736705220',
+    };
+
+    describe('and getSecretMetadata succeeds', () => {
+      let actual: ISecretMetadata & { rateLimit?: any };
+
+      beforeEach(async () => {
+        fetch.mockResolvedValue(
+          createFetchResponse(
+            secretMetadata,
+            'application/json',
+            200,
+            rateLimitHeaders,
+          ),
+        );
+        actual = (await getSecretMetadata(
+          secretMetadata.id,
+        )) as ISecretMetadata;
+      });
+
+      it('should include rateLimit in response', () => {
+        expect(actual.rateLimit).toBeDefined();
+      });
+      it('should include correct limit', () => {
+        expect(actual.rateLimit?.limit).toBe(300);
+      });
+      it('should include correct remaining', () => {
+        expect(actual.rateLimit?.remaining).toBe(250);
+      });
+      it('should calculate percentUsed', () => {
+        expect(actual.rateLimit?.percentUsed).toBeCloseTo(16.67, 1);
+      });
+    });
+  });
+
+  describe('when network error occurs', () => {
+    describe('and error is thrown during fetch', () => {
+      let actual: IApiError;
+
+      beforeEach(async () => {
+        vi.useFakeTimers();
+        fetch
+          .mockRejectedValueOnce(new Error('Network error'))
+          .mockRejectedValueOnce(new Error('Network error'))
+          .mockResolvedValueOnce(createFetchResponse(secretMetadata));
+
+        const promise = getSecretMetadata(secretMetadata.id);
+        await vi.advanceTimersByTimeAsync(5000);
+        actual = (await promise) as any;
+        vi.useRealTimers();
+      });
+
+      it('should retry on network errors', () =>
+        expect(fetch).toHaveBeenCalledTimes(3));
+      it('should succeed after retries', () =>
+        expect((actual as ISecretMetadata).id).toBe(secretMetadata.id));
     });
   });
 });
