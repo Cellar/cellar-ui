@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Comprehensive rate limiting error handling for API v3.4.0+ (429 status codes)
+- RateLimitError component displaying countdown timer and retry button for rate limit errors
+- RateLimitWarning component showing proactive warnings at 80% and 95% usage thresholds
+- Clock and Warning SVG icon components matching existing app design
+- Automatic retry logic with exponential backoff (max 3 retries) for all API calls
+- Rate limit metadata extraction from API response headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After)
+- Type guards for runtime type checking of rate limit errors (isRateLimitError, hasRateLimitInfo)
+- HTTP response helpers for parsing rate limit headers and calculating retry delays
+- IRateLimitInfo interface for structured rate limit metadata
+- ApiErrorBoundary component for centralized error routing (created but not yet integrated)
+- Comprehensive unit test coverage for rate limiting functionality (81 tests for API client, 26 tests for helpers, 22 tests for error model)
+
+### Changed
+
+- Extended IApiError interface with optional retryAfter and rateLimit fields
+- API client methods now automatically retry on 429 errors with respect to Retry-After header
+- CreateSecretForm now displays rate limit errors and warnings instead of silently failing
+- Rate limit information now attached to all successful API responses when available
+- API retry delays use exponential backoff with jitter (1s, 2s, 4s, 8s with max 10s)
+
 ## [3.0.1] - 2025-12-27
 
 ### Fixed
