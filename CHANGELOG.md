@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-01-13
+
 ### Added
 
 - Comprehensive rate limiting error handling for API v3.4.0+ (429 status codes)
@@ -15,19 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clock and Warning SVG icon components matching existing app design
 - Automatic retry logic with exponential backoff (max 3 retries) for all API calls
 - Rate limit metadata extraction from API response headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After)
-- Type guards for runtime type checking of rate limit errors (isRateLimitError, hasRateLimitInfo)
+- Type guards for runtime type checking of API and rate limit errors (isApiError, isRateLimitError, hasRateLimitInfo)
 - HTTP response helpers for parsing rate limit headers and calculating retry delays
 - IRateLimitInfo interface for structured rate limit metadata
 - ApiErrorBoundary component for centralized error routing (created but not yet integrated)
-- Comprehensive unit test coverage for rate limiting functionality (81 tests for API client, 26 tests for helpers, 22 tests for error model)
+- Comprehensive unit test coverage for rate limiting functionality (81 tests for API client, 26 tests for helpers, 33 tests for error model)
 
 ### Changed
 
+- Updated to require cellar-api v3.4.1 or higher (was v3.3.1)
 - Extended IApiError interface with optional retryAfter and rateLimit fields
 - API client methods now automatically retry on 429 errors with respect to Retry-After header
 - CreateSecretForm now displays rate limit errors and warnings instead of silently failing
 - Rate limit information now attached to all successful API responses when available
 - API retry delays use exponential backoff with jitter (1s, 2s, 4s, 8s with max 10s)
+- Page loaders (AccessSecret, SecretMetadata) now throw errors for React Router error boundary handling
+
+### Fixed
+
+- React Router error boundary now properly catches API errors and redirects to NotFound page
+- 404 and other API errors now properly handled in loaders instead of being swallowed
 
 ## [3.0.1] - 2025-12-27
 
@@ -164,7 +173,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitLab CI/CD pipeline
 - Makefile for development workflows
 
-[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.0...HEAD
+[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.1.0...HEAD
+[3.1.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.1...v3.1.0
+[3.0.1]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.0...v3.0.1
 [3.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v2.0.0...v3.0.0
 [2.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v1.0.0...v2.0.0
 [1.0.0]: https://gitlab.com/cellar-app/cellar-ui/releases/tag/v1.0.0
