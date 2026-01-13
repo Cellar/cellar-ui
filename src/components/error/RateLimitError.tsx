@@ -75,8 +75,8 @@ export const RateLimitError: React.FC<RateLimitErrorProps> = ({
           <Button
             data-testid="retry-button"
             appearance={Button.appearances.primary}
-            disabled={!canRetry}
-            onClick={onRetry}
+            className={!canRetry ? "disabled" : undefined}
+            onClick={canRetry ? onRetry : undefined}
           >
             {canRetry ? "Try Again" : `Wait ${formatTime(secondsRemaining)}`}
           </Button>
