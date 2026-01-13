@@ -1,5 +1,63 @@
 import { describe, it, expect } from 'vitest';
-import { IApiError, isRateLimitError, hasRateLimitInfo } from './error';
+import {
+  IApiError,
+  isApiError,
+  isRateLimitError,
+  hasRateLimitInfo,
+} from './error';
+
+describe('when isApiError is called', () => {
+  const validApiErrors = [
+    { name: 'basic error', error: { code: 404, message: 'Not found' } },
+    {
+      name: '429 error',
+      error: { code: 429, message: 'Rate limit exceeded' },
+    },
+    {
+      name: 'error with retryAfter',
+      error: { code: 500, message: 'Server error', retryAfter: 60 },
+    },
+    {
+      name: 'error with rateLimit info',
+      error: {
+        code: 429,
+        message: 'Rate limit exceeded',
+        rateLimit: {
+          limit: 300,
+          remaining: 0,
+          reset: 123456,
+          percentUsed: 100,
+        },
+      },
+    },
+  ];
+
+  validApiErrors.forEach(({ name, error }) => {
+    describe(`and error is ${name}`, () => {
+      it('should return true', () => {
+        expect(isApiError(error)).toBe(true);
+      });
+    });
+  });
+
+  const invalidInputs = [
+    { name: 'null', value: null },
+    { name: 'undefined', value: undefined },
+    { name: 'string', value: 'error' },
+    { name: 'number', value: 429 },
+    { name: 'object without code', value: { message: 'error' } },
+    { name: 'object without message', value: { code: 404 } },
+    { name: 'empty object', value: {} },
+  ];
+
+  invalidInputs.forEach(({ name, value }) => {
+    describe(`and error is ${name}`, () => {
+      it('should return false', () => {
+        expect(isApiError(value)).toBe(false);
+      });
+    });
+  });
+});
 
 describe('when isRateLimitError is called', () => {
   const validRateLimitErrors = [

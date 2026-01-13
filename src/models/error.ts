@@ -12,6 +12,15 @@ export interface IRateLimitInfo {
   percentUsed: number;
 }
 
+export function isApiError(error: unknown): error is IApiError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    'message' in error
+  );
+}
+
 export function isRateLimitError(error: unknown): error is IApiError {
   return (
     typeof error === 'object' &&

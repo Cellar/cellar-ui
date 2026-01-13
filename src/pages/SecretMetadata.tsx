@@ -2,17 +2,24 @@ import { Layout } from "../layouts/Layout";
 import React from "react";
 import { SecretMetadataDisplay } from "../components/secretMetadata/SecretMetadataDisplay";
 import { ISecretMetadata } from "../models/secretMetadata";
-import { IApiError } from "../models/error";
+import { isApiError } from "../models/error";
 import { getSecretMetadata } from "../api/client";
 
 export const SecretMetadataLoader = async ({
   params,
 }: {
   params: any;
-}): Promise<ISecretMetadata | IApiError> => {
+}): Promise<ISecretMetadata> => {
   const secretId = params.secretId;
 
-  return getSecretMetadata(secretId);
+  const result = await getSecretMetadata(secretId);
+
+  // If we got an error, throw it so React Router error boundary catches it
+  if (isApiError(result)) {
+    throw result;
+  }
+
+  return result;
 };
 
 export const SecretMetadata = () => {
