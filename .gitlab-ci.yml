@@ -6,8 +6,8 @@ stages:
 
 variables:
   APP_NAME: cellar-ui
-  APP_VERSION: 3.1.0
-  API_VERSION: 3.4.1
+  APP_VERSION: 3.1.1
+  API_VERSION: 4.0.0
   IMAGE_NAME: ${CI_REGISTRY_IMAGE}
   PACKAGE_REGISTRY_URL: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic
 
@@ -78,6 +78,10 @@ test-unit:
     REDIS_PORT: 6379
     DATASTORE_REDIS_HOST: redis
     DATASTORE_REDIS_PORT: 6379
+    DATASTORE_REDIS_ENABLED: "true"
+    DATASTORE_VALKEY_ENABLED: "false"
+    DATASTORE_VALKEY_HOST: valkey
+    DATASTORE_VALKEY_PORT: 6379
     CRYPTOGRAPHY_VAULT_ADDRESS: http://vault:8200
     CRYPTOGRAPHY_VAULT_AUTH_MOUNT_PATH: approle
     CRYPTOGRAPHY_VAULT_ENCRYPTION_TOKEN_NAME: cellar-testing
@@ -87,8 +91,10 @@ test-unit:
     VAULT_ROOT_TOKEN: vault-admin
     VAULT_TOKEN_NAME: cellar-testing
   services:
-    - name: redis:7-alpine
+    - name: redis:8-alpine
       alias: redis
+    - name: valkey/valkey:9-alpine
+      alias: valkey
     - name: hashicorp/vault:1.17
       alias: vault
   artifacts:
@@ -123,6 +129,15 @@ test-e2e-desktop:
           - 'chromium-desktop'
           - 'firefox-desktop'
           - 'webkit-desktop'
+
+test-e2e-valkey:
+  extends: .e2e
+  stage: test
+  rules:
+  variables:
+    DATASTORE_REDIS_ENABLED: "false"
+    DATASTORE_VALKEY_ENABLED: "true"
+    BROWSER: 'chromium-desktop'
 
 test-e2e-chromium-mobile:
   extends: .e2e

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-10-20
+
+### Changed
+- E2E test environment now targets Cellar API 4.0.0.
+  The API container sets `DATASTORE_REDIS_ENABLED`, which API 4.0.0 requires.
+- Local services include Valkey (`localhost:6380`).
+  Run the API against it with `make services DATASTORE_ENGINE=valkey`.
+- CI runs a chromium-desktop E2E job against Valkey (`test-e2e-valkey`).
+- CI Redis service bumped from `redis:7-alpine` to `redis:8-alpine` to match local compose.
+
 ## [3.1.0] - 2026-01-13
 
 ### Added
@@ -173,7 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitLab CI/CD pipeline
 - Makefile for development workflows
 
-[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.1.0...HEAD
+[Unreleased]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.1.1...HEAD
+[3.1.1]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.1.0...v3.1.1
 [3.1.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.1...v3.1.0
 [3.0.1]: https://gitlab.com/cellar-app/cellar-ui/compare/v3.0.0...v3.0.1
 [3.0.0]: https://gitlab.com/cellar-app/cellar-ui/compare/v2.0.0...v3.0.0
