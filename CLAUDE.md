@@ -18,7 +18,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Docker Testing
 - Initialize services and Playwright: `make services`
-  - This sets up Redis, Vault, API, and a Playwright container
+  - This sets up Redis, Valkey, Vault, API, and a Playwright container
+  - The API uses Redis by default; use `make services DATASTORE_ENGINE=valkey` to run it against Valkey
   - Installs all dependencies and browsers in the Playwright container
 - Run tests against initialized services:
   - WebKit tests: `make test-webkit-docker`

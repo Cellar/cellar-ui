@@ -26,6 +26,15 @@ VAULT_ROLE_NAME ?= cellar-testing
 
 VAULT_REQUEST := @curl --header "X-Vault-Token: ${VAULT_ROOT_TOKEN}"
 
+DATASTORE_ENGINE ?= redis
+ifeq (${DATASTORE_ENGINE},valkey)
+export DATASTORE_REDIS_ENABLED ?= false
+export DATASTORE_VALKEY_ENABLED ?= true
+else
+export DATASTORE_REDIS_ENABLED ?= true
+export DATASTORE_VALKEY_ENABLED ?= false
+endif
+
 E2E_PARAMS ?= --project='figma' --project='figma-mobile' --project='figma-mobile-tiny'
 
 BROWSER ?=
@@ -181,7 +190,7 @@ dotenv-values:
 services-api-dependencies:
 	$(LOG) "Starting API dependencies"
 	@docker compose pull
-	@docker compose up -d redis vault
+	@docker compose up -d redis valkey vault
 
 services-api:
 	$(LOG) "Starting API"
@@ -195,7 +204,7 @@ services-vault-wait:
 clean-services:
 	@docker compose down
 	@docker compose rm -svf
-	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data
+	@basename ${PWD} | xargs -I % docker volume rm -f %_redis_data %_valkey_data
 
 test-e2e-docker:
 	$(LOG) "Running tests "${E2E_TEST}" in ${BROWSER}"

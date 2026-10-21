@@ -8,6 +8,15 @@ services:
     volumes:
       - redis_data:/data
 
+  valkey:
+    image: valkey/valkey:9-alpine
+    ports:
+      - 6380:6379
+    networks:
+      - datastore
+    volumes:
+      - valkey_data:/data
+
   vault:
     image: hashicorp/vault:1.21
     ports:
@@ -20,18 +29,23 @@ services:
       VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
 
   api:
-    image: registry.gitlab.com/cellar-app/cellar-api:3.4.1
+    image: registry.gitlab.com/cellar-app/cellar-api:${API_VERSION:-4.0.0}
     ports:
       - 8081:8080
     networks:
       - datastore
     depends_on:
       - redis
+      - valkey
       - vault
     environment:
       APP_CLIENT_ADDRESS: 127.0.0.1:8081
+      DATASTORE_REDIS_ENABLED: ${DATASTORE_REDIS_ENABLED:-true}
       DATASTORE_REDIS_HOST: redis
       DATASTORE_REDIS_PORT: 6379
+      DATASTORE_VALKEY_ENABLED: ${DATASTORE_VALKEY_ENABLED:-false}
+      DATASTORE_VALKEY_HOST: valkey
+      DATASTORE_VALKEY_PORT: 6379
       DISABLE_SWAGGER:
       LOGGING_LEVEL: "DEBUG"
       CRYPTOGRAPHY_VAULT_ADDRESS: http://vault:8200
@@ -78,6 +92,7 @@ services:
 
 volumes:
   redis_data:
+  valkey_data:
 
 
 networks:
